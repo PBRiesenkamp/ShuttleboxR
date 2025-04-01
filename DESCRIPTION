@@ -1,13 +1,19 @@
 Package: ShuttleboxR
-Title: What the Package Does (One Line, Title Case)
+Title: An R Package For Data Exploration In Shuttle-Box Temperature Experiments
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Pieter", "Riesenkamp", , "p.b.riesenkamp@student.rug.nl", role = c("aut", "cre"))
+Description: ShuttleboxR is an R package designed to streamline the workflow between data collection and analysis. ShuttleboxR provides functions for data import, organization, calculation, and inspection, offering a standardized approach to data handling. It also helps identify flawed methodologies or trials, improving the reliability of shuttle-box experiments. 
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-URL: https://github.com/PBRiesenkamp/ShuttleboxR
-BugReports: https://github.com/PBRiesenkamp/ShuttleboxR/issues
+Imports: 
+    dbscan,
+    factoextra,
+    FactoMineR,
+    ggplot2,
+    ggrepel,
+    gridExtra,
+    rgl,
+    segmented
