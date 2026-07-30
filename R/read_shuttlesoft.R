@@ -1,104 +1,196 @@
-#' Import shuttlesoft shuttle-box data
+#' Import ShuttleSoft shuttle-box data
 #'
-#' This function imports .txt files output by shuttlesoft
+#' Imports a single `.txt` file produced by ShuttleSoft. A metadata table is
+#' optional. For a single trial, values such as the trial start time can be
+#' supplied directly as arguments. By default, the imported file is also
+#' prepared for analysis with [file_prepare()].
 #'
-#' @param file A string containing the directory of the file to be loaded.
-#' @param metadata A metadata file containing the variables file_name, initial_temp, mass, a_value and b_value
-#' @param multidat A parameter that specifies whether this considers a single trial or multiple trials, default is FALSE
-#' @return a raw shuttle-box dataframe
+#' ShuttleSoft files normally already contain a `core_T` column. The arguments
+#' `mass`, `initial_T`, `a_value`, and `b_value` are therefore optional and are
+#' only needed if body temperature will later be recalculated with
+#' [calc_coreT()]. Direct arguments take priority over values in `metadata`.
+#'
+#' @param file Path to a ShuttleSoft `.txt` file. Use `file.choose()` to select
+#'   a file interactively.
+#' @param metadata Optional data frame containing one row per file. It must
+#'   contain `file_name` and may contain `trial_start`, `mass`, `initial_T`,
+#'   `a_value`, and `b_value`. The legacy name `initial_temp` is also accepted.
+#' @param multidat Deprecated compatibility argument. It is no longer needed.
+#' @param trial_start Optional clock time at which the experimental trial began,
+#'   written as `"HH:MM:SS"`. When omitted, the first observation is treated as
+#'   the start of the trial, so the whole recording is labelled as trial data.
+#' @param mass Optional body mass used only when recalculating `core_T`.
+#' @param initial_T Optional initial body temperature used only when
+#'   recalculating `core_T`.
+#' @param a_value Optional calibrated coefficient used only when recalculating
+#'   `core_T`.
+#' @param b_value Optional calibrated coefficient used only when recalculating
+#'   `core_T`.
+#' @param prepare Logical. If `TRUE` (the default), run [file_prepare()] before
+#'   returning the data.
+#'
+#' @return A ShuttleSoft data frame. When `prepare = TRUE`, it is ready for
+#'   calculation functions such as [calc_Tbreadth()].
+#'
+#' @examples
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' fish <- read_shuttlesoft(file.choose(), trial_start = "13:30:00")
+#' }
+#'
 #' @export
+read_shuttlesoft <- function(file,
+                             metadata = NULL,
+                             multidat = FALSE,
+                             trial_start = NULL,
+                             mass = NULL,
+                             initial_T = NULL,
+                             a_value = NULL,
+                             b_value = NULL,
+                             prepare = TRUE) {
 
-read_shuttlesoft <- function (file, metadata, multidat = F){
-  # Load .txt data file that shuttlesoft produces into R
-  # Don't load headers, because the additional info at the top of the .txt file will make a confusing dataframe
-  # Rename data columns
-  data<-read.delim(file,
-                   header = F,
-                   col.names = (c("time", "zone", "core_T", "Tpref_loligo", "INCR_T",
-                                  "DECR_T", "x_pos", "y_pos", "velocity", "distance", "time_in_INCR", "time_in_DECR",
-                                  "delta_T", "dyn_hysteresis", "stat_T_INCR", "stat_hyst_INCR", "stat_T_DECR",
-                                  "stat_hyst_DECR", "k", "max_T", "min_T", "change_rate", "avoidance_upper",
-                                  "avoidance_upper_core", "avoidance_lower", "avoidance_lower_core")),
-                   
-                   na.strings = c("NaN", ""))
-  
-  # Extract notes, the file created info and the pixel ratio from the dataframe
-  data<-data[!is.na(data$time), ]
-  if (length(data$zone[data$time == "Notes"]) == 0 || is.na(data$zone[data$time == "Notes"])) {
-    notes <- NA
-  }else{
-    notes <- data$zone[data$time == "Notes"]
+  if (length(file) != 1L || is.na(file) || !nzchar(file)) {
+    stop("`file` must be the path to one ShuttleSoft text file.", call. = FALSE)
   }
-  filecreated <- as.POSIXct(data$zone[data$time == "File created"], format = "%d/%m/%Y; %H:%M")
-  pixel_ratio <- data$zone[data$time == "Pixel Ratio [cm/pix]"]
-  
-  # Remove the additional info and reset rownames
-  data<-data[!is.na(data$INCR_T), ]
+
+  if (!file.exists(file)) {
+    stop("The file does not exist: ", file, call. = FALSE)
+  }
+
+  column_names <- c(
+    "time", "zone", "core_T", "Tpref_loligo", "INCR_T", "DECR_T",
+    "x_pos", "y_pos", "velocity", "distance", "time_in_INCR",
+    "time_in_DECR", "delta_T", "dyn_hysteresis", "stat_T_INCR",
+    "stat_hyst_INCR", "stat_T_DECR", "stat_hyst_DECR", "k", "max_T",
+    "min_T", "change_rate", "avoidance_upper", "avoidance_upper_core",
+    "avoidance_lower", "avoidance_lower_core"
+  )
+
+  data <- utils::read.delim(
+    file,
+    header = FALSE,
+    col.names = column_names,
+    na.strings = c("NaN", ""),
+    stringsAsFactors = FALSE
+  )
+
+  first_value <- function(x, default = NA_character_) {
+    if (length(x) == 0L || all(is.na(x))) {
+      return(default)
+    }
+    x[which(!is.na(x))[1L]]
+  }
+
+  notes <- first_value(data$zone[data$time == "Notes"])
+  file_created_text <- first_value(data$zone[data$time == "File created"])
+  pixel_ratio <- first_value(data$zone[data$time == "Pixel Ratio [cm/pix]"])
+
+  file_created <- as.POSIXct(
+    file_created_text,
+    format = "%d/%m/%Y; %H:%M",
+    tz = ""
+  )
+
+  data <- data[!is.na(data$time), , drop = FALSE]
+  data <- data[!is.na(data$INCR_T), , drop = FALSE]
   numeric_rows <- !is.na(suppressWarnings(as.numeric(data$INCR_T)))
-  data<-data[numeric_rows, ]
-  rownames(data)<-NULL 
-  
-  # Add notes and pixel ratio
+  data <- data[numeric_rows, , drop = FALSE]
+  rownames(data) <- NULL
+
+  if (nrow(data) == 0L) {
+    stop("No ShuttleSoft observations could be read from this file.", call. = FALSE)
+  }
+
   data$notes <- notes
   data$pixel_ratio <- pixel_ratio
-  
-  # Add the date of the trial by extracting it from the filecreated object
-  data$date <- as.Date(filecreated)
-  fileID <- basename(file)
-  data$fileID <- fileID
-  
-  trialstart <-  function(metadata){
-    
-    if (missing(metadata)) {
-      trial_start <- data$time[1]
-      warning("Metadata not provided; cannot define 'trial_start'")
+  data$date <- as.Date(file_created)
+  file_id <- basename(file)
+  data$fileID <- file_id
+
+  metadata_row <- NULL
+  if (!is.null(metadata)) {
+    if (!is.data.frame(metadata)) {
+      stop("`metadata` must be a data frame when supplied.", call. = FALSE)
+    }
+    if (!"file_name" %in% names(metadata)) {
+      stop("`metadata` must contain a `file_name` column.", call. = FALSE)
+    }
+
+    matched_rows <- which(as.character(metadata$file_name) == file_id)
+    if (length(matched_rows) == 0L) {
+      warning(
+        "No metadata row matched ", file_id,
+        "; direct arguments and file values will be used.",
+        call. = FALSE
+      )
     } else {
-      
-      # If the metadata is present, ensure necessary columns exist in the metadata
-      if (!all(c("file_name", "trial_start", "mass", "a_value", "b_value") %in% colnames(metadata))) {
-        warning("The metadata does not contain one or more valuable columns: 'file_name', 'trial_start', 'mass', 'a_value', 'b_value'.")
+      if (length(matched_rows) > 1L) {
+        warning(
+          "More than one metadata row matched ", file_id,
+          "; the first match will be used.",
+          call. = FALSE
+        )
       }
-      
-      # Find rows with NA in specified columns
-      columns_to_check <- intersect(c("file_name", "trial_start", "mass", "a_value", "b_value"), colnames(metadata))
-      rows_with_na <- apply(metadata[columns_to_check], 1, function(row) any(is.na(row)))
-      
-      # If there are any rows with NA, throw a warning mentioning file names
-      if (any(rows_with_na)) {
-        names_with_na <- metadata$file_name[rows_with_na]
-        warning (paste("The metadata contains NA values in one or more of these columns: 'file_name', 'trial_start', 'mass', 'a_value', 'b_value'
-",paste(names_with_na, collapse = "\n ")))
-      }
-      
-      #Ensure necessary columns are in the right format
-      if (all(grepl("^\\d{2}:\\d{2}:\\d{2}$", metadata$trial_start))==F){
-        message("Warning: One or more entries in trial_start are not in an hh:mm:ss format")
-      }
-      
-      if(!("trial_start" %in% colnames(metadata))){
-        trial_start <- data$time[1]
-      }else if("trial_start" %in% colnames(metadata) && is.na(metadata$trial_start[metadata$file_name==fileID])){
-        trial_start <- data$time[1]
-      }else {
-        trial_start<-metadata$trial_start[metadata$file_name==fileID]
+      metadata_row <- metadata[matched_rows[1L], , drop = FALSE]
+    }
+  }
+
+  metadata_value <- function(argument, possible_names, default = NA) {
+    if (!is.null(argument) && length(argument) > 0L && !all(is.na(argument))) {
+      return(argument[[1L]])
+    }
+
+    if (!is.null(metadata_row)) {
+      for (column_name in possible_names) {
+        if (column_name %in% names(metadata_row)) {
+          value <- metadata_row[[column_name]][1L]
+          if (length(value) > 0L && !is.na(value)) {
+            return(value)
+          }
+        }
       }
     }
-    return(trial_start)}
-  
-  if (multidat) {
-    data$trial_start <- suppressWarnings(trialstart (metadata = metadata))} else {
-      data$trial_start <- trialstart(metadata = metadata)}
-  
-  data$trial_start <- as.character(data$trial_start)
-  
-  data$a_value <- NA
-  data$b_value <- NA
-  data$mass <- NA
-  data$initial_T <- NA
-  data$a_value <- metadata$a_value[metadata$file_name == fileID]
-  data$b_value <- metadata$b_value[metadata$file_name == fileID]
-  data$mass <- metadata$mass[metadata$file_name == fileID]
-  data$initial_T <- metadata$initial_T[metadata$file_name == fileID] 
-  
-  return(data)
+
+    default
+  }
+
+  trial_start_value <- metadata_value(
+    trial_start,
+    "trial_start",
+    default = as.character(data$time[1L])
+  )
+
+  if (inherits(trial_start_value, c("POSIXct", "POSIXlt"))) {
+    trial_start_value <- format(trial_start_value, "%H:%M:%S")
+  } else {
+    trial_start_value <- trimws(as.character(trial_start_value))
+  }
+
+  if (grepl("^\\d{1,2}:\\d{2}$", trial_start_value)) {
+    trial_start_value <- paste0(trial_start_value, ":00")
+  }
+
+  if (!grepl("^\\d{1,2}:\\d{2}:\\d{2}$", trial_start_value)) {
+    warning(
+      "`trial_start` is not in HH:MM:SS format; the first observation will be used.",
+      call. = FALSE
+    )
+    trial_start_value <- as.character(data$time[1L])
+  }
+
+  data$trial_start <- trial_start_value
+  data$mass <- metadata_value(mass, "mass", default = NA_real_)
+  data$initial_T <- metadata_value(
+    initial_T,
+    c("initial_T", "initial_temp"),
+    default = NA_real_
+  )
+  data$a_value <- metadata_value(a_value, "a_value", default = NA_real_)
+  data$b_value <- metadata_value(b_value, "b_value", default = NA_real_)
+
+  if (isTRUE(prepare)) {
+    data <- file_prepare(data)
+  }
+
+  data
 }

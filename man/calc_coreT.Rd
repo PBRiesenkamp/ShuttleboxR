@@ -2,16 +2,39 @@
 % Please edit documentation in R/calc_coreT.R
 \name{calc_coreT}
 \alias{calc_coreT}
-\title{Calculate the core body temperature}
+\title{Recalculate core body temperature}
 \usage{
-calc_coreT(data)
+calc_coreT(data, mass = NULL, initial_T = NULL, a_value = NULL, b_value = NULL)
 }
 \arguments{
-\item{data}{an organised shuttle-box data file, as output by file_prepare}
+\item{data}{An organised shuttle-box data frame.}
+
+\item{mass}{Optional body mass.}
+
+\item{initial_T}{Optional initial body temperature.}
+
+\item{a_value}{Optional calibrated coefficient \code{a}.}
+
+\item{b_value}{Optional calibrated coefficient \code{b}.}
 }
 \value{
-a data frame with corrected core body temperature values
+The data frame with recalculated \code{core_T}, \code{ambient_T}, and \code{k}.
 }
 \description{
-This function calculates the core body temperature changes during the trial
+Recalculates core body temperature from ambient chamber temperature and a calibrated thermal-lag model. Most ShuttleSoft files already contain \code{core_T}, so this function is optional.
+}
+\details{
+The model uses \code{k = a_value * mass^b_value}. The \code{a_value} and \code{b_value} coefficients must come from an appropriate calibration or published source; they cannot be inferred from the ShuttleSoft file itself.
+
+Values may be supplied directly as arguments or stored in columns of the same names. Direct arguments take priority. When \code{initial_T} is omitted, the first valid existing \code{core_T} value is used where possible.
+}
+\examples{
+\dontrun{
+fish <- calc_coreT(
+  fish,
+  mass = 12.4,
+  a_value = 0.05,
+  b_value = -0.25
+)
+}
 }

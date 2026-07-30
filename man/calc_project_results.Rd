@@ -2,45 +2,54 @@
 % Please edit documentation in R/calc_project_results.R
 \name{calc_project_results}
 \alias{calc_project_results}
-\title{Calculate shuttle-box metrics for all shuttle-box trials}
+\title{Calculate shuttle-box metrics for all trials}
 \usage{
 calc_project_results(
   data_read,
-  calculate_distance = F,
-  pixel_to_cm = T,
-  exclude_acclimation = F,
+  calculate_distance = FALSE,
+  pixel_to_cm = TRUE,
+  recalculate_core_T = FALSE,
+  exclude_acclimation = FALSE,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
   Tpref_method = "median",
   Tavoid_percentiles = c(0.05, 0.95),
+  Tbreadth_bin_size = 0.1,
   textremes_threshold = expression(0.2 * (max(df$max_T) - max(df$min_T))),
   core_T_variance_type = "std_error"
 )
 }
 \arguments{
-\item{data_read}{A list object containing the imported shuttle-box trials}
+\item{data_read}{A list containing imported shuttle-box trials.}
 
-\item{calculate_distance}{Boolean to determine whether to calculate the distance according to calculate_distance, default is FALSE}
+\item{calculate_distance}{Logical. Calculate distance from coordinates. Default is \code{FALSE}.}
 
-\item{pixel_to_cm}{Specify whether to convert coordinate units in pixels to coordinate units in cm if calculate_distance is TRUE, default is TRUE}
+\item{pixel_to_cm}{Logical. Convert pixels to centimetres when calculating distance. Default is \code{TRUE}.}
 
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
+\item{recalculate_core_T}{Logical. Recalculate body temperature with \code{calc_coreT()}. Default is \code{FALSE}, which uses the \code{core_T} already present in the ShuttleSoft files.}
 
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
+\item{exclude_acclimation}{Logical. Exclude the acclimation period. Default is \code{FALSE}.}
 
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
+\item{exclude_start_minutes}{Minutes excluded from the start of each recording. Default is 0.}
 
-\item{Tpref_method}{The method used for calculation of temperature preference ("median", "mean", "mode"). Default is "median"}
+\item{exclude_end_minutes}{Minutes excluded from the end of each recording. Default is 0.}
 
-\item{Tavoid_percentiles}{The lower and upper percentile for lower and upper avoidance temperature calculation resp. Default is c(0.05, 0.95)}
+\item{Tpref_method}{Method used by \code{calc_Tpref()}: \code{"median"}, \code{"mean"}, or \code{"mode"}. Default is \code{"median"}.}
 
-\item{textremes_threshold}{Definition of the extreme temperature range. Default is 20\% of the temperature range: expression(0.2*(max(data$max_T)-max(data$min_T)))}
+\item{Tavoid_percentiles}{Lower and upper percentiles used by \code{calc_Tavoid()}. Default is \code{c(0.05, 0.95)}.}
 
-\item{core_T_variance_type}{The method used for calculating the variance of core body temperature ("std_error", "std_deviation", "coeff_variation"). Default is "std_error".}
+\item{Tbreadth_bin_size}{Bin width in degrees Celsius used by \code{calc_Tbreadth()}. Default is 0.1.}
+
+\item{textremes_threshold}{Definition of the extreme-temperature range.}
+
+\item{core_T_variance_type}{Method used by \code{calc_coreT_variance()}.}
 }
 \value{
-Dataframe containing shuttle-box metrics for all trials in the project
+A data frame containing metrics for all trials.
 }
 \description{
-This function calculates shuttle-box metrics for all trials in a list object, as imported by read_shuttlesoft
+Calculates the standard ShuttleboxR metrics for every trial in a list, such as the object returned by \code{read_shuttlesoft_project()}. The output now includes effective selected thermal breadth from \code{calc_Tbreadth()}.
+}
+\details{
+ShuttleSoft files normally already contain \code{core_T}, so recalculation is off by default. Set \code{recalculate_core_T = TRUE} only when calibrated thermal-lag parameters are available for every trial.
 }

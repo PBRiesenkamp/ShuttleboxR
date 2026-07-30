@@ -2,6 +2,7 @@
 
 export(animate_movements)
 export(calc_Tavoid)
+export(calc_Tbreadth)
 export(calc_Tpref)
 export(calc_coreT)
 export(calc_coreT_variance)

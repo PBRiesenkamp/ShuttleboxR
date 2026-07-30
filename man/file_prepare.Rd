@@ -7,11 +7,14 @@
 file_prepare(data)
 }
 \arguments{
-\item{data}{a raw shuttle-box dataframe, for example as output by read_shuttlesoft}
+\item{data}{A raw shuttle-box data frame, for example as returned by \code{read_shuttlesoft()}.}
 }
 \value{
-an organised shuttle-box dataframe, ready for calculation steps
+An organised shuttle-box data frame ready for calculation functions.
 }
 \description{
-This prepares shuttle-box data by adding the variables time_h and time_s (time in hours and time in seconds), correcting the timeseries in case the trial continues past midnight, and delimiting the acclimmation period using trial_start
+Adds elapsed time, date-time, trial phase, dynamic/static state, and shuttle events to a raw ShuttleSoft data frame. The function can safely be run on a data frame that has already been prepared.
+}
+\details{
+When no valid \code{trial_start} is available, the first observation is used and the whole recording is labelled as \code{"trial"}.
 }

@@ -2,18 +2,20 @@
 % Please edit documentation in R/read_shuttlesoft_project.R
 \name{read_shuttlesoft_project}
 \alias{read_shuttlesoft_project}
-\title{Import all shuttlesoft files in a directory}
+\title{Import all ShuttleSoft files in a directory}
 \usage{
-read_shuttlesoft_project(metadata, directory = getwd())
+read_shuttlesoft_project(metadata = NULL, directory = getwd(), prepare = TRUE)
 }
 \arguments{
-\item{metadata}{A metadata file containing the variables file_name, initial_temp, mass, a_value and b_value for each trial in the directory}
+\item{metadata}{Optional data frame containing \code{file_name} and any of \code{trial_start}, \code{mass}, \code{initial_T}, \code{a_value}, or \code{b_value}.}
 
-\item{directory}{The directory the function will search in for the .txt files, default is the working directory}
+\item{directory}{Directory containing the \code{.txt} files. The default is the current working directory.}
+
+\item{prepare}{Logical. If \code{TRUE} (the default), prepare each file with \code{file_prepare()}.}
 }
 \value{
-List object containing imported raw shuttlesoft data
+A named list of imported ShuttleSoft data frames.
 }
 \description{
-This function imports all the .txt shuttlesoft files in a directory according to read_shuttlesoft and compiles them into a list object
+Imports every \code{.txt} ShuttleSoft file in a directory and returns them as a list. A metadata table is optional. When supplied, it may provide different trial start times or thermal-model values for each file.
 }

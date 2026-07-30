@@ -2,20 +2,51 @@
 % Please edit documentation in R/read_shuttlesoft.R
 \name{read_shuttlesoft}
 \alias{read_shuttlesoft}
-\title{Import shuttlesoft shuttle-box data}
+\title{Import ShuttleSoft shuttle-box data}
 \usage{
-read_shuttlesoft(file, metadata, multidat = F)
+read_shuttlesoft(
+  file,
+  metadata = NULL,
+  multidat = FALSE,
+  trial_start = NULL,
+  mass = NULL,
+  initial_T = NULL,
+  a_value = NULL,
+  b_value = NULL,
+  prepare = TRUE
+)
 }
 \arguments{
-\item{file}{A string containing the directory of the file to be loaded.}
+\item{file}{Path to a ShuttleSoft \code{.txt} file. Use \code{file.choose()} to select a file interactively.}
 
-\item{metadata}{A metadata file containing the variables file_name, initial_temp, mass, a_value and b_value}
+\item{metadata}{Optional data frame containing one row per file. It must contain \code{file_name} and may contain \code{trial_start}, \code{mass}, \code{initial_T}, \code{a_value}, and \code{b_value}. The legacy name \code{initial_temp} is also accepted.}
 
-\item{multidat}{A parameter that specifies whether this considers a single trial or multiple trials, default is FALSE}
+\item{multidat}{Deprecated compatibility argument. It is no longer needed.}
+
+\item{trial_start}{Optional clock time at which the experimental trial began, written as \code{"HH:MM:SS"}. When omitted, the first observation is treated as the start of the trial.}
+
+\item{mass}{Optional body mass used only when recalculating \code{core_T}.}
+
+\item{initial_T}{Optional initial body temperature used only when recalculating \code{core_T}.}
+
+\item{a_value}{Optional calibrated coefficient used only when recalculating \code{core_T}.}
+
+\item{b_value}{Optional calibrated coefficient used only when recalculating \code{core_T}.}
+
+\item{prepare}{Logical. If \code{TRUE} (the default), run \code{file_prepare()} before returning the data.}
 }
 \value{
-a raw shuttle-box dataframe
+A ShuttleSoft data frame. When \code{prepare = TRUE}, it is ready for calculation functions such as \code{calc_Tbreadth()}.
 }
 \description{
-This function imports .txt files output by shuttlesoft
+Imports a single \code{.txt} file produced by ShuttleSoft. A metadata table is optional. For a single trial, values such as the trial start time can be supplied directly as arguments. By default, the imported file is also prepared for analysis with \code{file_prepare()}.
+}
+\details{
+ShuttleSoft files normally already contain a \code{core_T} column. The arguments \code{mass}, \code{initial_T}, \code{a_value}, and \code{b_value} are therefore optional and are only needed if body temperature will later be recalculated with \code{calc_coreT()}. Direct arguments take priority over values in \code{metadata}.
+}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+fish <- read_shuttlesoft(file.choose(), trial_start = "13:30:00")
+}
 }
