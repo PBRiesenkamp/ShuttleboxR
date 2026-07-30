@@ -1,10 +1,16 @@
 Package: ShuttleboxR
-Title: An R Package For Data Exploration In Shuttle-Box Temperature Experiments
-Version: 0.0.0.9001
+Title: Data Exploration and Analysis for Shuttle-Box Temperature Experiments
+Version: 0.0.0.9003
 Authors@R: 
     person("Pieter", "Riesenkamp", , "p.b.riesenkamp@student.rug.nl", role = c("aut", "cre"))
-Description: ShuttleboxR is an R package designed to streamline the workflow between data collection and analysis. ShuttleboxR provides functions for data import, organization, calculation, and inspection, offering a standardized approach to data handling. It also helps identify flawed methodologies or trials, improving the reliability of shuttle-box experiments. 
+Description: Provides a streamlined workflow for importing, organising,
+    inspecting, analysing, and visualising data from ShuttleSoft shuttle-box
+    temperature experiments. Functions calculate thermal preference, avoidance
+    temperatures, effective selected thermal breadth, movement, chamber
+    occupancy, shuttling behaviour, and project-level summaries.
 License: MIT + file LICENSE
+URL: https://github.com/PBRiesenkamp/ShuttleboxR
+BugReports: https://github.com/PBRiesenkamp/ShuttleboxR/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -17,3 +23,8 @@ Imports:
     gridExtra,
     rgl,
     segmented
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/Needs/website: pkgdown

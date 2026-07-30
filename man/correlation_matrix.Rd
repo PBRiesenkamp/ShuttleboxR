@@ -13,19 +13,30 @@ correlation_matrix(
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
+\item{data}{A project-results data frame or an organised single-trial data frame.}
 
-\item{columns}{Specify the columns to be used in plotting the correlation matrix}
+\item{columns}{Character vector naming the numeric columns to include.}
 
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
+\item{exclude_start_minutes}{For single-trial data, minutes removed from the start. Ignored for project-results data.}
 
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
+\item{exclude_end_minutes}{For single-trial data, minutes removed from the end. Ignored for project-results data.}
 
-\item{interval_minutes}{Specify the interval length in minutes, default is 10}
+\item{interval_minutes}{For single-trial data, interval length used before calculating correlations. Default is 10 minutes.}
 }
 \value{
-Correlation matrix of selected shuttle-box metrics
+The numeric correlation matrix, invisibly.
 }
 \description{
-This function plots the number of missing tracks per interval
+Creates a pairs plot and returns the corresponding correlation matrix. The function can be used with a project-results table containing one row per trial, or with a single time-series trial that is first averaged into time intervals.
+}
+\examples{
+example_file <- system.file(
+  "extdata", "project_database_example.csv", package = "ShuttleboxR"
+)
+project_data <- read_project_database(example_file)
+
+correlation_matrix(
+  project_data,
+  columns = c("Tpref", "Tavoid_lower", "Tavoid_upper", "nr_shuttles")
+)
 }

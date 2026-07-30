@@ -2,30 +2,47 @@
 % Please edit documentation in R/plot_coreT_histogram.R
 \name{plot_coreT_histogram}
 \alias{plot_coreT_histogram}
-\title{Plot a histogram of core body temperatures}
+\title{Plot the distribution of core body temperatures}
 \usage{
 plot_coreT_histogram(
   data,
   bin_size = 0.1,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F
+  exclude_acclimation = FALSE,
+  show_Tpref = TRUE,
+  show_Tbreadth = TRUE
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
+\item{data}{An organised shuttle-box data frame containing \code{core_T}.}
 
-\item{bin_size}{Bin size of the histogram, default is 0.1}
+\item{bin_size}{Width of the temperature bins in degrees Celsius. Default is 0.1. Use the same value when comparing animals.}
 
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
+\item{exclude_start_minutes}{Minutes excluded from the beginning of the recording. Default is 0.}
 
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
+\item{exclude_end_minutes}{Minutes excluded from the end of the recording. Default is 0.}
 
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default is TRUE}
+\item{exclude_acclimation}{Logical. Exclude rows labelled \code{"acclimation"}. Default is \code{FALSE}.}
+
+\item{show_Tpref}{Logical. Show a dashed line at the midpoint of the most frequently occupied temperature bin. Default is \code{TRUE}.}
+
+\item{show_Tbreadth}{Logical. Report effective selected thermal breadth in the plot subtitle. Default is \code{TRUE}.}
 }
 \value{
-Histogram of the core body temperatures during the trial
+Invisibly returns the \code{ggplot} object, allowing it to be saved or further customised.
 }
 \description{
-This function plots a histogram of different core body temperatures observed during the trial
+Plots the percentage of observations within fixed-width \code{core_T} bins. The plot can show the midpoint of the most frequently occupied temperature bin and the effective selected thermal breadth calculated from the same bins.
+}
+\examples{
+example_file <- system.file(
+  "extdata", "Fish_8_13_3_example.csv",
+  package = "ShuttleboxR"
+)
+fish <- read_shuttlesoft(example_file)
+plot_coreT_histogram(fish)
+}
+\seealso{
+\code{\link{calc_Tbreadth}}, \code{\link{calc_Tpref}}
 }

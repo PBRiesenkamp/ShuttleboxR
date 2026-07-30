@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_shuttlesoft.R
 \name{read_shuttlesoft}
 \alias{read_shuttlesoft}
-\title{Import ShuttleSoft shuttle-box data}
+\title{Import a ShuttleSoft data file}
 \usage{
 read_shuttlesoft(
   file,
@@ -17,13 +17,13 @@ read_shuttlesoft(
 )
 }
 \arguments{
-\item{file}{Path to a ShuttleSoft \code{.txt} file. Use \code{file.choose()} to select a file interactively.}
+\item{file}{Path to one ShuttleSoft \code{.txt} or \code{.csv} file. Use \code{file.choose()} to select a file interactively.}
 
 \item{metadata}{Optional data frame containing one row per file. It must contain \code{file_name} and may contain \code{trial_start}, \code{mass}, \code{initial_T}, \code{a_value}, and \code{b_value}. The legacy name \code{initial_temp} is also accepted.}
 
 \item{multidat}{Deprecated compatibility argument. It is no longer needed.}
 
-\item{trial_start}{Optional clock time at which the experimental trial began, written as \code{"HH:MM:SS"}. When omitted, the first observation is treated as the start of the trial.}
+\item{trial_start}{Optional clock time at which the experimental trial began, written as \code{"HH:MM:SS"}. When omitted, the first observation is treated as the start of the trial, so the whole recording is labelled as trial data.}
 
 \item{mass}{Optional body mass used only when recalculating \code{core_T}.}
 
@@ -36,17 +36,22 @@ read_shuttlesoft(
 \item{prepare}{Logical. If \code{TRUE} (the default), run \code{file_prepare()} before returning the data.}
 }
 \value{
-A ShuttleSoft data frame. When \code{prepare = TRUE}, it is ready for calculation functions such as \code{calc_Tbreadth()}.
+A ShuttleSoft data frame. When \code{prepare = TRUE}, it is ready for calculation and plotting functions.
 }
 \description{
-Imports a single \code{.txt} file produced by ShuttleSoft. A metadata table is optional. For a single trial, values such as the trial start time can be supplied directly as arguments. By default, the imported file is also prepared for analysis with \code{file_prepare()}.
+Imports a single ShuttleSoft tab-delimited \code{.txt} file or comma-separated \code{.csv} export. A metadata table is optional. For a single trial, values such as the trial start time can be supplied directly as arguments. By default, the imported file is prepared for analysis with \code{file_prepare()}.
 }
 \details{
 ShuttleSoft files normally already contain a \code{core_T} column. The arguments \code{mass}, \code{initial_T}, \code{a_value}, and \code{b_value} are therefore optional and are only needed if body temperature will later be recalculated with \code{calc_coreT()}. Direct arguments take priority over values in \code{metadata}.
 }
 \examples{
-\dontrun{
-fish <- read_shuttlesoft(file.choose())
-fish <- read_shuttlesoft(file.choose(), trial_start = "13:30:00")
+example_file <- system.file(
+  "extdata", "Fish_8_13_3_example.csv",
+  package = "ShuttleboxR"
+)
+fish <- read_shuttlesoft(example_file)
+calc_Tpref(fish, print_results = FALSE)
 }
+\seealso{
+\code{\link{read_shuttlesoft_project}}, \code{\link{file_prepare}}, \code{\link{calc_coreT}}
 }

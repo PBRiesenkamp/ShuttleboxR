@@ -2,7 +2,7 @@
 % Please edit documentation in R/pca.R
 \name{pca}
 \alias{pca}
-\title{Perform a PCA on the project data and calculate outliers}
+\title{Perform principal component analysis on project data}
 \usage{
 pca(
   data,
@@ -11,28 +11,41 @@ pca(
   print_labels = TRUE,
   id_col = "fileID",
   var_col = "Tpref",
-  biplot_variables = T
+  biplot_variables = TRUE
 )
 }
 \arguments{
-\item{data}{(Subset of) project data containg shuttle-box metrics, as output by calc_project_data}
+\item{data}{Project-results data containing one row per trial or individual.}
 
-\item{mahalanobis_th, }{threshold for mahalanobis distance outlier cutoff, default is 0.7}
+\item{mahalanobis_th}{Probability used for the chi-squared Mahalanobis distance cutoff. Default is 0.7, retained for compatibility with earlier ShuttleboxR versions.}
 
-\item{dbscan_th, }{threshold for DBSCAN clustering outlier cutoff, default is 1}
+\item{dbscan_th}{\code{eps} value supplied to DBSCAN. Default is 1.}
 
-\item{print_labels}{Boolean to print labels for each datapoint, default is TRUE}
+\item{print_labels}{Logical. Show individual labels on PCA plots. Default is \code{TRUE}.}
 
-\item{id_col}{Column to be used for identifier labels in plots, default is "fileID"}
+\item{id_col}{Identifier column. Default is \code{"fileID"}.}
 
-\item{var_col}{Column to plot against principal component, default is "Tpref"}
+\item{var_col}{Variable plotted against PC1. Default is \code{"Tpref"}.}
 
-\item{biplot_variables}{Boolean to print overlaying of shuttle-box metrics on biplot}
+\item{biplot_variables}{Logical. Show variable vectors on the biplot.}
 }
 \value{
-List object containing PCA output
+A list containing the PCA object, loadings, scores, outlier table, retained row identifiers, and plots.
 }
 \description{
-This function performs a Principal Component Analysis, and calculates outliers according to the Mahalanobis distance and DBSCAN clustering.
-The function produces a list object containing the pca, pca loadings, pca scores, a table containing the outliers, a PCA biplot, a screeplot, a contribution plot and a plot of a chosen variable against the first principal component
+Performs a scaled principal component analysis (PCA) of numeric project-level shuttle-box metrics. The returned object includes scores, loadings, two complementary outlier screens, and four ready-to-display plots.
+}
+\examples{
+example_file <- system.file(
+  "extdata", "project_database_example.csv", package = "ShuttleboxR"
+)
+project_data <- read_project_database(example_file)
+
+pca_data <- project_data[c(
+  "fileID", "mass", "Tpref", "Tavoid_lower", "Tavoid_upper",
+  "Tpref_range", "tot_distance", "nr_shuttles"
+)]
+
+pca_result <- pca(pca_data, print_labels = FALSE)
+pca_result$plots$biplot
 }

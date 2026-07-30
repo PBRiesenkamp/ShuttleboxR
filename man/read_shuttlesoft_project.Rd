@@ -9,7 +9,7 @@ read_shuttlesoft_project(metadata = NULL, directory = getwd(), prepare = TRUE)
 \arguments{
 \item{metadata}{Optional data frame containing \code{file_name} and any of \code{trial_start}, \code{mass}, \code{initial_T}, \code{a_value}, or \code{b_value}.}
 
-\item{directory}{Directory containing the \code{.txt} files. The default is the current working directory.}
+\item{directory}{Directory containing the ShuttleSoft files. The default is the current working directory.}
 
 \item{prepare}{Logical. If \code{TRUE} (the default), prepare each file with \code{file_prepare()}.}
 }
@@ -17,5 +17,11 @@ read_shuttlesoft_project(metadata = NULL, directory = getwd(), prepare = TRUE)
 A named list of imported ShuttleSoft data frames.
 }
 \description{
-Imports every \code{.txt} ShuttleSoft file in a directory and returns them as a list. A metadata table is optional. When supplied, it may provide different trial start times or thermal-model values for each file.
+Imports every ShuttleSoft \code{.txt} and \code{.csv} file in a directory and returns them as a named list. A metadata table is optional. When supplied, it may provide different trial start times or thermal-model values for each file.
+}
+\details{
+Files are imported in alphabetical order. If \code{metadata} is supplied, values are matched to each file using the \code{file_name} column.
+}
+\seealso{
+\code{\link{read_shuttlesoft}}, \code{\link{calc_project_results}}
 }

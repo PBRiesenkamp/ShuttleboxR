@@ -1,17 +1,17 @@
-#' Import ShuttleSoft shuttle-box data
+#' Import a ShuttleSoft data file
 #'
-#' Imports a single `.txt` file produced by ShuttleSoft. A metadata table is
-#' optional. For a single trial, values such as the trial start time can be
-#' supplied directly as arguments. By default, the imported file is also
-#' prepared for analysis with [file_prepare()].
+#' Imports a single ShuttleSoft tab-delimited `.txt` file or comma-separated
+#' `.csv` export. A metadata table is optional. For a single trial, values such
+#' as the trial start time can be supplied directly as arguments. By default,
+#' the imported file is prepared for analysis with [file_prepare()].
 #'
 #' ShuttleSoft files normally already contain a `core_T` column. The arguments
 #' `mass`, `initial_T`, `a_value`, and `b_value` are therefore optional and are
 #' only needed if body temperature will later be recalculated with
 #' [calc_coreT()]. Direct arguments take priority over values in `metadata`.
 #'
-#' @param file Path to a ShuttleSoft `.txt` file. Use `file.choose()` to select
-#'   a file interactively.
+#' @param file Path to one ShuttleSoft `.txt` or `.csv` file. Use
+#'   `file.choose()` to select a file interactively.
 #' @param metadata Optional data frame containing one row per file. It must
 #'   contain `file_name` and may contain `trial_start`, `mass`, `initial_T`,
 #'   `a_value`, and `b_value`. The legacy name `initial_temp` is also accepted.
@@ -30,14 +30,17 @@
 #'   returning the data.
 #'
 #' @return A ShuttleSoft data frame. When `prepare = TRUE`, it is ready for
-#'   calculation functions such as [calc_Tbreadth()].
+#'   calculation and plotting functions.
 #'
 #' @examples
-#' \dontrun{
-#' fish <- read_shuttlesoft(file.choose())
-#' fish <- read_shuttlesoft(file.choose(), trial_start = "13:30:00")
-#' }
+#' example_file <- system.file(
+#'   "extdata", "Fish_8_13_3_example.csv",
+#'   package = "ShuttleboxR"
+#' )
+#' fish <- read_shuttlesoft(example_file)
+#' calc_Tpref(fish, print_results = FALSE)
 #'
+#' @seealso [read_shuttlesoft_project()], [file_prepare()], [calc_coreT()]
 #' @export
 read_shuttlesoft <- function(file,
                              metadata = NULL,
@@ -50,7 +53,7 @@ read_shuttlesoft <- function(file,
                              prepare = TRUE) {
 
   if (length(file) != 1L || is.na(file) || !nzchar(file)) {
-    stop("`file` must be the path to one ShuttleSoft text file.", call. = FALSE)
+    stop("`file` must be the path to one ShuttleSoft file.", call. = FALSE)
   }
 
   if (!file.exists(file)) {
@@ -66,13 +69,27 @@ read_shuttlesoft <- function(file,
     "avoidance_lower", "avoidance_lower_core"
   )
 
-  data <- utils::read.delim(
-    file,
-    header = FALSE,
-    col.names = column_names,
-    na.strings = c("NaN", ""),
-    stringsAsFactors = FALSE
-  )
+  extension <- tolower(tools::file_ext(file))
+
+  if (extension == "csv") {
+    data <- utils::read.csv(
+      file,
+      header = FALSE,
+      col.names = column_names,
+      na.strings = c("NaN", ""),
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+  } else {
+    data <- utils::read.delim(
+      file,
+      header = FALSE,
+      col.names = column_names,
+      na.strings = c("NaN", ""),
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+  }
 
   first_value <- function(x, default = NA_character_) {
     if (length(x) == 0L || all(is.na(x))) {

@@ -28,11 +28,14 @@
 #' @return A single effective thermal breadth in degrees Celsius.
 #'
 #' @examples
-#' \dontrun{
-#' fish <- read_shuttlesoft(file.choose(), trial_start = "13:30:00")
-#' calc_Tbreadth(fish, exclude_acclimation = TRUE)
-#' }
+#' example_file <- system.file(
+#'   "extdata", "Fish_8_13_3_example.csv",
+#'   package = "ShuttleboxR"
+#' )
+#' fish <- read_shuttlesoft(example_file)
+#' calc_Tbreadth(fish, print_results = FALSE)
 #'
+#' @seealso [plot_coreT_histogram()], [calc_Tpref()], [calc_Tavoid()]
 #' @export
 calc_Tbreadth <- function(data,
                           bin_size = 0.1,

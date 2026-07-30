@@ -2,16 +2,20 @@
 % Please edit documentation in R/plot_limits_vs_shuttles.R
 \name{plot_limits_vs_shuttles}
 \alias{plot_limits_vs_shuttles}
-\title{Plot time spent near the limits versus shuttles across project data}
+\title{Plot time spent near limits versus shuttles across project data}
 \usage{
-plot_limits_vs_shuttles(proj_data)
+plot_limits_vs_shuttles(proj_data, id_col = "fileID", label_points = TRUE)
 }
 \arguments{
-\item{proj_data}{Project data containg shuttle-box metrics, as output by calc_project_data}
+\item{proj_data}{Project-results data frame.}
+
+\item{id_col}{Identifier column used for labels. Default is \code{"fileID"}.}
+
+\item{label_points}{Logical. Label individual points. Default is \code{TRUE}.}
 }
 \value{
-Plot of limits versus shuttles across project data
+A \code{ggplot2} plot, invisibly.
 }
 \description{
-This function plots the the time spent near the set temperature limits against the number of shuttles, across individual trials in the project data
+Plots the number of shuttles against time spent close to the programmed temperature limits for each trial or individual.
 }

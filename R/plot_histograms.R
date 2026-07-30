@@ -1,8 +1,8 @@
 #' Plot frequency distributions of key shuttle-box metrics
 #'
-#' This function plots frequency distributions for key shuttle-box metrics across individuals in the data se
+#' Plots distributions of key shuttle-box metrics across trials or individuals and identifies potential univariate outliers.
 #'
-#' @param proj_data Project data containg shuttle-box metrics, as output by calc_project_data
+#' @param proj_data Project-results data, such as the output of [calc_project_results()] or [read_project_database()].
 #' @param bin_size_Tpref Bin size for temperature preference histogram, default = 1
 #' @param bin_size_Tavoid_upper Bin size for upper avoidance temperature histogram, default  = 1
 #' @param bin_size_Tavoid_lower Bin size for lower avoidance temperature histogram, default = 1 
@@ -13,10 +13,14 @@
 #' @param iqr_multiplier Interquartile range multiplier for outlier cutoff for exponentially distributed variable (time near limits), default = 1.5
 #' @param id_col Column to be used for identifier labels, default = "fileID"
 #' @import ggplot2 gridExtra
-#' @return Plot of frequency distributions for key shuttle-box metrics across individuals in dataset
+#' @return A data frame identifying potential outliers. The multipanel plot is displayed as a side effect.
 #' @export
 
 plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper = 1, bin_size_Tavoid_lower = 1, bin_size_distance = 2000, bin_size_shuttles = 20, bin_size_t_near_limits = 5, nr_sd = 2, iqr_multiplier = 1.5, id_col = "fileID") {
+  proj_data <- .standardise_project_data(proj_data)
+  if (!id_col %in% names(proj_data)) {
+    stop("Identifier column `", id_col, "` was not found.", call. = FALSE)
+  }
   # Ensure necessary columns exist
   required_columns <- c("Tpref", "Tavoid_upper", "Tavoid_lower", "tot_distance", "nr_shuttles", "t_near_limits")
   if (!all(required_columns %in% colnames(proj_data))) {

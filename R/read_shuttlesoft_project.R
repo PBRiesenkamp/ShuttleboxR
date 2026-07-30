@@ -1,18 +1,23 @@
 #' Import all ShuttleSoft files in a directory
 #'
-#' Imports every `.txt` ShuttleSoft file in a directory and returns them as a
-#' list. A metadata table is optional. When supplied, it may provide different
-#' trial start times or thermal-model values for each file.
+#' Imports every ShuttleSoft `.txt` and `.csv` file in a directory and returns
+#' them as a named list. A metadata table is optional. When supplied, it may
+#' provide different trial start times or thermal-model values for each file.
 #'
 #' @param metadata Optional data frame containing `file_name` and any of
 #'   `trial_start`, `mass`, `initial_T`, `a_value`, or `b_value`.
-#' @param directory Directory containing the `.txt` files. The default is the
-#'   current working directory.
+#' @param directory Directory containing the ShuttleSoft files. The default is
+#'   the current working directory.
 #' @param prepare Logical. If `TRUE` (the default), prepare each file with
 #'   [file_prepare()].
 #'
 #' @return A named list of imported ShuttleSoft data frames.
 #'
+#' @details
+#' Files are imported in alphabetical order. If `metadata` is supplied, values
+#' are matched to each file using the `file_name` column.
+#'
+#' @seealso [read_shuttlesoft()], [calc_project_results()]
 #' @export
 read_shuttlesoft_project <- function(metadata = NULL,
                                      directory = getwd(),
@@ -22,15 +27,15 @@ read_shuttlesoft_project <- function(metadata = NULL,
     stop("`directory` must be an existing folder.", call. = FALSE)
   }
 
-  txt_files <- list.files(
+  shuttle_files <- list.files(
     path = directory,
-    pattern = "\\.txt$",
+    pattern = "\\.(txt|csv)$",
     full.names = TRUE,
     ignore.case = TRUE
   )
 
-  if (length(txt_files) == 0L) {
-    stop("No `.txt` files were found in the selected directory.", call. = FALSE)
+  if (length(shuttle_files) == 0L) {
+    stop("No `.txt` or `.csv` files were found in the selected directory.", call. = FALSE)
   }
 
   if (!is.null(metadata)) {
@@ -38,7 +43,7 @@ read_shuttlesoft_project <- function(metadata = NULL,
       stop("`metadata` must be a data frame containing `file_name`.", call. = FALSE)
     }
 
-    missing_files <- setdiff(basename(txt_files), as.character(metadata$file_name))
+    missing_files <- setdiff(basename(shuttle_files), as.character(metadata$file_name))
     if (length(missing_files) > 0L) {
       warning(
         "No metadata row was found for: ",
@@ -50,7 +55,7 @@ read_shuttlesoft_project <- function(metadata = NULL,
   }
 
   data_read <- lapply(
-    txt_files,
+    shuttle_files,
     function(path) {
       read_shuttlesoft(
         file = path,
@@ -61,6 +66,6 @@ read_shuttlesoft_project <- function(metadata = NULL,
     }
   )
 
-  names(data_read) <- basename(txt_files)
+  names(data_read) <- basename(shuttle_files)
   data_read
 }

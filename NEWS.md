@@ -1,3 +1,28 @@
+# ShuttleboxR 0.0.0.9003
+
+- Added a bundled 85-trial project-results database and a complete project-level
+  analysis section to the vignette.
+- Added `read_project_database()` to import existing summary databases and
+  standardise column names used by older ShuttleboxR versions.
+- Updated project-level scatter plots and correlation analysis to work directly
+  with both current and legacy project-result column names and to return their
+  plot or correlation objects.
+- Repaired and strengthened `pca()`, including input checks, missing-data
+  handling, outlier reporting, and reusable plot outputs.
+
+# ShuttleboxR 0.0.0.9002
+
+- Added a complete getting-started vignette and an included example
+  ShuttleSoft file.
+- Added a structured `pkgdown` reference index and an automated documentation
+  website workflow.
+- Expanded the README and added a simple package-maintenance guide.
+- `read_shuttlesoft()` and `read_shuttlesoft_project()` now accept both
+  tab-delimited `.txt` files and comma-separated `.csv` exports.
+- `plot_coreT_histogram()` now reports effective selected thermal breadth,
+  uses bin boundaries consistent with `calc_Tbreadth()`, and returns the plot
+  object invisibly.
+
 # ShuttleboxR 0.0.0.9001
 
 - Added `calc_Tbreadth()` for effective selected thermal breadth based on the

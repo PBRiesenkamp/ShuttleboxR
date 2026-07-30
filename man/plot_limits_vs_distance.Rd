@@ -4,14 +4,18 @@
 \alias{plot_limits_vs_distance}
 \title{Plot distance versus time spent near limits across project data}
 \usage{
-plot_limits_vs_distance(proj_data)
+plot_limits_vs_distance(proj_data, id_col = "fileID", label_points = TRUE)
 }
 \arguments{
-\item{proj_data}{Project data containg shuttle-box metrics, as output by calc_project_data}
+\item{proj_data}{Project-results data frame.}
+
+\item{id_col}{Identifier column used for labels. Default is \code{"fileID"}.}
+
+\item{label_points}{Logical. Label individual points. Default is \code{TRUE}.}
 }
 \value{
-Plot of distance versus time near limits across project data
+A \code{ggplot2} plot, invisibly.
 }
 \description{
-This function plots the distance covered during the trial against the time spent near the set temperature limits, across individual trials in the project data
+Plots total movement distance against time spent close to the programmed temperature limits for each trial or individual.
 }

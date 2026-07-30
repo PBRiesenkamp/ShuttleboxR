@@ -38,8 +38,13 @@ This is a Simpson/Hill-number effective breadth expressed in degrees Celsius. It
 This metric describes selected or experienced temperatures during the trial; it is not a measure of physiological thermal tolerance.
 }
 \examples{
-\dontrun{
-fish <- read_shuttlesoft(file.choose(), trial_start = "13:30:00")
-calc_Tbreadth(fish, exclude_acclimation = TRUE)
+example_file <- system.file(
+  "extdata", "Fish_8_13_3_example.csv",
+  package = "ShuttleboxR"
+)
+fish <- read_shuttlesoft(example_file)
+calc_Tbreadth(fish, print_results = FALSE)
 }
+\seealso{
+\code{\link{plot_coreT_histogram()}}, \code{\link{calc_Tpref}}, \code{\link{calc_Tavoid}}
 }

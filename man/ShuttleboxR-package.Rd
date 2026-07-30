@@ -4,12 +4,26 @@
 \name{ShuttleboxR-package}
 \alias{ShuttleboxR}
 \alias{ShuttleboxR-package}
-\title{ShuttleboxR: An R Package For Data Exploration In Shuttle-Box Temperature Experiments}
+\title{ShuttleboxR: Data Exploration and Analysis for Shuttle-Box Temperature Experiments}
 \description{
-ShuttleboxR is an R package designed to streamline the workflow between data collection and analysis. ShuttleboxR provides functions for data import, organization, calculation, and inspection, offering a standardized approach to data handling. It also helps identify flawed methodologies or trials, improving the reliability of shuttle-box experiments.
+ShuttleboxR imports, prepares, checks, analyses, and visualises data produced by ShuttleSoft shuttle-box experiments. It supports both single-trial and multi-file workflows.
+}
+\section{Typical workflow}{
+\enumerate{
+\item Import one file with \code{read_shuttlesoft()} or a folder of files with \code{read_shuttlesoft_project()}.
+\item Inspect the imported data with \code{inspect()}.
+\item Calculate thermal and behavioural metrics such as \code{calc_Tpref()}, \code{calc_Tavoid()}, \code{calc_Tbreadth()}, \code{calc_shuttles()}, and \code{calc_occupancy()}.
+\item Visualise individual trials with functions such as \code{plot_T_segmented()}, \code{plot_coreT_histogram()}, \code{plot_tracking()}, and \code{plot_heatmap()}.
+\item Summarise a complete project with \code{calc_project_results()}.
+}
+}
+\section{Core temperature}{
+ShuttleSoft files normally already include \code{core_T}. Recalculation with \code{calc_coreT()} is optional and requires calibrated thermal-lag parameters.
+}
+\section{Getting started}{
+Run \code{vignette("ShuttleboxR", package = "ShuttleboxR")} for a complete worked example using the file included with the package.
 }
 \author{
 \strong{Maintainer}: Pieter Riesenkamp \email{p.b.riesenkamp@student.rug.nl}
-
 }
 \keyword{internal}

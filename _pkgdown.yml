@@ -1,0 +1,66 @@
+url: https://pbriesenkamp.github.io/ShuttleboxR/
+
+template:
+  bootstrap: 5
+  light-switch: true
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github, lightswitch]
+
+reference:
+- title: Import, prepare, and inspect data
+  contents:
+  - read_shuttlesoft
+  - read_shuttlesoft_project
+  - read_project_database
+  - file_prepare
+  - compile_project_data
+  - inspect
+
+- title: Thermal metrics
+  contents:
+  - calc_Tpref
+  - calc_Tavoid
+  - calc_Tbreadth
+  - calc_coreT
+  - calc_coreT_variance
+  - calc_extremes
+  - calc_gravitation
+
+- title: Movement, occupancy, and tracking
+  contents:
+  - calc_distance
+  - calc_tot_distance
+  - calc_shuttles
+  - calc_occupancy
+  - calc_track_accuracy
+
+- title: Single-trial plots
+  contents:
+  - plot_T_gradient
+  - plot_T_segmented
+  - plot_coreT_histogram
+  - plot_distance
+  - plot_heatmap
+  - plot_tracking
+  - plot_speed_coreT
+  - animate_movements
+  - plot_histogram
+  - plot_interval
+
+- title: Project-level summaries and plots
+  contents:
+  - calc_project_results
+  - correlation_matrix
+  - plot_histograms
+  - plot_distance_vs_shuttles
+  - plot_limits_vs_distance
+  - plot_limits_vs_shuttles
+  - pca
+
+articles:
+- title: Getting started
+  contents:
+  - ShuttleboxR
