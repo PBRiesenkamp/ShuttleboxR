@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,9 +40,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="import-prepare-and-inspect-data">Import, prepare, and inspect data<a class="anchor" aria-label="anchor" href="#import-prepare-and-inspect-data"></a></h2>
+      <h2 id="single-trials-import-and-organise">Single trials: import and organise<a class="anchor" aria-label="anchor" href="#single-trials-import-and-organise"></a></h2>
 
-
+      <div class="section-desc"><p>Read, prepare and validate one shuttle-box recording.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -58,31 +58,10 @@
 
         <dt>
 
-          <code><a href="read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code>
-
-        </dt>
-        <dd>Import all ShuttleSoft files in a directory</dd>
-
-        <dt>
-
-          <code><a href="read_project_database.html">read_project_database()</a></code>
-
-        </dt>
-        <dd>Read a ShuttleboxR project-results database</dd>
-
-        <dt>
-
           <code><a href="file_prepare.html">file_prepare()</a></code>
 
         </dt>
         <dd>Prepare shuttle-box data</dd>
-
-        <dt>
-
-          <code><a href="compile_project_data.html">compile_project_data()</a></code>
-
-        </dt>
-        <dd>Compile all trials into a single datafile</dd>
 
         <dt>
 
@@ -91,9 +70,9 @@
         </dt>
         <dd>Inspect imported shuttle-box data</dd>
       </dl></div><div class="section level2">
-      <h2 id="thermal-metrics">Thermal metrics<a class="anchor" aria-label="anchor" href="#thermal-metrics"></a></h2>
+      <h2 id="single-trials-calculate-metrics">Single trials: calculate metrics<a class="anchor" aria-label="anchor" href="#single-trials-calculate-metrics"></a></h2>
 
-
+      <div class="section-desc"><p>Calculate thermal, behavioural, movement and tracking metrics for one fish.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -101,6 +80,20 @@
 
 
       <dl><dt>
+
+          <code><a href="calc_coreT.html">calc_coreT()</a></code>
+
+        </dt>
+        <dd>Recalculate core body temperature</dd>
+
+        <dt>
+
+          <code><a href="calc_distance.html">calc_distance()</a></code>
+
+        </dt>
+        <dd>Calculate the cumulative distance</dd>
+
+        <dt>
 
           <code><a href="calc_Tpref.html">calc_Tpref()</a></code>
 
@@ -123,20 +116,6 @@
 
         <dt>
 
-          <code><a href="calc_coreT.html">calc_coreT()</a></code>
-
-        </dt>
-        <dd>Recalculate core body temperature</dd>
-
-        <dt>
-
-          <code><a href="calc_coreT_variance.html">calc_coreT_variance()</a></code>
-
-        </dt>
-        <dd>Calculate the temperature preference</dd>
-
-        <dt>
-
           <code><a href="calc_extremes.html">calc_extremes()</a></code>
 
         </dt>
@@ -144,33 +123,17 @@
 
         <dt>
 
-          <code><a href="calc_gravitation.html">calc_gravitation()</a></code>
-
-        </dt>
-        <dd>Calculate the gravitation period</dd>
-      </dl></div><div class="section level2">
-      <h2 id="movement-occupancy-and-tracking">Movement, occupancy, and tracking<a class="anchor" aria-label="anchor" href="#movement-occupancy-and-tracking"></a></h2>
-
-
-
-      <dl></dl></div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="calc_distance.html">calc_distance()</a></code>
-
-        </dt>
-        <dd>Calculate the cumulative distance</dd>
-
-        <dt>
-
           <code><a href="calc_tot_distance.html">calc_tot_distance()</a></code>
 
         </dt>
         <dd>Calculate the total distance</dd>
+
+        <dt>
+
+          <code><a href="calc_gravitation.html">calc_gravitation()</a></code>
+
+        </dt>
+        <dd>Calculate the gravitation period</dd>
 
         <dt>
 
@@ -188,14 +151,21 @@
 
         <dt>
 
+          <code><a href="calc_coreT_variance.html">calc_coreT_variance()</a></code>
+
+        </dt>
+        <dd>Calculate the temperature preference</dd>
+
+        <dt>
+
           <code><a href="calc_track_accuracy.html">calc_track_accuracy()</a></code>
 
         </dt>
         <dd>Calculate the tracking accuracy</dd>
       </dl></div><div class="section level2">
-      <h2 id="single-trial-plots">Single-trial plots<a class="anchor" aria-label="anchor" href="#single-trial-plots"></a></h2>
+      <h2 id="single-trials-inspect-and-troubleshoot">Single trials: inspect and troubleshoot<a class="anchor" aria-label="anchor" href="#single-trials-inspect-and-troubleshoot"></a></h2>
 
-
+      <div class="section-desc"><p>Check temperature control, tracking and fish behaviour within a trial.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -272,9 +242,9 @@
         </dt>
         <dd>Plot the interval means for a selected column over time</dd>
       </dl></div><div class="section level2">
-      <h2 id="project-level-summaries-and-plots">Project-level summaries and plots<a class="anchor" aria-label="anchor" href="#project-level-summaries-and-plots"></a></h2>
+      <h2 id="projects-import-and-summarise">Projects: import and summarise<a class="anchor" aria-label="anchor" href="#projects-import-and-summarise"></a></h2>
 
-
+      <div class="section-desc"><p>Combine trials and create or read a one-row-per-fish results database.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -283,6 +253,20 @@
 
       <dl><dt>
 
+          <code><a href="read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code>
+
+        </dt>
+        <dd>Import all ShuttleSoft files in a directory</dd>
+
+        <dt>
+
+          <code><a href="compile_project_data.html">compile_project_data()</a></code>
+
+        </dt>
+        <dd>Compile all trials into a single datafile</dd>
+
+        <dt>
+
           <code><a href="calc_project_results.html">calc_project_results()</a></code>
 
         </dt>
@@ -290,12 +274,21 @@
 
         <dt>
 
-          <code><a href="correlation_matrix.html">correlation_matrix()</a></code>
+          <code><a href="read_project_database.html">read_project_database()</a></code>
 
         </dt>
-        <dd>Plot a correlation matrix of selected shuttle-box metrics</dd>
+        <dd>Read a ShuttleboxR project-results database</dd>
+      </dl></div><div class="section level2">
+      <h2 id="projects-inspect-and-flag-trials">Projects: inspect and flag trials<a class="anchor" aria-label="anchor" href="#projects-inspect-and-flag-trials"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>Explore variation across fish and identify candidates for single-trial review.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="plot_histograms.html">plot_histograms()</a></code>
 
@@ -322,6 +315,13 @@
 
         </dt>
         <dd>Plot time spent near limits versus shuttles across project data</dd>
+
+        <dt>
+
+          <code><a href="correlation_matrix.html">correlation_matrix()</a></code>
+
+        </dt>
+        <dd>Plot a correlation matrix of selected shuttle-box metrics</dd>
 
         <dt>
 

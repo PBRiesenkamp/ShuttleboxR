@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Data Exploration and Analysis for Shuttle-Box Temperature Experiments • ShuttleboxR</title>
+<title>Data Preparation and Exploration for Shuttle-Box Temperature Experiments • ShuttleboxR</title>
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Data Exploration and Analysis for Shuttle-Box Temperature Experiments">
-<meta name="description" content="Provides a streamlined workflow for importing, organising, inspecting, analysing, and visualising data from ShuttleSoft shuttle-box temperature experiments. Functions calculate thermal preference, avoidance temperatures, effective selected thermal breadth, movement, chamber occupancy, shuttling behaviour, and project-level summaries.">
-<meta property="og:description" content="Provides a streamlined workflow for importing, organising, inspecting, analysing, and visualising data from ShuttleSoft shuttle-box temperature experiments. Functions calculate thermal preference, avoidance temperatures, effective selected thermal breadth, movement, chamber occupancy, shuttling behaviour, and project-level summaries.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Data Preparation and Exploration for Shuttle-Box Temperature Experiments">
+<meta name="description" content="Provides a structured workflow for importing and organising ShuttleSoft temperature shuttle-box data, calculating reproducible thermal and behavioural metrics, and inspecting single trials and complete projects before statistical analysis. Project-level tools help flag unusual trials for closer inspection without treating outlier status as an automatic basis for exclusion.">
+<meta property="og:description" content="Provides a structured workflow for importing and organising ShuttleSoft temperature shuttle-box data, calculating reproducible thermal and behavioural metrics, and inspecting single trials and complete projects before statistical analysis. Project-level tools help flag unusual trials for closer inspection without treating outlier status as an automatic basis for exclusion.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,108 +59,227 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="shuttleboxr">ShuttleboxR<a class="anchor" aria-label="anchor" href="#shuttleboxr"></a>
 </h1></div>
-<p>ShuttleboxR provides a practical workflow for importing, checking, analysing, and plotting data from ShuttleSoft shuttle-box temperature experiments.</p>
+<p>ShuttleboxR provides a structured workflow for moving from raw shuttle-box recordings to a checked, interpretable dataset that is ready for statistical analysis.</p>
+<p>The package is organised around <strong>three consecutive tasks</strong>:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Import and organise</strong> the raw data.</li>
+<li>
+<strong>Calculate shuttle-box metrics</strong> using consistent definitions.</li>
+<li>
+<strong>Inspect and troubleshoot</strong> the data before formal analysis.</li>
+</ol>
+<p>The same logic is applied at two complementary levels:</p>
+<ul>
+<li>the <strong>single-trial branch</strong>, used to calculate and inspect the results for one fish; and</li>
+<li>the <strong>project branch</strong>, used after all fish have been processed to compare metrics across the study and flag unusual trials for closer inspection.</li>
+</ul>
+<pre class="text"><code>Raw shuttle-box recordings
+        |
+        +-- Single-trial branch
+        |      1. Import and organise one trial
+        |      2. Calculate thermal and behavioural metrics
+        |      3. Inspect system performance and fish behaviour
+        |
+        +-- Project branch
+               1. Import all trials or an existing results database
+               2. Compile one row of metrics per fish
+               3. Inspect distributions, relationships and multivariate patterns
+                              |
+                              v
+                    Flag trials for review
+                              |
+                              v
+                    Return to the single-trial plots</code></pre>
+<p>ShuttleboxR supports quality control and data exploration. It does <strong>not</strong> automatically decide that a fish should be excluded, and it does not replace the statistical analysis appropriate to a study. A trial that appears unusual at the project level should be checked against its raw temperature, tracking and behavioural records, and interpreted in the context of the species and experimental design.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Install the current GitHub version with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"PBRiesenkamp/ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
-<p>Then load the package:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PBRiesenkamp/ShuttleboxR" class="external-link">ShuttleboxR</a></span><span class="op">)</span></span></code></pre></div>
-<p>When developing the package locally in RStudio, open <code>ShuttleboxR.Rproj</code> and use:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>  <span class="co"># only needed once</span></span>
+<span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  <span class="st">"PBRiesenkamp/ShuttleboxR"</span>,</span>
+<span>  build_vignettes <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Then load the package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PBRiesenkamp/ShuttleboxR" class="external-link">ShuttleboxR</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="quick-start-one-file">Quick start: one file<a class="anchor" aria-label="anchor" href="#quick-start-one-file"></a>
+<h2 id="branch-1-analyse-and-inspect-one-fish">Branch 1: analyse and inspect one fish<a class="anchor" aria-label="anchor" href="#branch-1-analyse-and-inspect-one-fish"></a>
 </h2>
-<p>Select either a ShuttleSoft <code>.txt</code> file or a comma-separated <code>.csv</code> export:</p>
+<div class="section level3">
+<h3 id="id_1-import-and-organise">1. Import and organise<a class="anchor" aria-label="anchor" href="#id_1-import-and-organise"></a>
+</h3>
+<p>Select a ShuttleSoft <code>.txt</code> file or comma-separated <code>.csv</code> export:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_shuttlesoft.html">read_shuttlesoft</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="reference/read_shuttlesoft.html">read_shuttlesoft()</a></code> prepares the data automatically. ShuttleSoft’s existing <code>core_T</code> values are retained, so most users do not need to recalculate body temperature.</p>
-<p>Calculate common metrics:</p>
+<p><code><a href="reference/read_shuttlesoft.html">read_shuttlesoft()</a></code> imports and prepares the recording automatically. It adds elapsed time, labels trial phases and identifies shuttles between chambers. The existing <code>core_T</code> values produced by ShuttleSoft are retained by default.</p>
+<p>When the recording includes a separate acclimation period, provide the clock time at which the dynamic trial began:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_occupancy.html">calc_occupancy</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_tot_distance.html">calc_tot_distance</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
-<p>Plot the temperature distribution and effective thermal breadth:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="excluding-acclimation">Excluding acclimation<a class="anchor" aria-label="anchor" href="#excluding-acclimation"></a>
-</h2>
-<p>When the experimental trial began after an acclimation period, provide the clock time at which the trial started:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_shuttlesoft.html">read_shuttlesoft</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  trial_start <span class="op">=</span> <span class="st">"13:30:00"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>When <code>trial_start</code> is omitted, the whole recording is treated as trial data.</p>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The structure can be checked with:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/inspect.html">inspect</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="effective-selected-thermal-breadth">Effective selected thermal breadth<a class="anchor" aria-label="anchor" href="#effective-selected-thermal-breadth"></a>
-</h2>
-<p><code><a href="reference/calc_Tbreadth.html">calc_Tbreadth()</a></code> summarises both the range of temperatures used and how evenly time was distributed among them. It is expressed in degrees Celsius and is calculated from fixed-width temperature bins:</p>
+<div class="section level3">
+<h3 id="id_2-calculate-shuttle-box-metrics">2. Calculate shuttle-box metrics<a class="anchor" aria-label="anchor" href="#id_2-calculate-shuttle-box-metrics"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_gravitation.html">calc_gravitation</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_occupancy.html">calc_occupancy</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_tot_distance.html">calc_tot_distance</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_extremes.html">calc_extremes</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_track_accuracy.html">calc_track_accuracy</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
+<p>The thermal metrics answer related but distinct questions:</p>
+<ul>
+<li>
+<code>Tpref</code> summarises the central selected temperature; the default is median <code>core_T</code>.</li>
+<li>
+<code>Tavoid_lower</code> and <code>Tavoid_upper</code> are lower and upper percentiles of the <code>core_T</code> distribution.</li>
+<li>
+<code>Tpref_range</code> is the difference between those avoidance temperatures.</li>
+<li>
+<code>Tbreadth</code> uses the full frequency distribution and becomes larger when time is distributed more broadly and evenly across temperatures.</li>
+</ul>
+<p><code>Tbreadth</code> is expressed in degrees Celsius but is not a physiological tolerance limit. Use the same <code>bin_size</code> for every fish being compared:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span>, bin_size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
-<p>Use the same <code>bin_size</code> for every animal being compared. This metric describes the breadth of selected or experienced temperatures; it is not a measure of physiological thermal tolerance.</p>
+</div>
+<div class="section level3">
+<h3 id="id_3-inspect-the-trial">3. Inspect the trial<a class="anchor" aria-label="anchor" href="#id_3-inspect-the-trial"></a>
+</h3>
+<p>Single-trial plots help answer two different quality-control questions.</p>
+<p><strong>Did the shuttle-box and tracking system work as intended?</strong></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_tracking.html">plot_tracking</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Did the fish display interpretable behaviour?</strong></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_distance.html">plot_distance</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_interval.html">plot_interval</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_speed_coreT.html">plot_speed_coreT</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/animate_movements.html">animate_movements</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
+<p>These plots can reveal interruptions in temperature control, poor tracking, prolonged inactivity, extensive time near system limits, doorway use or other patterns that deserve closer examination.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="multiple-files">Multiple files<a class="anchor" aria-label="anchor" href="#multiple-files"></a>
+<h2 id="branch-2-inspect-a-complete-project">Branch 2: inspect a complete project<a class="anchor" aria-label="anchor" href="#branch-2-inspect-a-complete-project"></a>
 </h2>
-<p>Import all ShuttleSoft <code>.txt</code> and <code>.csv</code> files in a folder:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="id_1-import-all-trials">1. Import all trials<a class="anchor" aria-label="anchor" href="#id_1-import-all-trials"></a>
+</h3>
+<p>Place the raw files for a project in one folder and import them as a named list:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_shuttlesoft_project.html">read_shuttlesoft_project</a></span><span class="op">(</span></span>
 <span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>A metadata table is optional. It is useful when individual files have different trial start times:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  file_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Fish_1.txt"</span>, <span class="st">"Fish_2.txt"</span><span class="op">)</span>,</span>
+<span>  trial_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10:30:00"</span>, <span class="st">"14:15:00"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span><span class="va">all_fish</span><span class="op">)</span></span></code></pre></div>
-<p>The resulting table includes <code>Tpref</code>, upper and lower <code>Tavoid</code>, <code>Tbreadth</code>, shuttling, occupancy, movement, tracking accuracy, and other summary metrics. A metadata table remains available for projects that require different trial start times or thermal-model values for individual files, but it is optional.</p>
-<p>An existing project-results CSV can be imported directly:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_project_database.html">read_project_database</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="reference/plot_histograms.html">plot_histograms</a></span><span class="op">(</span><span class="va">project_data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span><span class="va">project_data</span>, label_points <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="reference/correlation_matrix.html">correlation_matrix</a></span><span class="op">(</span></span>
-<span>  <span class="va">project_data</span>,</span>
+<span><span class="va">all_fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_shuttlesoft_project.html">read_shuttlesoft_project</a></span><span class="op">(</span></span>
+<span>  metadata <span class="op">=</span> <span class="va">metadata</span>,</span>
+<span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="id_2-calculate-one-row-of-results-per-fish">2. Calculate one row of results per fish<a class="anchor" aria-label="anchor" href="#id_2-calculate-one-row-of-results-per-fish"></a>
+</h3>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span></span>
+<span>  <span class="va">all_fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  Tpref_method <span class="op">=</span> <span class="st">"median"</span>,</span>
+<span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  Tbreadth_bin_size <span class="op">=</span> <span class="fl">0.1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>This creates a project-level database containing thermal, activity, occupancy, tracking and movement metrics for every trial.</p>
+<p>An existing project-results CSV can instead be loaded with:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_project_database.html">read_project_database</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="id_3-flag-unusual-trials-for-individual-review">3. Flag unusual trials for individual review<a class="anchor" aria-label="anchor" href="#id_3-flag-unusual-trials-for-individual-review"></a>
+</h3>
+<p>Start with the distributions of key metrics:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">possible_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_histograms.html">plot_histograms</a></span><span class="op">(</span><span class="va">project_results</span><span class="op">)</span></span></code></pre></div>
+<p>Then inspect relationships that can distinguish different kinds of unusual behaviour:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span><span class="va">project_results</span>, label_points <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_limits_vs_distance.html">plot_limits_vs_distance</a></span><span class="op">(</span><span class="va">project_results</span>, label_points <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_limits_vs_shuttles.html">plot_limits_vs_shuttles</a></span><span class="op">(</span><span class="va">project_results</span>, label_points <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>A correlation matrix or PCA can provide a multivariate overview:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/correlation_matrix.html">correlation_matrix</a></span><span class="op">(</span></span>
+<span>  <span class="va">project_results</span>,</span>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Tpref"</span>, <span class="st">"Tavoid_lower"</span>, <span class="st">"Tavoid_upper"</span>,</span>
-<span>    <span class="st">"tot_distance"</span>, <span class="st">"nr_shuttles"</span></span>
+<span>    <span class="st">"tot_distance"</span>, <span class="st">"nr_shuttles"</span>, <span class="st">"t_near_limits"</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="reference/read_project_database.html">read_project_database()</a></code> automatically standardises common column names from older ShuttleboxR versions. The package vignette includes a complete runnable example covering project distributions, correlations, scatter plots, outlier screening, and PCA.</p>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pca.html">pca</a></span><span class="op">(</span></span>
+<span>  <span class="va">project_results</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"fileID"</span>, <span class="st">"Tpref"</span>, <span class="st">"Tavoid_lower"</span>, <span class="st">"Tavoid_upper"</span>,</span>
+<span>    <span class="st">"tot_distance"</span>, <span class="st">"nr_shuttles"</span>, <span class="st">"t_near_limits"</span></span>
+<span>  <span class="op">)</span><span class="op">]</span>,</span>
+<span>  print_labels <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">project_pca</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">biplot</span></span>
+<span><span class="va">project_pca</span><span class="op">$</span><span class="va">outliers</span></span></code></pre></div>
+<p>When the project database was generated with the current version of <code><a href="reference/calc_project_results.html">calc_project_results()</a></code>, <code>Tbreadth</code> can also be included in these project-level comparisons. Older summary databases must be regenerated from the raw trial files before <code>Tbreadth</code> is available.</p>
+<p>The output identifies <strong>candidates for review</strong>, not automatic exclusions. The recommended next step is to locate each flagged fish in <code>all_fish</code> and inspect its raw trial:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fish_to_check</span> <span class="op">&lt;-</span> <span class="va">all_fish</span><span class="op">[[</span><span class="st">"Fish_17.txt"</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_tracking.html">plot_tracking</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span></code></pre></div>
+<p>A fish should only be excluded when there is a clear, documented reason that the trial is technically flawed or does not provide a valid measure of the intended behaviour. Unusual behaviour can also be genuine biological variation.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="recalculating-body-temperature-is-optional">Recalculating body temperature is optional<a class="anchor" aria-label="anchor" href="#recalculating-body-temperature-is-optional"></a>
+<h2 id="recalculating-core-temperature-is-optional">Recalculating core temperature is optional<a class="anchor" aria-label="anchor" href="#recalculating-core-temperature-is-optional"></a>
 </h2>
-<p>ShuttleSoft files normally already contain <code>core_T</code>. Only use <code><a href="reference/calc_coreT.html">calc_coreT()</a></code> when you deliberately want to recalculate body temperature and have appropriate calibrated coefficients:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>ShuttleSoft files normally already contain <code>core_T</code>. Only use <code><a href="reference/calc_coreT.html">calc_coreT()</a></code> when those values need to be replaced and appropriate thermal-lag coefficients are available:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calc_coreT.html">calc_coreT</a></span><span class="op">(</span></span>
 <span>  <span class="va">fish</span>,</span>
 <span>  mass <span class="op">=</span> <span class="fl">12.4</span>,</span>
 <span>  a_value <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  b_value <span class="op">=</span> <span class="op">-</span><span class="fl">0.25</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The <code>a_value</code> and <code>b_value</code> coefficients cannot be inferred from the ShuttleSoft file. They must come from an appropriate calibration or published source.</p>
+<p>The <code>a_value</code> and <code>b_value</code> coefficients cannot be inferred from the recording. They must come from an appropriate calibration or published source.</p>
 </div>
 <div class="section level2">
 <h2 id="full-guide">Full guide<a class="anchor" aria-label="anchor" href="#full-guide"></a>
 </h2>
-<p>After installation, open the package vignette with:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>After installation, open the worked vignette with:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"ShuttleboxR"</span>, package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
+<p>Individual function documentation is available in R, for example:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">?</span><span class="va">calc_Tbreadth</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

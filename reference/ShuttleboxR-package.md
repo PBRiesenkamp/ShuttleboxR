@@ -1,36 +1,35 @@
-# ShuttleboxR: Data Exploration and Analysis for Shuttle-Box Temperature Experiments
+# ShuttleboxR: Data Preparation and Exploration for Shuttle-Box Temperature Experiments
 
-ShuttleboxR imports, prepares, checks, analyses, and visualises data
-produced by ShuttleSoft shuttle-box experiments. It supports both
-single-trial and multi-file workflows.
+ShuttleboxR bridges the gap between data acquisition and statistical
+analysis in shuttle-box temperature experiments. It imports and
+organises recordings, calculates reproducible thermal and behavioural
+metrics, and provides plots and project-level screens for inspecting
+data quality.
 
-## Typical workflow
+## Workflow
 
-1.  Import one file with
-    [`read_shuttlesoft()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft.md)
-    or a folder of files with
-    [`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md).
+The package follows three consecutive stages:
 
-2.  Inspect the imported data with
-    [`inspect()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/inspect.md).
+1.  **Import and organise** the data.
 
-3.  Calculate thermal and behavioural metrics such as
-    [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md),
-    [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md),
-    [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
-    [`calc_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_shuttles.md),
-    and
-    [`calc_occupancy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_occupancy.md).
+2.  **Calculate shuttle-box metrics** using explicit settings.
 
-4.  Visualise individual trials with functions such as
-    [`plot_T_segmented()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md),
-    [`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md),
-    [`plot_tracking()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_tracking.md),
-    and
-    [`plot_heatmap()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_heatmap.md).
+3.  **Inspect and troubleshoot** the data before formal analysis.
 
-5.  Summarise a complete project with
-    [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md).
+The stages are applied to two connected branches. The single-trial
+branch calculates and inspects one fish. The project branch compiles one
+row of metrics per fish, examines distributions and multivariate
+patterns across the study, and flags trials that should be returned to
+the single-trial plots for closer review.
+
+## Interpretation
+
+Project-level outlier screens identify candidates for inspection, not
+automatic exclusions. Unusual values should be checked against the
+original temperature, tracking and movement records and interpreted in
+the context of the species and experimental design. ShuttleboxR prepares
+and explores data; it does not choose the inferential analysis for a
+study.
 
 ## Core temperature
 
@@ -42,7 +41,8 @@ is optional and requires calibrated thermal-lag parameters.
 
 Run
 [`vignette("ShuttleboxR", package = "ShuttleboxR")`](https://pbriesenkamp.github.io/ShuttleboxR/articles/ShuttleboxR.md)
-for a complete worked example using the file included with the package.
+for a worked example covering both the single-trial and project-level
+workflows.
 
 ## Author
 

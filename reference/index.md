@@ -1,51 +1,49 @@
 # Package index
 
-## Import, prepare, and inspect data
+## Single trials: import and organise
+
+Read, prepare and validate one shuttle-box recording.
 
 - [`read_shuttlesoft()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft.md)
   : Import a ShuttleSoft data file
-- [`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md)
-  : Import all ShuttleSoft files in a directory
-- [`read_project_database()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_project_database.md)
-  : Read a ShuttleboxR project-results database
 - [`file_prepare()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/file_prepare.md)
   : Prepare shuttle-box data
-- [`compile_project_data()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/compile_project_data.md)
-  : Compile all trials into a single datafile
 - [`inspect()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/inspect.md)
   : Inspect imported shuttle-box data
 
-## Thermal metrics
+## Single trials: calculate metrics
 
+Calculate thermal, behavioural, movement and tracking metrics for one
+fish.
+
+- [`calc_coreT()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT.md)
+  : Recalculate core body temperature
+- [`calc_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_distance.md)
+  : Calculate the cumulative distance
 - [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md)
   : Calculate the temperature preference
 - [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md)
   : Calculate the avoidance temperatures
 - [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md)
   : Calculate effective selected thermal breadth
-- [`calc_coreT()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT.md)
-  : Recalculate core body temperature
-- [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md)
-  : Calculate the temperature preference
 - [`calc_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_extremes.md)
   : Calculate the time spent near the extremes
-- [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
-  : Calculate the gravitation period
-
-## Movement, occupancy, and tracking
-
-- [`calc_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_distance.md)
-  : Calculate the cumulative distance
 - [`calc_tot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_tot_distance.md)
   : Calculate the total distance
+- [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
+  : Calculate the gravitation period
 - [`calc_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_shuttles.md)
   : Calculate the number of shuttles
 - [`calc_occupancy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_occupancy.md)
   : Calculate the occupancy times
+- [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md)
+  : Calculate the temperature preference
 - [`calc_track_accuracy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_track_accuracy.md)
   : Calculate the tracking accuracy
 
-## Single-trial plots
+## Single trials: inspect and troubleshoot
+
+Check temperature control, tracking and fish behaviour within a trial.
 
 - [`plot_T_gradient()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_gradient.md)
   : Plot the temperatures in each side of the shuttlebox over time
@@ -68,12 +66,24 @@
 - [`plot_interval()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_interval.md)
   : Plot the interval means for a selected column over time
 
-## Project-level summaries and plots
+## Projects: import and summarise
 
+Combine trials and create or read a one-row-per-fish results database.
+
+- [`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md)
+  : Import all ShuttleSoft files in a directory
+- [`compile_project_data()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/compile_project_data.md)
+  : Compile all trials into a single datafile
 - [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md)
   : Calculate shuttle-box metrics for all trials
-- [`correlation_matrix()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/correlation_matrix.md)
-  : Plot a correlation matrix of selected shuttle-box metrics
+- [`read_project_database()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_project_database.md)
+  : Read a ShuttleboxR project-results database
+
+## Projects: inspect and flag trials
+
+Explore variation across fish and identify candidates for single-trial
+review.
+
 - [`plot_histograms()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_histograms.md)
   : Plot frequency distributions of key shuttle-box metrics
 - [`plot_distance_vs_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_distance_vs_shuttles.md)
@@ -82,5 +92,7 @@
   : Plot distance versus time spent near limits across project data
 - [`plot_limits_vs_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_limits_vs_shuttles.md)
   : Plot time spent near limits versus shuttles across project data
+- [`correlation_matrix()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/correlation_matrix.md)
+  : Plot a correlation matrix of selected shuttle-box metrics
 - [`pca()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/pca.md)
   : Perform principal component analysis on project data
