@@ -10,34 +10,31 @@ navbar:
     right: [search, github, lightswitch]
 
 reference:
-- title: Import, prepare, and inspect data
+- title: "Single trials: import and organise"
+  desc: "Read, prepare and validate one shuttle-box recording."
   contents:
   - read_shuttlesoft
-  - read_shuttlesoft_project
-  - read_project_database
   - file_prepare
-  - compile_project_data
   - inspect
 
-- title: Thermal metrics
+- title: "Single trials: calculate metrics"
+  desc: "Calculate thermal, behavioural, movement and tracking metrics for one fish."
   contents:
+  - calc_coreT
+  - calc_distance
   - calc_Tpref
   - calc_Tavoid
   - calc_Tbreadth
-  - calc_coreT
-  - calc_coreT_variance
   - calc_extremes
-  - calc_gravitation
-
-- title: Movement, occupancy, and tracking
-  contents:
-  - calc_distance
   - calc_tot_distance
+  - calc_gravitation
   - calc_shuttles
   - calc_occupancy
+  - calc_coreT_variance
   - calc_track_accuracy
 
-- title: Single-trial plots
+- title: "Single trials: inspect and troubleshoot"
+  desc: "Check temperature control, tracking and fish behaviour within a trial."
   contents:
   - plot_T_gradient
   - plot_T_segmented
@@ -50,14 +47,22 @@ reference:
   - plot_histogram
   - plot_interval
 
-- title: Project-level summaries and plots
+- title: "Projects: import and summarise"
+  desc: "Combine trials and create or read a one-row-per-fish results database."
   contents:
+  - read_shuttlesoft_project
+  - compile_project_data
   - calc_project_results
-  - correlation_matrix
+  - read_project_database
+
+- title: "Projects: inspect and flag trials"
+  desc: "Explore variation across fish and identify candidates for single-trial review."
+  contents:
   - plot_histograms
   - plot_distance_vs_shuttles
   - plot_limits_vs_distance
   - plot_limits_vs_shuttles
+  - correlation_matrix
   - pca
 
 articles:

@@ -1,28 +1,37 @@
-#' ShuttleboxR: analysis of shuttle-box temperature experiments
+#' ShuttleboxR: preparation and exploration of shuttle-box temperature data
 #'
-#' ShuttleboxR imports, prepares, checks, analyses, and visualises data produced
-#' by ShuttleSoft shuttle-box experiments. It supports both single-trial and
-#' multi-file workflows.
+#' ShuttleboxR bridges the gap between data acquisition and statistical analysis
+#' in shuttle-box temperature experiments. It imports and organises recordings,
+#' calculates reproducible thermal and behavioural metrics, and provides plots
+#' and project-level screens for inspecting data quality.
 #'
-#' @section Typical workflow:
-#' 1. Import one file with [read_shuttlesoft()] or a folder of files with
-#'    [read_shuttlesoft_project()].
-#' 2. Inspect the imported data with [inspect()].
-#' 3. Calculate thermal and behavioural metrics such as [calc_Tpref()],
-#'    [calc_Tavoid()], [calc_Tbreadth()], [calc_shuttles()], and
-#'    [calc_occupancy()].
-#' 4. Visualise individual trials with functions such as
-#'    [plot_T_segmented()], [plot_coreT_histogram()], [plot_tracking()], and
-#'    [plot_heatmap()].
-#' 5. Summarise a complete project with [calc_project_results()].
+#' @section Workflow:
+#' The package follows three consecutive stages:
+#'
+#' 1. **Import and organise** the data.
+#' 2. **Calculate shuttle-box metrics** using explicit settings.
+#' 3. **Inspect and troubleshoot** the data before formal analysis.
+#'
+#' The stages are applied to two connected branches. The single-trial branch
+#' calculates and inspects one fish. The project branch compiles one row of
+#' metrics per fish, examines distributions and multivariate patterns across the
+#' study, and flags trials that should be returned to the single-trial plots for
+#' closer review.
+#'
+#' @section Interpretation:
+#' Project-level outlier screens identify candidates for inspection, not
+#' automatic exclusions. Unusual values should be checked against the original
+#' temperature, tracking and movement records and interpreted in the context of
+#' the species and experimental design. ShuttleboxR prepares and explores data;
+#' it does not choose the inferential analysis for a study.
 #'
 #' @section Core temperature:
 #' ShuttleSoft files normally already include `core_T`. Recalculation with
 #' [calc_coreT()] is optional and requires calibrated thermal-lag parameters.
 #'
 #' @section Getting started:
-#' Run `vignette("ShuttleboxR", package = "ShuttleboxR")` for a complete worked
-#' example using the file included with the package.
+#' Run `vignette("ShuttleboxR", package = "ShuttleboxR")` for a worked example
+#' covering both the single-trial and project-level workflows.
 #'
 #' @keywords internal
 "_PACKAGE"

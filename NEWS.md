@@ -1,3 +1,19 @@
+# ShuttleboxR 0.0.0.9004
+
+- Reframed the README, vignette, package overview and website reference index
+  around the package's three-stage workflow: import and organise, calculate
+  metrics, and inspect and troubleshoot.
+- Clarified the two connected branches for individual trials and complete
+  projects, including the recommended loop from project-level screening back to
+  detailed single-trial inspection.
+- Expanded the explanation of quality control: project-level outlier screens
+  flag candidates for review and do not provide an automatic basis for
+  excluding fish.
+- Added a metric overview and integrated `Tbreadth` as a complementary measure
+  to the percentile-based `Tpref_range`.
+- Clarified that ShuttleboxR prepares and explores data before formal
+  statistical analysis rather than selecting the inferential analysis itself.
+
 # ShuttleboxR 0.0.0.9003
 
 - Added a bundled 85-trial project-results database and a complete project-level
