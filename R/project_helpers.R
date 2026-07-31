@@ -59,6 +59,79 @@
   invisible(TRUE)
 }
 
+
+.validate_probability <- function(x, name) {
+  .validate_positive_scalar(x, name, allow_zero = TRUE)
+  if (x > 1) {
+    stop("`", name, "` must be between 0 and 1.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+.validate_percentage_threshold <- function(x, name) {
+  .validate_positive_scalar(x, name, allow_zero = TRUE)
+  if (x > 100) {
+    stop("`", name, "` must be between 0 and 100 percent.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+.calculate_limit_cutoff <- function(values,
+                                    method,
+                                    absolute_threshold,
+                                    quantile_probability,
+                                    iqr_multiplier) {
+  values <- suppressWarnings(as.numeric(values))
+  values <- values[is.finite(values)]
+  if (length(values) == 0L) {
+    stop("No finite limit-exposure values are available.", call. = FALSE)
+  }
+
+  method <- match.arg(method, c("absolute", "quantile", "iqr"))
+  .validate_percentage_threshold(absolute_threshold, "limit_threshold")
+  .validate_probability(quantile_probability, "limit_quantile")
+  .validate_positive_scalar(iqr_multiplier, "limits_iqr_multiplier", allow_zero = TRUE)
+
+  switch(
+    method,
+    absolute = as.numeric(absolute_threshold),
+    quantile = as.numeric(stats::quantile(
+      values,
+      probs = quantile_probability,
+      na.rm = TRUE,
+      names = FALSE
+    )),
+    iqr = {
+      q1 <- as.numeric(stats::quantile(values, 0.25, na.rm = TRUE, names = FALSE))
+      q3 <- as.numeric(stats::quantile(values, 0.75, na.rm = TRUE, names = FALSE))
+      q3 + iqr_multiplier * (q3 - q1)
+    }
+  )
+}
+
+.limit_screen_text <- function(method,
+                               cutoff,
+                               quantile_probability,
+                               activity_name = NULL) {
+  method <- match.arg(method, c("absolute", "quantile", "iqr"))
+  exposure_text <- switch(
+    method,
+    absolute = paste0("Limit-exposure threshold: > ", format(cutoff, trim = TRUE), "%"),
+    quantile = paste0(
+      "Limit-exposure threshold: > project ",
+      format(100 * quantile_probability, trim = TRUE),
+      "th percentile"
+    ),
+    iqr = "Limit exposure uses a project-level IQR screen"
+  )
+
+  if (is.null(activity_name)) {
+    exposure_text
+  } else {
+    paste0(exposure_text, "; ", activity_name, " uses project quantiles")
+  }
+}
+
 .classify_distance_shuttles <- function(data, cutoffs) {
   distance_state <- ifelse(
     data$tot_distance <= cutoffs[["distance_low"]], "low",
@@ -96,10 +169,10 @@
   high_activity <- activity >= activity_high
 
   result <- rep("Typical project range", length(limits))
-  result[high_limits] <- "High limit exposure"
+  result[high_limits] <- "Above limit-exposure threshold"
   result[low_activity] <- paste("Low", activity_name)
   result[high_activity] <- paste("High", activity_name)
-  result[high_limits & low_activity] <- paste("High limit exposure + low", activity_name)
-  result[high_limits & high_activity] <- paste("High limit exposure + high", activity_name)
+  result[high_limits & low_activity] <- paste("Above threshold + low", activity_name)
+  result[high_limits & high_activity] <- paste("Above threshold + high", activity_name)
   result
 }

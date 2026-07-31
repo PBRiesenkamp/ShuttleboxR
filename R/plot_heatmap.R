@@ -50,7 +50,7 @@ plot_heatmap <- function(data, exclude_start_minutes = 0, exclude_end_minutes = 
     ggplot2::labs(title = "Heat Map of Fish Locations within the Shuttlebox",
                   x = "X Position",
                   y = "Y Position") +
-    ggplot2::theme_light() +
+    ggplot2::theme_classic() +
     ggplot2::coord_fixed()
   
   return(heatmap_plot)

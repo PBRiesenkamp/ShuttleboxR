@@ -46,7 +46,7 @@ ShuttleSoft files normally already contain a \code{core_T} column. The arguments
 }
 \examples{
 example_file <- system.file(
-  "extdata", "Fish_8_13_3_example.csv",
+  "extdata", "Fish_7_13_2.csv",
   package = "ShuttleboxR"
 )
 fish <- read_shuttlesoft(example_file)

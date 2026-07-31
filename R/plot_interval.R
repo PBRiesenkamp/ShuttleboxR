@@ -42,7 +42,7 @@ plot_interval <- function(data, column, interval_minutes = 10, exclude_start_min
     ggplot2::labs(title = paste("Mean ", column,  "over the trial"),
                   x = "Time (h)",
                   y = paste("Mean ", column))+
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   print(rate)
   

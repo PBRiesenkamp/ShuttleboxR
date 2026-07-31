@@ -1,3 +1,26 @@
+# ShuttleboxR 0.0.0.9010
+
+- Replaced the default IQR screen for temperature-limit exposure with a direct 10% exposure threshold in `plot_limits_vs_distance()`, `plot_limits_vs_shuttles()`, and `plot_upper_vs_lower_extremes()`.
+- Added `limit_method = "absolute"`, `"quantile"`, or `"iqr"`, together with adjustable absolute and quantile thresholds. The absolute method is now the default because it remains interpretable in zero-heavy project datasets.
+- Renamed review categories so they describe threshold exceedance rather than implying that any non-zero exposure is biologically high.
+- Updated the README and vignette to explain why IQR thresholds can collapse to zero and how to set study-appropriate limit-exposure thresholds.
+- Changed all ggplot-based package figures, including PCA figures produced through factoextra, to `theme_classic()` with no gridlines.
+
+# ShuttleboxR 0.0.0.9009
+
+- Added an explicit `variables` argument to `pca()`. This makes the metrics included in the PCA transparent and prevents the PCA from changing silently when new numeric columns are added to a project database.
+- Added `dbscan_minPts` to control the minimum local neighbourhood size used by DBSCAN.
+- Added `flag_rule = "both"`, `"either"`, `"mahalanobis"`, or `"dbscan"` to control which detections are highlighted as candidates for review.
+- Made the default PCA screening more conservative (`mahalanobis_th = 0.99`, `dbscan_th = 1.5`, `dbscan_minPts = 4`, and `flag_rule = "both"`).
+- Added a fish-level `screening` table and `flagged_ids` output while retaining the method-level `outliers` table. `outlier_details` now indicates whether each fish is selected under the chosen flag rule.
+- Revised the README and vignette to explain why PCA results change when the selected variables change, how each threshold affects sensitivity, and how one-method signals differ from fish identified by both methods.
+
+# ShuttleboxR 0.0.0.9008
+
+- Replaced the bundled single-trial example with `Fish_7_13_2`, which provides a cleaner and more intuitive illustration of gravitation, thermal selection, the core-temperature histogram, and the single-trial inspection workflow.
+- Updated the README, vignette, function examples, and generated help pages to use the new example file.
+- Updated the maintenance instructions to render the vignette with `rmarkdown::render()`.
+
 # ShuttleboxR 0.0.0.9007
 
 - Fixed vignette-building failures in the project-level screening plots. Quantile values are now stored without inherited percentile names, so cutoff lookups such as `lower_limit_high`, `distance_low`, and `shuttles_high` work correctly.

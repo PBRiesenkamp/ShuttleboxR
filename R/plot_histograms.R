@@ -40,7 +40,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                            color = 'darkorange2') +
     ggplot2::labs(x = "Temperature preference (Celsius)", 
                   y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   # p2: Distribution of Tavoid_upper
   p2 <- ggplot2::ggplot(proj_data, ggplot2::aes(x = Tavoid_upper)) +
@@ -54,7 +54,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                            linewidth = 1, 
                            color = 'darkred') +  
     ggplot2::labs(x = "Upper avoidance temperature (Celsius)", y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   # p3: Distribution of Tavoid_lower
   p3 <- ggplot2::ggplot(proj_data, ggplot2::aes(x = Tavoid_lower)) +
@@ -68,7 +68,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                            linewidth = 1, 
                            color = 'darkblue') +  
     ggplot2::labs(x = "Lower avoidance temperature (Celsius)", y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   # p4: Distribution of Distance
   p4 <- ggplot2::ggplot(proj_data, ggplot2::aes(x = tot_distance)) +
@@ -82,7 +82,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                            linewidth = 1, 
                            color = 'darkgreen') +  
     ggplot2::labs(x = "Distance", y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   # p5: Distribution of Shuttles
   p5 <- ggplot2::ggplot(proj_data, ggplot2::aes(x = nr_shuttles)) +
@@ -96,7 +96,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                            linewidth = 1, 
                            color = 'purple') +  
     ggplot2::labs(x = "Nr shuttles", y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   # p6: Distribution of Time Near Limits
   p6 <- ggplot2::ggplot(proj_data, ggplot2::aes(x = t_near_limits)) +
@@ -110,7 +110,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                            linewidth = 1, 
                            color = 'orange') +  
     ggplot2::labs(x = "Observations near limits (%)", y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   variables <- c("Tpref", "Tavoid_upper", "Tavoid_lower", "tot_distance", "nr_shuttles", "t_near_limits")
   

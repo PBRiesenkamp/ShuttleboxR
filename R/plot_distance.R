@@ -33,7 +33,7 @@ plot_distance <- function(data, exclude_start_minutes = 0, exclude_end_minutes =
     ggplot2::labs(title = "Cumulative Distance Moved During Trial",
                   x = "Time (minutes)",
                   y = "Distance Moved (cm)") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   print(plot)
 }

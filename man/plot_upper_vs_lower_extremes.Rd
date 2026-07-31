@@ -10,20 +10,24 @@ plot_upper_vs_lower_extremes(
   label_points = TRUE,
   highlight_cases = TRUE,
   iqr_multiplier = 1.5,
-  return_cases = FALSE
+  return_cases = FALSE,
+  limit_method = c("absolute", "quantile", "iqr"),
+  lower_limit_threshold = 10,
+  upper_limit_threshold = 10,
+  limit_quantile = 0.95
 )
 }
 \arguments{
 \item{proj_data}{Project-results data frame containing \code{t_near_min} and \code{t_near_max}.}
 \item{id_col}{Identifier column used for labels. Default is \code{"fileID"}.}
 \item{label_points}{Logical. Label highlighted points. Default is \code{TRUE}.}
-\item{highlight_cases}{Logical. Highlight potential review cases using an IQR rule separately for the upper and lower limits. Default is \code{TRUE}.}
-\item{iqr_multiplier}{Multiplier in \code{Q3 + multiplier * IQR}. Default is 1.5.}
+\item{highlight_cases}{Logical. Highlight potential review cases. Default is \code{TRUE}.}
+\item{iqr_multiplier}{Multiplier used when \code{limit_method = "iqr"} to define each cutoff as \code{Q3 + multiplier * IQR}. Default is 1.5.}
+\item{limit_method}{Method used to define elevated exposure at each limit. One of \code{"absolute"} (default), \code{"quantile"}, or \code{"iqr"}.}
+\item{lower_limit_threshold}{Percentage threshold for lower-limit exposure when \code{limit_method = "absolute"}. Default is 10.}
+\item{upper_limit_threshold}{Percentage threshold for upper-limit exposure when \code{limit_method = "absolute"}. Default is 10.}
+\item{limit_quantile}{Project quantile used separately for lower- and upper-limit exposure when \code{limit_method = "quantile"}. Default is 0.95.}
 \item{return_cases}{Logical. Return a list containing the plot, highlighted cases and cutoffs. Default is \code{FALSE}.}
 }
-\value{
-A \code{ggplot2} plot invisibly, or a list with \code{plot}, \code{cases} and \code{cutoffs} when \code{return_cases = TRUE}.
-}
-\description{
-Compares the percentage of observations spent near the lower and upper programmed temperature limits. The plot can highlight fish with unusually high exposure to the upper limit, lower limit, or both. This is a screening step that should be followed by inspection of the original trial.
-}
+\value{A \code{ggplot2} plot invisibly, or a list with \code{plot}, \code{cases}, \code{cutoffs}, and \code{limit_method} when \code{return_cases = TRUE}.}
+\description{Compares the percentage of observations spent near the lower and upper programmed temperature limits. The plot can highlight fish exceeding a transparent threshold at the upper limit, lower limit, or both. This is a screening step that should be followed by inspection of the original trial.}

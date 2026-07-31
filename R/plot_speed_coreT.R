@@ -36,7 +36,7 @@ plot_speed_coreT <- function(data, exclude_start_minutes = 0, exclude_end_minute
     ggplot2::labs(title = "Movement Speed vs. Core Body Temperature",
                   x = "Core Body Temperature (Celsius)",
                   y = "Movement Speed (cm/s)") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   return(plot)
 }

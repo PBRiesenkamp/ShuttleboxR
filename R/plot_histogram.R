@@ -31,7 +31,7 @@ plot_histogram <- function(data, column, binwidth = 0.1, exclude_start_minutes =
     ggplot2::labs(title = paste("Histogram of", column),
                   x = column,
                   y = "Frequency") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   print(plot)
 }

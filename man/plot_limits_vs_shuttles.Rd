@@ -4,18 +4,32 @@
 \alias{plot_limits_vs_shuttles}
 \title{Plot time spent near limits versus shuttles across project data}
 \usage{
-plot_limits_vs_shuttles(proj_data, id_col = "fileID", label_points = TRUE)
+plot_limits_vs_shuttles(
+  proj_data,
+  id_col = "fileID",
+  label_points = TRUE,
+  highlight_cases = FALSE,
+  lower_quantile = 0.05,
+  upper_quantile = 0.95,
+  limits_iqr_multiplier = 1.5,
+  return_cases = FALSE,
+  limit_method = c("absolute", "quantile", "iqr"),
+  limit_threshold = 10,
+  limit_quantile = 0.95
+)
 }
 \arguments{
 \item{proj_data}{Project-results data frame.}
-
 \item{id_col}{Identifier column used for labels. Default is \code{"fileID"}.}
-
-\item{label_points}{Logical. Label individual points. Default is \code{TRUE}.}
+\item{label_points}{Logical. Label points. When \code{highlight_cases = TRUE}, only highlighted cases are labelled. Default is \code{TRUE}.}
+\item{highlight_cases}{Logical. Highlight potential review cases. Default is \code{FALSE}.}
+\item{lower_quantile}{Lower shuttling quantile used for screening. Default is 0.05.}
+\item{upper_quantile}{Upper shuttling quantile used for screening. Default is 0.95.}
+\item{limits_iqr_multiplier}{Multiplier used when \code{limit_method = "iqr"} to define the cutoff as \code{Q3 + multiplier * IQR}. Default is 1.5.}
+\item{limit_method}{Method used to define elevated limit exposure. One of \code{"absolute"} (default), \code{"quantile"}, or \code{"iqr"}. The absolute method is recommended for zero-heavy datasets because it retains a direct biological interpretation.}
+\item{limit_threshold}{Percentage threshold used when \code{limit_method = "absolute"}. Default is 10, meaning more than 10 percent of analysed observations near either programmed limit.}
+\item{limit_quantile}{Project quantile used when \code{limit_method = "quantile"}. Default is 0.95.}
+\item{return_cases}{Logical. Return a list containing the plot, highlighted cases and cutoffs. Default is \code{FALSE}.}
 }
-\value{
-A \code{ggplot2} plot, invisibly.
-}
-\description{
-Plots the number of shuttles against time spent close to the programmed temperature limits for each trial or individual.
-}
+\value{A \code{ggplot2} plot invisibly, or a list with \code{plot}, \code{cases}, \code{cutoffs}, and \code{limit_method} when \code{return_cases = TRUE}.}
+\description{Plots the number of shuttles against the percentage of observations spent close to the programmed temperature limits. Optional review guides highlight trials exceeding a transparent limit-exposure threshold and trials with unusually low or high shuttling within the project. Highlighted cases require inspection of the original trial and are not automatic exclusions.}

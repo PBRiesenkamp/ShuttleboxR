@@ -31,7 +31,7 @@ plot_T_gradient <- function(data, exclude_start_minutes = 0, exclude_end_minutes
                   x = "Time (hours)",
                   y = "Temperature (Celsius)",
                   color = "Temperature Side") +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   print(plot)
 }

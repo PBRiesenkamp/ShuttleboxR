@@ -68,7 +68,7 @@ plot_distance_vs_shuttles <- function(proj_data,
       x = "Total distance moved (cm)",
       y = "Number of shuttles"
     ) +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
 
   if (isTRUE(highlight_cases)) {
     plot <- plot +

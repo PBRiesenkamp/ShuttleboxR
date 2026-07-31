@@ -38,7 +38,7 @@ Tbreadth describes overall spread but cannot, by itself, show whether the histog
 }
 \examples{
 example_file <- system.file(
-  "extdata", "Fish_8_13_3_example.csv",
+  "extdata", "Fish_7_13_2.csv",
   package = "ShuttleboxR"
 )
 fish <- read_shuttlesoft(example_file)

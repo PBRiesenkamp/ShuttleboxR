@@ -68,7 +68,7 @@ plot_T_segmented <- function(data, Tpref_method = "median", Tavoid_percentiles =
     ggplot2::labs(title = "Body Core Temperature vs Time with Segmented Regression",
                   x = "Time (h)",
                   y = "Body Core Temperature (Celsius)")+
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   if(overlay_chamber_temp){
     plot <- plot + 

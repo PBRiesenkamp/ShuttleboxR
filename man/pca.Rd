@@ -6,8 +6,11 @@
 \usage{
 pca(
   data,
-  mahalanobis_th = 0.975,
-  dbscan_th = 1,
+  variables = NULL,
+  mahalanobis_th = 0.99,
+  dbscan_th = 1.5,
+  dbscan_minPts = 4,
+  flag_rule = c("both", "either", "mahalanobis", "dbscan"),
   print_labels = TRUE,
   id_col = "fileID",
   var_col = "Tpref",
@@ -18,23 +21,37 @@ pca(
 }
 \arguments{
 \item{data}{Project-results data containing one row per trial or individual.}
-\item{mahalanobis_th}{Probability used for the chi-squared Mahalanobis distance cutoff. Default is 0.975. Smaller values flag more fish.}
-\item{dbscan_th}{\code{eps} value supplied to DBSCAN. Default is 1. Smaller values generally classify more fish as locally isolated.}
+
+\item{variables}{Character vector naming the numeric variables to include in the PCA. Supplying this argument is recommended because it makes the analysis explicit and prevents newly added numeric columns from silently changing the PCA. If \code{NULL}, all suitable numeric columns are used.}
+
+\item{mahalanobis_th}{Probability used for the chi-squared Mahalanobis distance cutoff. Default is 0.99. Larger values are more conservative and flag fewer fish.}
+
+\item{dbscan_th}{\code{eps} value supplied to DBSCAN. Default is 1.5. Larger values generally join more neighbouring fish and flag fewer as locally isolated.}
+
+\item{dbscan_minPts}{Minimum number of neighbouring points required by DBSCAN. Default is 4. Larger values generally make the density screen more stringent, although the effect depends on sample size and structure.}
+
+\item{flag_rule}{Rule used to define the fish highlighted as candidates for review. One of \code{"both"} (default), \code{"either"}, \code{"mahalanobis"}, or \code{"dbscan"}. \code{"both"} is the most conservative and highlights only fish identified by both screens.}
+
 \item{print_labels}{Logical. Show labels for all individuals on PCA plots. Default is \code{TRUE}. Flagged fish are labelled when \code{highlight_outliers} is \code{TRUE} even when \code{print_labels = FALSE}.}
+
 \item{id_col}{Identifier column. Default is \code{"fileID"}.}
+
 \item{var_col}{Variable plotted against PC1. Default is \code{"Tpref"}.}
+
 \item{biplot_variables}{Logical. Show variable vectors on the biplot.}
-\item{highlight_outliers}{Logical. Circle and label fish flagged by either outlier screen on the biplot and PC1-variable plot. Default is \code{TRUE}.}
-\item{n_driver_variables}{Number of unusually high or low original variables reported for each flagged fish. Default is 3.}
+
+\item{highlight_outliers}{Logical. Circle and label fish selected by \code{flag_rule} on the biplot and PC1-variable plot. Default is \code{TRUE}.}
+
+\item{n_driver_variables}{Number of unusually high or low original variables reported for each fish detected by at least one screen. Default is 3.}
 }
 \value{
-A list containing the PCA object, loadings, scores, method-level outlier table, an \code{outlier_details} table describing potential drivers, retained row identifiers, variance explained, and plots.
+A list containing the PCA object, loadings, scores, variance explained, method-level detections, a fish-level \code{screening} table, \code{flagged_ids} selected by \code{flag_rule}, an \code{outlier_details} table describing potential drivers, thresholds, retained identifiers, and plots.
 }
 \description{
-Performs a scaled principal component analysis of numeric project-level shuttle-box metrics. Fish close together have similar multivariate profiles, while separated fish differ in one or more metrics. Variable arrows show the direction in which each metric increases and help identify measurements that may be driving a flagged fish.
+Performs a scaled principal component analysis (PCA) of selected numeric project-level shuttle-box metrics. PCA summarises correlated metrics as new axes. Fish close together have similar multivariate profiles, while separated fish differ in one or more metrics. Variable arrows show the direction in which each metric increases and help identify which measurements may be driving a flagged fish.
 }
 \details{
-Mahalanobis distance identifies fish far from the multivariate centre while accounting for covariance among PCA dimensions. DBSCAN identifies fish in locally sparse regions of the PC1-PC2 plot. These screens identify candidates for review, not automatic exclusions.
+Two complementary screens are provided. Mahalanobis distance identifies fish far from the multivariate centre while accounting for covariance among PCA dimensions. DBSCAN identifies fish in locally sparse regions of the PC1-PC2 plot. \code{flag_rule} controls whether either screen, both screens, or one named screen is used for highlighting. These screens identify candidates for review, not automatic exclusions.
 }
 \examples{
 example_file <- system.file(
@@ -42,12 +59,19 @@ example_file <- system.file(
 )
 project_data <- read_project_database(example_file)
 
-pca_data <- project_data[c(
-  "fileID", "Tpref", "Tpref_range", "grav_time",
-  "tot_distance", "nr_shuttles", "t_near_max", "t_near_min"
-)]
-
-pca_result <- pca(pca_data, print_labels = FALSE)
+pca_result <- pca(
+  project_data,
+  variables = c(
+    "Tpref", "Tpref_range", "grav_time", "tot_distance",
+    "nr_shuttles", "t_near_max", "t_near_min"
+  ),
+  mahalanobis_th = 0.99,
+  dbscan_th = 1.5,
+  dbscan_minPts = 4,
+  flag_rule = "both",
+  print_labels = FALSE
+)
 pca_result$plots$biplot
+pca_result$screening
 pca_result$outlier_details
 }

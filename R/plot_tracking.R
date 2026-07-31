@@ -60,7 +60,7 @@ plot_tracking <- function(data, interval_minutes = 60, exclude_start_minutes = 0
     ggplot2::labs(title = "Number of missed tracks over the trial",
                   x = "Time (h)",
                   y = paste("Missed tracks/h "))+
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
   
   print(rate)
   

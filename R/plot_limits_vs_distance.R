@@ -2,9 +2,9 @@
 #'
 #' Plots total movement distance against the percentage of observations spent
 #' close to the programmed temperature limits. Optional review guides highlight
-#' high limit exposure and unusually low or high movement within the project.
-#' Highlighted cases require inspection of the original trial and are not
-#' automatic exclusions.
+#' trials exceeding a transparent limit-exposure threshold and trials with
+#' unusually low or high movement within the project. Highlighted cases require
+#' inspection of the original trial and are not automatic exclusions.
 #'
 #' @param proj_data Project-results data frame.
 #' @param id_col Identifier column used for labels. Default is `"fileID"`.
@@ -16,13 +16,22 @@
 #'   0.05.
 #' @param upper_quantile Upper movement quantile used for screening. Default is
 #'   0.95.
-#' @param limits_iqr_multiplier Multiplier used to define unusually high time
-#'   near limits as `Q3 + multiplier * IQR`. Default is 1.5.
+#' @param limits_iqr_multiplier Multiplier used when `limit_method = "iqr"` to
+#'   define the cutoff as `Q3 + multiplier * IQR`. Default is 1.5.
+#' @param limit_method Method used to define elevated limit exposure. One of
+#'   `"absolute"` (default), `"quantile"`, or `"iqr"`. The absolute method is
+#'   recommended for zero-heavy datasets because it retains a direct biological
+#'   interpretation.
+#' @param limit_threshold Percentage threshold used when
+#'   `limit_method = "absolute"`. Default is 10, meaning more than 10 percent of
+#'   analysed observations near either programmed limit.
+#' @param limit_quantile Project quantile used when
+#'   `limit_method = "quantile"`. Default is 0.95.
 #' @param return_cases Logical. Return a list containing the plot, highlighted
 #'   cases and cutoffs. Default is `FALSE`.
 #'
-#' @return A `ggplot2` plot invisibly, or a list with `plot`, `cases` and
-#'   `cutoffs` when `return_cases = TRUE`.
+#' @return A `ggplot2` plot invisibly, or a list with `plot`, `cases`, `cutoffs`,
+#'   and `limit_method` when `return_cases = TRUE`.
 #' @import ggplot2
 #' @export
 plot_limits_vs_distance <- function(proj_data,
@@ -32,26 +41,37 @@ plot_limits_vs_distance <- function(proj_data,
                                     lower_quantile = 0.05,
                                     upper_quantile = 0.95,
                                     limits_iqr_multiplier = 1.5,
-                                    return_cases = FALSE) {
+                                    return_cases = FALSE,
+                                    limit_method = c("absolute", "quantile", "iqr"),
+                                    limit_threshold = 10,
+                                    limit_quantile = 0.95) {
   proj_data <- .standardise_project_data(proj_data)
+  limit_method <- match.arg(limit_method)
   required <- c(id_col, "tot_distance", "t_near_limits")
   missing <- setdiff(required, names(proj_data))
   if (length(missing) > 0L) {
     stop("Missing required columns: ", paste(missing, collapse = ", "), call. = FALSE)
   }
   .validate_review_quantiles(lower_quantile, upper_quantile)
-  .validate_positive_scalar(limits_iqr_multiplier, "limits_iqr_multiplier", allow_zero = TRUE)
 
   plot_data <- proj_data[
     is.finite(proj_data$tot_distance) & is.finite(proj_data$t_near_limits),
     , drop = FALSE
   ]
+  if (nrow(plot_data) == 0L) {
+    stop("No complete finite observations are available for plotting.", call. = FALSE)
+  }
   plot_data$.label_id <- as.character(plot_data[[id_col]])
 
-  limits_q1 <- stats::quantile(plot_data$t_near_limits, 0.25, na.rm = TRUE, names = FALSE)
-  limits_q3 <- stats::quantile(plot_data$t_near_limits, 0.75, na.rm = TRUE, names = FALSE)
+  limits_high <- .calculate_limit_cutoff(
+    plot_data$t_near_limits,
+    method = limit_method,
+    absolute_threshold = limit_threshold,
+    quantile_probability = limit_quantile,
+    iqr_multiplier = limits_iqr_multiplier
+  )
   cutoffs <- c(
-    limits_high = limits_q3 + limits_iqr_multiplier * (limits_q3 - limits_q1),
+    limits_high = limits_high,
     distance_low = stats::quantile(plot_data$tot_distance, lower_quantile, na.rm = TRUE, names = FALSE),
     distance_high = stats::quantile(plot_data$tot_distance, upper_quantile, na.rm = TRUE, names = FALSE)
   )
@@ -76,14 +96,19 @@ plot_limits_vs_distance <- function(proj_data,
     ggplot2::labs(
       title = "Time near temperature limits and distance moved",
       subtitle = if (isTRUE(highlight_cases)) {
-        "Limit exposure uses an IQR screen; movement uses project quantiles"
+        .limit_screen_text(
+          limit_method,
+          cutoffs[["limits_high"]],
+          limit_quantile,
+          activity_name = "movement"
+        )
       } else {
         NULL
       },
       x = "Observations near temperature limits (%)",
       y = "Total distance moved (cm)"
     ) +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
 
   if (isTRUE(highlight_cases)) {
     flagged <- plot_data[plot_data$.review_case != "Typical project range", , drop = FALSE]
@@ -124,7 +149,12 @@ plot_limits_vs_distance <- function(proj_data,
   }
 
   if (isTRUE(return_cases)) {
-    return(list(plot = plot, cases = cases, cutoffs = cutoffs))
+    return(list(
+      plot = plot,
+      cases = cases,
+      cutoffs = cutoffs,
+      limit_method = limit_method
+    ))
   }
 
   print(plot)
