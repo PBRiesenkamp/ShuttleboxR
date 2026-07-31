@@ -14,40 +14,29 @@ calc_project_results(
   exclude_end_minutes = 0,
   Tpref_method = "median",
   Tavoid_percentiles = c(0.05, 0.95),
-  textremes_threshold = expression(0.2 * (max(df$max_T) - max(df$min_T))),
-  core_T_variance_type = "std_error"
+  textremes_threshold = expression(0.2 * (max(df$max_T, na.rm = TRUE) - max(df$min_T, na.rm = TRUE))),
+  core_T_variance_type = "std_error",
+  exclude_gravitation_thermal = FALSE,
+  exclude_gravitation_activity = FALSE,
+  gravitation_failure = c("warn", "error")
 )
 }
 \arguments{
-\item{data_read}{A list containing imported shuttle-box trials.}
-
-\item{calculate_distance}{Logical. Calculate distance from coordinates. Default is \code{FALSE}.}
-
-\item{pixel_to_cm}{Logical. Convert pixels to centimetres when calculating distance. Default is \code{TRUE}.}
-
-\item{recalculate_core_T}{Logical. Recalculate body temperature with \code{calc_coreT()}. Default is \code{FALSE}, which uses the \code{core_T} already present in the ShuttleSoft files.}
-
-\item{exclude_acclimation}{Logical. Exclude the acclimation period. Default is \code{FALSE}.}
-
-\item{exclude_start_minutes}{Minutes excluded from the start of each recording. Default is 0.}
-
-\item{exclude_end_minutes}{Minutes excluded from the end of each recording. Default is 0.}
-
-\item{Tpref_method}{Method used by \code{calc_Tpref()}: \code{"median"}, \code{"mean"}, or \code{"mode"}. Default is \code{"median"}.}
-
-\item{Tavoid_percentiles}{Lower and upper percentiles used by \code{calc_Tavoid()}. Default is \code{c(0.05, 0.95)}.}
-
-
+\item{data_read}{A list of imported shuttle-box trials.}
+\item{calculate_distance}{Calculate distance from coordinates.}
+\item{pixel_to_cm}{Convert pixels to centimetres when calculating distance.}
+\item{recalculate_core_T}{Recalculate core body temperature.}
+\item{exclude_acclimation}{Use the dynamic period as the calculation origin.}
+\item{exclude_start_minutes}{Minutes omitted from the selected origin.}
+\item{exclude_end_minutes}{Minutes omitted from the end.}
+\item{Tpref_method}{Method used by \code{calc_Tpref()}.}
+\item{Tavoid_percentiles}{Percentiles used by \code{calc_Tavoid()}.}
 \item{textremes_threshold}{Definition of the extreme-temperature range.}
-
 \item{core_T_variance_type}{Method used by \code{calc_coreT_variance()}.}
+\item{exclude_gravitation_thermal}{Exclude gravitation from thermal distribution metrics.}
+\item{exclude_gravitation_activity}{Exclude gravitation from distance, shuttles, and occupancy.}
+\item{gravitation_failure}{Use \code{"warn"} to record NA for gravitation-dependent metrics or \code{"error"} to stop.}
 }
-\value{
-A data frame containing metrics for all trials.
-}
-\description{
-Calculates the standard ShuttleboxR metrics for every trial in a list, such as the object returned by \code{read_shuttlesoft_project()}. The output includes selected thermal breadth from \code{calc_Tbreadth()}, calculated as the mean pairwise difference among observed core temperatures.
-}
-\details{
-ShuttleSoft files normally already contain \code{core_T}, so recalculation is off by default. Set \code{recalculate_core_T = TRUE} only when calibrated thermal-lag parameters are available for every trial.
-}
+\value{A data frame containing one row of metrics per trial, plus gravitation-window metadata.}
+\description{Calculates project-level metrics and optionally separates transitional and settled behaviour.}
+\details{Gravitation is estimated once per fish and reused across dependent metrics.}

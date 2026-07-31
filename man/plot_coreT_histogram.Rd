@@ -11,38 +11,22 @@ plot_coreT_histogram(
   exclude_end_minutes = 0,
   exclude_acclimation = FALSE,
   show_Tpref = TRUE,
-  show_Tbreadth = TRUE
+  show_Tbreadth = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
 \item{data}{An organised shuttle-box data frame containing \code{core_T}.}
-
-\item{bin_size}{Width of the displayed temperature bins in degrees Celsius. Default is 0.1. This affects only the appearance of the histogram.}
-
-\item{exclude_start_minutes}{Minutes excluded from the beginning of the recording. Default is 0.}
-
-\item{exclude_end_minutes}{Minutes excluded from the end of the recording. Default is 0.}
-
-\item{exclude_acclimation}{Logical. Exclude rows labelled \code{"acclimation"}. Default is \code{FALSE}.}
-
-\item{show_Tpref}{Logical. Show a dashed line at median \code{core_T}, the default definition of \code{Tpref}. Default is \code{TRUE}.}
-
-\item{show_Tbreadth}{Logical. Report selected thermal breadth in the plot subtitle. Default is \code{TRUE}.}
+\item{bin_size}{Displayed histogram-bin width in degrees Celsius.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{show_Tpref}{Show median Tpref.}
+\item{show_Tbreadth}{Show Tbreadth in the subtitle.}
+\item{exclude_gravitation}{Plot only post-gravitation observations.}
+\item{gravitation_time}{Optional gravitation duration in hours.}
 }
-\value{
-Invisibly returns the \code{ggplot} object, allowing it to be saved or further customised.
-}
-\description{
-Plots the percentage of observations within fixed-width \code{core_T} bins. The histogram shows distribution shape, while the subtitle can report median \code{Tpref} and Tbreadth. Tbreadth is calculated from the original observations as the mean pairwise temperature difference; the visual \code{bin_size} does not affect its value.
-}
-\examples{
-example_file <- system.file(
-  "extdata", "Fish_14_13_2.txt",
-  package = "ShuttleboxR"
-)
-fish <- read_shuttlesoft(example_file)
-plot_coreT_histogram(fish)
-}
-\seealso{
-\code{\link{calc_Tbreadth}}, \code{\link{calc_Tpref}}
-}
+\value{Invisibly returns a \code{ggplot} object.}
+\description{Plots the frequency distribution of selected core temperatures and can summarise Tpref and Tbreadth.}
+\seealso{\code{\link{calc_Tbreadth}}, \code{\link{calc_gravitation}}}

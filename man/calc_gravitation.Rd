@@ -2,30 +2,24 @@
 % Please edit documentation in R/calc_gravitation.R
 \name{calc_gravitation}
 \alias{calc_gravitation}
-\title{Calculate the gravitation period}
+\title{Calculate gravitation time}
 \usage{
 calc_gravitation(
   data,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
-
-\item{print_results}{Print the results, default is TRUE}
+\item{data}{An organised shuttle-box data frame containing \code{time_sec} and \code{core_T}.}
+\item{exclude_start_minutes}{Minutes omitted before fitting, measured from the selected origin.}
+\item{exclude_end_minutes}{Minutes omitted from the end before fitting.}
+\item{exclude_acclimation}{Use the dynamic-period start as the origin rather than the recording start.}
+\item{print_results}{Print the estimated duration.}
 }
-\value{
-the temperature preference
-}
-\description{
-This function calculates the gravitation period using a segmented regression with a single breakpoint. The breakpoint represents the moment where temperature preference was reached. The time until that point is the gravitation time
-}
+\value{A gravitation duration in hours from the selected origin.}
+\description{Estimates a one-breakpoint segmented regression of core temperature through time.}
+\details{The returned duration can be reused in thermal calculations to ensure that all metrics use the same checked breakpoint.}
+\seealso{\code{\link{plot_T_segmented}}, \code{\link{calc_Tpref}}, \code{\link{calc_Tbreadth}}}

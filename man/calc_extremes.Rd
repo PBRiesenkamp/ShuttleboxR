@@ -2,33 +2,28 @@
 % Please edit documentation in R/calc_extremes.R
 \name{calc_extremes}
 \alias{calc_extremes}
-\title{Calculate the time spent near the extremes}
+\title{Calculate exposure near programmed temperature limits}
 \usage{
 calc_extremes(
   data,
-  threshold = 0.2 * (max(data$max_T) - max(data$min_T)),
+  threshold = 0.2 * (max(data$max_T, na.rm = TRUE) - max(data$min_T, na.rm = TRUE)),
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{threshold}{Definition of the extreme temperature range. Default is 20\% of the temperature range: 0.2*(max(data$max_T)-max(data$min_T))}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
-
-\item{print_results}{Print the results, default is TRUE}
+\item{data}{An organised shuttle-box data frame containing temperature and limit columns.}
+\item{threshold}{Width of each extreme-temperature zone in degrees Celsius.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{print_results}{Print the results.}
+\item{exclude_gravitation}{Exclude the transitional gravitation period.}
+\item{gravitation_time}{Optional gravitation duration in hours.}
 }
-\value{
-the time spent near each extreme
-}
-\description{
-This function calculates the time the subject spent near the set minimum and maximum temperature limits during the shuttle-box trial
-}
+\value{Percentages near the lower and upper programmed limits.}
+\description{Calculates limit exposure within the selected analysis window.}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_T_segmented.R
 \name{plot_T_segmented}
 \alias{plot_T_segmented}
-\title{Plot the core body temperature during the trial}
+\title{Plot temperature trajectory and gravitation breakpoint}
 \usage{
 plot_T_segmented(
   data,
@@ -11,27 +11,22 @@ plot_T_segmented(
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
   exclude_acclimation = TRUE,
-  overlay_chamber_temp = T
+  overlay_chamber_temp = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = NULL
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{Tpref_method}{The method used for calculation of temperature preference ("median", "mean", "mode"). Default is "median".}
-
-\item{Tavoid_percentiles}{The lower and upper percentile for lower and upper avoidance temperature calculation resp. Default is c(0.05, 0.95)}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default is TRUE}
-
-\item{overlay_chamber_temp}{Boolean to determine whether or not to overlay chamber temperatures, default = TRUE}
+\item{data}{An organised shuttle-box data frame containing time and temperature columns.}
+\item{Tpref_method}{Method used to calculate Tpref.}
+\item{Tavoid_percentiles}{Percentiles used to calculate avoidance temperatures.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use the dynamic-period start as the time origin.}
+\item{overlay_chamber_temp}{Overlay warm- and cold-chamber temperatures.}
+\item{exclude_gravitation}{Calculate horizontal thermal metrics after the breakpoint.}
+\item{gravitation_time}{Optional checked gravitation duration in hours.}
 }
-\value{
-plot with the core body temperature and key shuttle-box metrics
-}
-\description{
-This function plots the core body temperature during the trial, along with temperature preference, avoidance, and gravitation time.
-}
+\value{A \code{ggplot} object with the gravitation time stored as an attribute.}
+\description{Shows the temperature trajectory, segmented fit, gravitation period, and thermal summary metrics.}
+\details{The complete selected trajectory remains visible even when the horizontal metrics are calculated after gravitation.}

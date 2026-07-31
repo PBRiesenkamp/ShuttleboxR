@@ -2,33 +2,28 @@
 % Please edit documentation in R/calc_Tavoid.R
 \name{calc_Tavoid}
 \alias{calc_Tavoid}
-\title{Calculate the avoidance temperatures}
+\title{Calculate avoidance temperatures}
 \usage{
 calc_Tavoid(
   data,
   percentiles = c(0.05, 0.95),
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{percentiles}{The lower and upper percentile for lower and upper avoidance temperature calculation resp. Default is c(0.05, 0.95)}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
-
-\item{print_results}{Print the results, default is TRUE}
+\item{data}{An organised shuttle-box data frame containing \code{core_T}.}
+\item{percentiles}{Lower and upper percentiles.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{print_results}{Print the results.}
+\item{exclude_gravitation}{Exclude the transitional gravitation period.}
+\item{gravitation_time}{Optional gravitation duration in hours, usually from \code{calc_gravitation()}.}
 }
-\value{
-the upper and lower avoidance temperature
-}
-\description{
-This function calculates the upper and lower avoidance temperature for the trial
-}
+\value{A two-element vector containing lower and upper avoidance temperatures.}
+\description{Calculates percentile boundaries of the selected core-temperature distribution.}

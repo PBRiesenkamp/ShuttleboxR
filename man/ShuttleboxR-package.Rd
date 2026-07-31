@@ -27,6 +27,10 @@ Project-level outlier screens identify candidates for inspection, not automatic 
 
 ShuttleSoft files normally already include \code{core_T}. Recalculation with \code{calc_coreT()} is optional and requires calibrated thermal-lag parameters.
 }
+\section{Gravitation-aware metrics}{
+
+The transition from starting conditions to settled thermal behaviour can be estimated with \code{calc_gravitation()} and inspected with \code{plot_T_segmented()}. The same checked duration can then be reused when calculating thermal and activity metrics.
+}
 \section{Getting started}{
 
 Run \code{vignette("ShuttleboxR", package = "ShuttleboxR")} for a worked example covering both the single-trial and project-level workflows.

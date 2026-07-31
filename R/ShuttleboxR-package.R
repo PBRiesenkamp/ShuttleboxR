@@ -29,6 +29,13 @@
 #' ShuttleSoft files normally already include `core_T`. Recalculation with
 #' [calc_coreT()] is optional and requires calibrated thermal-lag parameters.
 #'
+#' @section Gravitation-aware metrics:
+#' The transition from starting conditions to settled thermal behaviour can be
+#' estimated with [calc_gravitation()] and inspected with
+#' [plot_T_segmented()]. The same checked duration can then be excluded from
+#' Tpref, avoidance temperatures, Tbreadth, core-temperature variation, limit
+#' exposure, and—when scientifically appropriate—activity metrics.
+#'
 #' @section Getting started:
 #' Run `vignette("ShuttleboxR", package = "ShuttleboxR")` for a worked example
 #' covering both the single-trial and project-level workflows.

@@ -2,33 +2,29 @@
 % Please edit documentation in R/calc_Tpref.R
 \name{calc_Tpref}
 \alias{calc_Tpref}
-\title{Calculate the temperature preference}
+\title{Calculate temperature preference}
 \usage{
 calc_Tpref(
   data,
   method = c("median", "mean", "mode"),
-  exclude_acclimation = F,
+  exclude_acclimation = FALSE,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  print_results = T
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{method}{The method used for calculation of temperature preference ("median", "mean", "mode"). Default is "median".}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{print_results}{Print the results, default is TRUE}
+\item{data}{An organised shuttle-box data frame containing \code{core_T}.}
+\item{method}{Calculation method: \code{"median"}, \code{"mean"}, or \code{"mode"}.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{print_results}{Print the result.}
+\item{exclude_gravitation}{Exclude the transitional gravitation period.}
+\item{gravitation_time}{Optional gravitation duration in hours, usually from \code{calc_gravitation()}.}
 }
-\value{
-the temperature preference
-}
-\description{
-This function calculates the temperature preference for the trial
-}
+\value{A single temperature preference in degrees Celsius.}
+\description{Calculates the centre of the selected core-temperature distribution.}
+\details{When gravitation is excluded, its duration is added to the dynamic-period start if acclimation is excluded, or to the recording start otherwise.}

@@ -15,6 +15,10 @@
 #'   Default is 0.
 #' @param exclude_acclimation Logical. Exclude rows labelled `"acclimation"`.
 #'   Default is `FALSE`.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period before drawing the histogram. Default is `FALSE`.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()].
 #' @param show_Tpref Logical. Show a dashed line at median `core_T`, the default
 #'   definition of `Tpref`. Default is `TRUE`.
 #' @param show_Tbreadth Logical. Report selected thermal breadth in the plot
@@ -40,53 +44,30 @@ plot_coreT_histogram <- function(data,
                                  exclude_end_minutes = 0,
                                  exclude_acclimation = FALSE,
                                  show_Tpref = TRUE,
-                                 show_Tbreadth = TRUE) {
-
-  if (!is.data.frame(data) || nrow(data) == 0L) {
-    stop("`data` must be a non-empty data frame.", call. = FALSE)
-  }
-
-  if (!"core_T" %in% names(data)) {
-    stop("The dataset does not contain a `core_T` column.", call. = FALSE)
-  }
+                                 show_Tbreadth = TRUE,
+                                 exclude_gravitation = FALSE,
+                                 gravitation_time = NULL) {
 
   if (length(bin_size) != 1L || !is.numeric(bin_size) ||
       !is.finite(bin_size) || bin_size <= 0) {
     stop("`bin_size` must be one number greater than zero.", call. = FALSE)
   }
 
-  if (!"time_sec" %in% names(data)) {
-    data$time_sec <- seq.int(0L, nrow(data) - 1L)
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "core-temperature histogram"
+  )
+
+  if (!"core_T" %in% names(data)) {
+    stop("The dataset does not contain a `core_T` column.", call. = FALSE)
   }
-
-  time_values <- suppressWarnings(as.numeric(data$time_sec))
-  if (!any(is.finite(time_values))) {
-    stop("`time_sec` contains no valid values.", call. = FALSE)
-  }
-
-  start_time <- exclude_start_minutes * 60
-  end_time <- max(time_values, na.rm = TRUE) - exclude_end_minutes * 60
-
-  if (end_time < start_time) {
-    stop("The requested start/end exclusions remove the entire recording.", call. = FALSE)
-  }
-
-  keep <- is.finite(time_values) & time_values >= start_time & time_values <= end_time
-  data <- data[keep, , drop = FALSE]
-
-  if (isTRUE(exclude_acclimation)) {
-    if (!"trial_phase" %in% names(data)) {
-      stop(
-        "To exclude acclimation, supply `trial_start` when importing the file.",
-        call. = FALSE
-      )
-    }
-    data <- data[data$trial_phase != "acclimation", , drop = FALSE]
-  }
-
   temperatures <- suppressWarnings(as.numeric(data$core_T))
   temperatures <- temperatures[is.finite(temperatures)]
-
   if (length(temperatures) == 0L) {
     stop("No valid `core_T` values remain after exclusions.", call. = FALSE)
   }
@@ -95,6 +76,9 @@ plot_coreT_histogram <- function(data,
   Tbreadth_value <- .temperature_gmd(temperatures)
 
   subtitle_parts <- character(0)
+  if (isTRUE(exclude_gravitation)) {
+    subtitle_parts <- c(subtitle_parts, "Post-gravitation observations only")
+  }
   if (isTRUE(show_Tpref)) {
     subtitle_parts <- c(
       subtitle_parts,
@@ -119,9 +103,7 @@ plot_coreT_histogram <- function(data,
       binwidth = bin_size,
       boundary = 0,
       closed = "left",
-      ggplot2::aes(
-        y = ggplot2::after_stat(count / sum(count) * 100)
-      ),
+      ggplot2::aes(y = ggplot2::after_stat(count / sum(count) * 100)),
       fill = "#F79518",
       colour = "black"
     ) +

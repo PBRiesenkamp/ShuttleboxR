@@ -1,35 +1,38 @@
-#' Calculate the tracking accuracy
+#' Calculate tracking accuracy
 #'
-#' This function calculates the proportion of time the subject was tracked accurately during the trial
+#' Calculates the proportion of observations with a valid x coordinate within
+#' the selected analysis window.
 #'
-#' @param data An organised shuttle-box dataframe with corrected core body temperature
-#' @param exclude_acclimation Exclude the acclimation period from variable calculation, default = F
-#' @param exclude_start_minutes Exclusion of time from the start of the trial onwards, in minutes. Default is 0
-#' @param exclude_end_minutes Exclusion of time from the end of the trial backwards, in minutes. Default is 0
-#' @param print_results Print the results, default is TRUE
-#' @return the tracking accuracy
+#' @param data An organised shuttle-box data frame containing `x_pos`.
+#' @param exclude_start_minutes Minutes omitted from the start of the selected
+#'   period. Default is 0.
+#' @param exclude_end_minutes Minutes omitted from the end of the recording.
+#'   Default is 0.
+#' @param exclude_acclimation Logical. Use only the dynamic period. Default is
+#'   `FALSE`.
+#' @param print_results Logical. Print the result. Default is `TRUE`.
+#'
+#' @return Proportion of observations successfully tracked, from 0 to 1.
 #' @export
-
-calc_track_accuracy <- function (data, exclude_start_minutes = 0, exclude_end_minutes = 0, exclude_acclimation = F, print_results = T){
-  
-  # Exclude rows based on the exclude_start_minutes and exclude_end_minutes parameters
-  start_time <- exclude_start_minutes * 60
-  end_time <- max(data$time_sec) - (exclude_end_minutes * 60)
-  data <- data[data$time_sec >= start_time & data$time_sec <= end_time, ]
-  
-  # Exclude acclimation if requested
-  if (exclude_acclimation) {
-    data <- data[data$trial_phase != "acclimation", ]
+calc_track_accuracy <- function(data,
+                                exclude_start_minutes = 0,
+                                exclude_end_minutes = 0,
+                                exclude_acclimation = FALSE,
+                                print_results = TRUE) {
+  if (!"x_pos" %in% names(data)) {
+    stop("The dataset does not contain `x_pos`.", call. = FALSE)
   }
-  
-  observations <- nrow(data)
-  missed_coordinates <- sum(is.na(data$x_pos))
-  
-  prop <- 1-(missed_coordinates/observations)
-  
-  if (print_results) {
-    print(paste0("Proportion of time where subject was tracked: ", prop*100, "%"))
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = FALSE,
+    context = "tracking-accuracy calculation"
+  )
+  proportion <- mean(!is.na(data$x_pos))
+  if (isTRUE(print_results)) {
+    message("Proportion successfully tracked: ", round(proportion * 100, 3), "%")
   }
-  return(prop)
-  
+  unname(proportion)
 }

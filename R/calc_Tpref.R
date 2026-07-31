@@ -1,46 +1,73 @@
-#' Calculate the temperature preference
+#' Calculate temperature preference
 #'
-#' This function calculates the temperature preference for the trial
+#' Calculates the centre of the selected core-temperature distribution using
+#' the median, mean, or mode.
 #'
-#' @param data An organised shuttle-box dataframe with corrected core body temperature
-#' @param method The method used for calculation of temperature preference ("median", "mean", "mode"). Default is "median".
-#' @param exclude_acclimation Exclude the acclimation period from variable calculation, default = F
-#' @param exclude_start_minutes Exclusion of time from the start of the trial onwards, in minutes. Default is 0
-#' @param exclude_end_minutes Exclusion of time from the end of the trial backwards, in minutes. Default is 0
-#' @param print_results Print the results, default is TRUE
-#' @return the temperature preference
+#' When `exclude_gravitation = TRUE`, observations before the gravitation
+#' breakpoint are removed. The breakpoint is added to the start of the dynamic
+#' period when `exclude_acclimation = TRUE`, or to the start of the complete
+#' recording when `exclude_acclimation = FALSE`.
+#'
+#' @param data An organised shuttle-box data frame containing `core_T`.
+#' @param method Calculation method: `"median"`, `"mean"`, or `"mode"`.
+#'   Default is `"median"`.
+#' @param exclude_acclimation Logical. Use only the dynamic period. Default is
+#'   `FALSE`.
+#' @param exclude_start_minutes Minutes omitted from the start of the selected
+#'   period. Default is 0.
+#' @param exclude_end_minutes Minutes omitted from the end of the recording.
+#'   Default is 0.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period. Default is `FALSE` for backwards compatibility.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()]. When omitted and `exclude_gravitation = TRUE`, it is
+#'   estimated automatically using the same acclimation reference.
+#' @param print_results Logical. Print the result. Default is `TRUE`.
+#'
+#' @return A single temperature preference in degrees Celsius.
+#'
 #' @export
-
-calc_Tpref <- function(data, method = c("median", "mean", "mode"), exclude_acclimation = F, exclude_start_minutes = 0, exclude_end_minutes = 0, print_results = T) {
+calc_Tpref <- function(data,
+                       method = c("median", "mean", "mode"),
+                       exclude_acclimation = FALSE,
+                       exclude_start_minutes = 0,
+                       exclude_end_minutes = 0,
+                       print_results = TRUE,
+                       exclude_gravitation = FALSE,
+                       gravitation_time = NULL) {
   method <- match.arg(method)
-  
-  # Convert the time to numeric if not already
-  data$time_sec <- as.numeric(data$time_sec)
-  
-  # Exclude rows based on the exclude_start_minutes and exclude_end_minutes parameters
-  start_time <- exclude_start_minutes * 60
-  end_time <- max(data$time_sec) - (exclude_end_minutes * 60)
-  data <- data[data$time_sec >= start_time & data$time_sec <= end_time, ]
-  
-  if (exclude_acclimation) {
-    data <- data[data$trial_phase != "acclimation", ]
+
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "Tpref calculation"
+  )
+
+  if (!"core_T" %in% names(data)) {
+    stop("The dataset does not contain `core_T`.", call. = FALSE)
   }
-  
-  # Convert the core_T column to numeric
-  data$core_T <- as.numeric(data$core_T)
-  
-  # Calculate Tpref based on the specified method
-  if (method == "median") {
-    Tpref <- median(data$core_T, na.rm = TRUE)
-  } else if (method == "mean") {
-    Tpref <- mean(data$core_T, na.rm = TRUE)
-  } else if (method == "mode") {
-    Tpref <- as.numeric(names(sort(table(data$core_T), decreasing = TRUE))[1])
+  temperatures <- suppressWarnings(as.numeric(data$core_T))
+  temperatures <- temperatures[is.finite(temperatures)]
+  if (length(temperatures) == 0L) {
+    stop("No valid `core_T` values remain after exclusions.", call. = FALSE)
   }
-  
-  if (print_results) {
-    print(paste("Tpref:", Tpref))
+
+  Tpref <- switch(
+    method,
+    median = stats::median(temperatures, na.rm = TRUE),
+    mean = mean(temperatures, na.rm = TRUE),
+    mode = {
+      counts <- sort(table(temperatures), decreasing = TRUE)
+      as.numeric(names(counts)[1L])
+    }
+  )
+
+  if (isTRUE(print_results)) {
+    message("Tpref: ", round(Tpref, 3), " degrees Celsius")
   }
-  return(Tpref)
-  
+  unname(Tpref)
 }

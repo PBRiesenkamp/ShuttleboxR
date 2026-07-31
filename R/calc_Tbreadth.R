@@ -30,6 +30,11 @@
 #'   Default is 0.
 #' @param exclude_acclimation Logical. Exclude rows labelled `"acclimation"` in
 #'   `trial_phase`. Default is `FALSE`.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period. Default is `FALSE` for backwards compatibility.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()]. When omitted and `exclude_gravitation = TRUE`, it is
+#'   estimated automatically using the same acclimation reference.
 #' @param print_results Logical. Print the result. Default is `TRUE`.
 #'
 #' @return A single non-negative selected thermal breadth in degrees Celsius.
@@ -55,56 +60,25 @@ calc_Tbreadth <- function(data,
                           exclude_start_minutes = 0,
                           exclude_end_minutes = 0,
                           exclude_acclimation = FALSE,
-                          print_results = TRUE) {
+                          print_results = TRUE,
+                          exclude_gravitation = FALSE,
+                          gravitation_time = NULL) {
 
-  if (!is.data.frame(data) || nrow(data) == 0L) {
-    stop("`data` must be a non-empty data frame.", call. = FALSE)
-  }
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "Tbreadth calculation"
+  )
 
   if (!"core_T" %in% names(data)) {
     stop(
       "The dataset does not contain `core_T`. Import a ShuttleSoft file with `read_shuttlesoft()` or provide a `core_T` column.",
       call. = FALSE
     )
-  }
-
-  numeric_scalar <- function(x, name) {
-    if (length(x) != 1L || is.na(x) || !is.numeric(x) || !is.finite(x) || x < 0) {
-      stop("`", name, "` must be one finite number that is zero or greater.", call. = FALSE)
-    }
-  }
-
-  numeric_scalar(exclude_start_minutes, "exclude_start_minutes")
-  numeric_scalar(exclude_end_minutes, "exclude_end_minutes")
-
-  if (!"time_sec" %in% names(data)) {
-    data$time_sec <- seq.int(0L, nrow(data) - 1L)
-  }
-
-  time_values <- suppressWarnings(as.numeric(data$time_sec))
-  if (!any(is.finite(time_values))) {
-    stop("`time_sec` contains no valid values.", call. = FALSE)
-  }
-
-  end_of_recording <- max(time_values, na.rm = TRUE)
-  start_time <- exclude_start_minutes * 60
-  end_time <- end_of_recording - exclude_end_minutes * 60
-
-  if (end_time < start_time) {
-    stop("The requested start/end exclusions remove the entire recording.", call. = FALSE)
-  }
-
-  keep <- is.finite(time_values) & time_values >= start_time & time_values <= end_time
-  data <- data[keep, , drop = FALSE]
-
-  if (isTRUE(exclude_acclimation)) {
-    if (!"trial_phase" %in% names(data)) {
-      stop(
-        "To exclude acclimation, import with `read_shuttlesoft(..., trial_start = \"HH:MM:SS\")` or provide a `trial_phase` column.",
-        call. = FALSE
-      )
-    }
-    data <- data[data$trial_phase != "acclimation", , drop = FALSE]
   }
 
   temperatures <- suppressWarnings(as.numeric(data$core_T))

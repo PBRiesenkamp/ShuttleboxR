@@ -8,24 +8,20 @@ calc_shuttles(
   data,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
-
-\item{print_results}{Print the results, default is TRUE}
+\item{data}{An organised shuttle-box data frame containing \code{shuttle}.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{print_results}{Print the result.}
+\item{exclude_gravitation}{Exclude the transitional gravitation period.}
+\item{gravitation_time}{Optional gravitation duration in hours.}
 }
-\value{
-The total number of shuttles
-}
-\description{
-This function calculates the total number of times the subject shuttled during the trial
-}
+\value{The number of chamber transitions.}
+\description{Counts shuttles within the selected analysis window.}

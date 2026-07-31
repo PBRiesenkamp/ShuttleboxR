@@ -9,48 +9,26 @@ calc_Tbreadth(
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
   exclude_acclimation = FALSE,
-  print_results = TRUE
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
 \item{data}{An organised shuttle-box data frame containing \code{core_T}.}
-
-\item{exclude_start_minutes}{Minutes to exclude from the beginning of the recording. Default is 0.}
-
-\item{exclude_end_minutes}{Minutes to exclude from the end of the recording. Default is 0.}
-
-\item{exclude_acclimation}{Logical. Exclude rows labelled \code{"acclimation"} in \code{trial_phase}. Default is \code{FALSE}.}
-
-\item{print_results}{Logical. Print the result. Default is \code{TRUE}.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{print_results}{Print the result.}
+\item{exclude_gravitation}{Exclude the transitional gravitation period.}
+\item{gravitation_time}{Optional gravitation duration in hours, usually from \code{calc_gravitation()}.}
 }
-\value{
-A single non-negative selected thermal breadth in degrees Celsius.
-}
-\description{
-Measures how widely separated the temperatures experienced by a fish were. Tbreadth is the mean absolute difference between the core temperatures at two independently selected observations from the trial.
-}
-\details{
-This quantity is also known as the Gini mean difference. It uses the complete distribution of \code{core_T}, including both the frequency of each temperature and the distance between temperatures. It does not use histogram bins and is not centred on \code{Tpref}.
-
-A fish that remains at nearly one temperature has a Tbreadth close to zero. A fish that regularly experiences temperatures far apart has a larger Tbreadth. For example, a fish spending half its time at 10 degrees Celsius and half at 20 degrees Celsius has a Tbreadth of 5 degrees Celsius: half of all pairs have the same temperature and half differ by 10 degrees Celsius.
-
-Tbreadth describes overall spread but cannot, by itself, show whether the histogram is symmetrical, skewed, or multimodal. Interpret it together with \code{plot_coreT_histogram()}. It is not a minimum-to-maximum range, does not define lower and upper boundaries, and is not a physiological thermal-tolerance limit.
-}
+\value{A non-negative selected thermal breadth in degrees Celsius.}
+\description{Measures the mean absolute difference between two independently selected core-temperature observations.}
+\details{Tbreadth uses both the frequency and separation of temperatures. It is not centred on Tpref. When gravitation is excluded, it describes the spread of the settled temperature distribution.}
 \examples{
-example_file <- system.file(
-  "extdata", "Fish_14_13_2.txt",
-  package = "ShuttleboxR"
-)
+example_file <- system.file("extdata", "Fish_14_13_2.txt", package = "ShuttleboxR")
 fish <- read_shuttlesoft(example_file)
 calc_Tbreadth(fish, print_results = FALSE)
-
-# Simple examples
-calc_Tbreadth(data.frame(core_T = rep(20, 100)), print_results = FALSE)
-calc_Tbreadth(
-  data.frame(core_T = c(rep(10, 50), rep(20, 50))),
-  print_results = FALSE
-)
 }
-\seealso{
-\code{\link[=plot_coreT_histogram]{plot_coreT_histogram()}}, \code{\link[=calc_Tpref]{calc_Tpref()}}, \code{\link[=calc_Tavoid]{calc_Tavoid()}}
-}
+\seealso{\code{\link{plot_coreT_histogram}}, \code{\link{calc_gravitation}}}

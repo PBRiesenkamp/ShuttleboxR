@@ -1,42 +1,50 @@
-#' Calculate the total distance
+#' Calculate total distance moved
 #'
-#' This function calculates the total distance covered during the trial
+#' Calculates distance accumulated within the selected analysis window.
 #'
-#' @param data An organised shuttle-box dataframe with corrected core body temperature
-#' @param exclude_acclimation Exclude the acclimation period from variable calculation, default = F
-#' @param exclude_start_minutes Exclusion of time from the start of the trial onwards, in minutes. Default is 0
-#' @param exclude_end_minutes Exclusion of time from the end of the trial backwards, in minutes. Default is 0
-#' @param print_results Print the results, default is TRUE
-#' @return the total distance covered during the trial
+#' @param data An organised shuttle-box data frame containing cumulative
+#'   `distance` and `time_sec`.
+#' @param exclude_start_minutes Minutes omitted from the start of the selected
+#'   period. Default is 0.
+#' @param exclude_end_minutes Minutes omitted from the end of the recording.
+#'   Default is 0.
+#' @param exclude_acclimation Logical. Use only the dynamic period. Default is
+#'   `FALSE`.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period. Default is `FALSE`; whole-trial activity is often of interest.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()].
+#' @param print_results Logical. Print the result. Default is `TRUE`.
+#'
+#' @return Total distance moved within the selected window.
 #' @export
-
-calc_tot_distance <- function(data, exclude_start_minutes = 0, exclude_end_minutes = 0, exclude_acclimation = FALSE, print_results = TRUE) {
-  # Ensure the Distance moved column exists
-  if (!"distance" %in% colnames(data)) {
-    stop("The dataset does not contain a 'distance' column")
+calc_tot_distance <- function(data,
+                              exclude_start_minutes = 0,
+                              exclude_end_minutes = 0,
+                              exclude_acclimation = FALSE,
+                              print_results = TRUE,
+                              exclude_gravitation = FALSE,
+                              gravitation_time = NULL) {
+  if (!"distance" %in% names(data)) {
+    stop("The dataset does not contain `distance`.", call. = FALSE)
   }
-  
-  # Convert exclude minutes to seconds
-  # Exclude initial and final data if necessary
-  start_time <- exclude_start_minutes * 60
-  end_time <- max(data$time_sec) - exclude_end_minutes * 60
-  data <- data[data$time_sec >= start_time & data$time_sec <= end_time, ]
-  
-  if (exclude_acclimation) {
-    data <- data[data$trial_phase != "acclimation", ]
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "distance calculation"
+  )
+  distance <- suppressWarnings(as.numeric(data$distance))
+  distance <- distance[is.finite(distance)]
+  if (length(distance) == 0L) {
+    stop("No valid distance values remain after exclusions.", call. = FALSE)
   }
-  
-  initial_distance <- data$distance[1]
-  
-  data$distance <- data$distance - initial_distance
-  
-  # Calculate net distance moved
-  total_distance <- max(data$distance, na.rm = TRUE)
-  
-  # Print the result
-  if (print_results) {
-    print(paste("Distance Moved:", total_distance, "cm"))
+  total_distance <- max(distance) - min(distance)
+  if (isTRUE(print_results)) {
+    message("Distance moved: ", round(total_distance, 3), " cm")
   }
-  
-  return(total_distance)
+  unname(total_distance)
 }

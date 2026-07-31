@@ -1,55 +1,70 @@
-#' Calculate the time spent near the extremes
+#' Calculate exposure near programmed temperature limits
 #'
-#' This function calculates the percentage of observations spent near the set minimum and maximum temperature limits during the shuttle-box trial
+#' Calculates the percentage of observations spent near the lower and upper
+#' programmed temperature limits within the selected analysis window.
 #'
-#' @param data An organised shuttle-box dataframe with corrected core body temperature
-#' @param threshold Definition of the extreme temperature range. Default is 20% of the temperature range: 0.2*(max(data$max_T)-max(data$min_T))
-#' @param exclude_acclimation Exclude the acclimation period from variable calculation, default = F
-#' @param exclude_start_minutes Exclusion of time from the start of the trial onwards, in minutes. Default is 0
-#' @param exclude_end_minutes Exclusion of time from the end of the trial backwards, in minutes. Default is 0
-#' @param print_results Print the results, default is TRUE
-#' @return A two-element vector giving the percentage of observations near the lower and upper extremes
+#' @param data An organised shuttle-box data frame containing `time_sec`,
+#'   `core_T`, `min_T`, and `max_T`.
+#' @param threshold Width of each extreme-temperature zone in degrees Celsius.
+#'   The default is 20 percent of the programmed temperature range.
+#' @param exclude_start_minutes Minutes omitted from the start of the selected
+#'   period. Default is 0.
+#' @param exclude_end_minutes Minutes omitted from the end of the recording.
+#'   Default is 0.
+#' @param exclude_acclimation Logical. Use only the dynamic period. Default is
+#'   `FALSE`.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period. Default is `FALSE`.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()].
+#' @param print_results Logical. Print the results. Default is `TRUE`.
+#'
+#' @return A two-element vector giving percentages near the lower and upper
+#'   limits.
 #' @export
+calc_extremes <- function(
+    data,
+    threshold = 0.2 * (max(data$max_T, na.rm = TRUE) - max(data$min_T, na.rm = TRUE)),
+    exclude_start_minutes = 0,
+    exclude_end_minutes = 0,
+    exclude_acclimation = FALSE,
+    print_results = TRUE,
+    exclude_gravitation = FALSE,
+    gravitation_time = NULL) {
 
-calc_extremes <- function(data, threshold = 0.2*(max(data$max_T)-max(data$min_T)), exclude_start_minutes = 0, exclude_end_minutes = 0, exclude_acclimation = F, print_results = T) {
-  # Ensure necessary columns exist
-  if (!("time_sec" %in% colnames(data) && "core_T" %in% colnames(data))) {
-    stop("The dataset does not contain 'time_sec' and/or 'core_T' columns.")
+  required <- c("time_sec", "core_T", "min_T", "max_T")
+  if (!all(required %in% names(data))) {
+    stop("The dataset must contain `time_sec`, `core_T`, `min_T`, and `max_T`.", call. = FALSE)
   }
-  
-  # Convert time_sec to numeric if not already
-  data$time_sec <- as.numeric(data$time_sec)
-  
-  # Exclude rows based on the exclude_start_minutes and exclude_end_minutes parameters
-  start_time <- exclude_start_minutes * 60
-  end_time <- max(data$time_sec) - (exclude_end_minutes * 60)
-  data <- data[data$time_sec >= start_time & data$time_sec <= end_time, ]
-  
-  if (exclude_acclimation) {
-    data <- data[data$trial_phase != "acclimation", ]
+  .validate_nonnegative_number(threshold, "threshold")
+
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "limit-exposure calculation"
+  )
+
+  core_T <- suppressWarnings(as.numeric(data$core_T))
+  upper_limit <- max(suppressWarnings(as.numeric(data$max_T)), na.rm = TRUE)
+  lower_limit <- max(suppressWarnings(as.numeric(data$min_T)), na.rm = TRUE)
+  valid <- is.finite(core_T)
+  if (!any(valid) || !is.finite(upper_limit) || !is.finite(lower_limit)) {
+    stop("No valid temperature-limit observations remain.", call. = FALSE)
   }
-  
-  # Convert time in secxonds to minutes
-  data$Time_min <- data$time_sec / 60
-  
-  
-  upper_limit<-max(data$max_T)
-  lower_limit<-max(data$min_T)
-  
-  # Determine time spent near upper and lower extreme temperatures with the threshold
+
   upper_threshold <- upper_limit - threshold
   lower_threshold <- lower_limit + threshold
-  data$Upper_Extreme_T <- ifelse(data$core_T > upper_threshold, 1, 0)
-  data$Lower_Extreme_T <- ifelse(data$core_T < lower_threshold, 1, 0)
-  
-  time_near_upper_extreme <- sum(data$Upper_Extreme_T) / nrow(data) * 100
-  time_near_lower_extreme <- sum(data$Lower_Extreme_T) / nrow(data) * 100
-  
-  if (print_results) {
-    # Print the results
-    print(paste("Time spent near upper extreme temperatures (%):", time_near_upper_extreme))
-    print(paste("Time spent near lower extreme temperatures (%):", time_near_lower_extreme))
+  lower <- mean(core_T[valid] < lower_threshold) * 100
+  upper <- mean(core_T[valid] > upper_threshold) * 100
+  values <- c(lower = lower, upper = upper)
+
+  if (isTRUE(print_results)) {
+    message("Time near lower limit: ", round(lower, 3), "%")
+    message("Time near upper limit: ", round(upper, 3), "%")
   }
-  
-  return(c(time_near_lower_extreme, time_near_upper_extreme))
+  values
 }

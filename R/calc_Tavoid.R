@@ -1,39 +1,76 @@
-#' Calculate the avoidance temperatures
+#' Calculate avoidance temperatures
 #'
-#' This function calculates the upper and lower avoidance temperature for the trial
+#' Calculates lower and upper percentile boundaries of the selected
+#' core-temperature distribution.
 #'
-#' @param data An organised shuttle-box dataframe with corrected core body temperature
-#' @param percentiles The lower and upper percentile for lower and upper avoidance temperature calculation resp. Default is c(0.05, 0.95)
-#' @param exclude_acclimation Exclude the acclimation period from variable calculation, default = F
-#' @param exclude_start_minutes Exclusion of time from the start of the trial onwards, in minutes. Default is 0
-#' @param exclude_end_minutes Exclusion of time from the end of the trial backwards, in minutes. Default is 0
-#' @param print_results Print the results, default is TRUE
-#' @return the upper and lower avoidance temperature
+#' When `exclude_gravitation = TRUE`, observations before the gravitation
+#' breakpoint are removed. The breakpoint is added to the start of the dynamic
+#' period when `exclude_acclimation = TRUE`, or to the start of the complete
+#' recording when `exclude_acclimation = FALSE`.
+#'
+#' @param data An organised shuttle-box data frame containing `core_T`.
+#' @param percentiles Lower and upper percentiles. Default is `c(0.05, 0.95)`.
+#' @param exclude_start_minutes Minutes omitted from the start of the selected
+#'   period. Default is 0.
+#' @param exclude_end_minutes Minutes omitted from the end of the recording.
+#'   Default is 0.
+#' @param exclude_acclimation Logical. Use only the dynamic period. Default is
+#'   `FALSE`.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period. Default is `FALSE` for backwards compatibility.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()]. When omitted and `exclude_gravitation = TRUE`, it is
+#'   estimated automatically.
+#' @param print_results Logical. Print the results. Default is `TRUE`.
+#'
+#' @return A two-element vector containing lower and upper avoidance
+#'   temperatures in degrees Celsius.
+#'
 #' @export
+calc_Tavoid <- function(data,
+                        percentiles = c(0.05, 0.95),
+                        exclude_start_minutes = 0,
+                        exclude_end_minutes = 0,
+                        exclude_acclimation = FALSE,
+                        print_results = TRUE,
+                        exclude_gravitation = FALSE,
+                        gravitation_time = NULL) {
+  if (length(percentiles) != 2L || any(!is.finite(percentiles)) ||
+      any(percentiles < 0) || any(percentiles > 1) ||
+      percentiles[1L] >= percentiles[2L]) {
+    stop("`percentiles` must contain two increasing values between 0 and 1.", call. = FALSE)
+  }
 
-calc_Tavoid <- function(data, percentiles = c(0.05, 0.95), exclude_start_minutes = 0, exclude_end_minutes = 0, exclude_acclimation = F, print_results = T) {
-  # Ensure the percentiles are valid
-  if (length(percentiles) != 2 || any(percentiles < 0) || any(percentiles > 1)) {
-    stop("Tavoid percentiles should be a vector of two values between 0 and 1")
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "avoidance-temperature calculation"
+  )
+
+  if (!"core_T" %in% names(data)) {
+    stop("The dataset does not contain `core_T`.", call. = FALSE)
   }
-  
-  start_time <- exclude_start_minutes * 60
-  end_time <- max(data$time_sec) - (exclude_end_minutes * 60)
-  data <- data[data$time_sec >= start_time & data$time_sec <= end_time, ]
-  
-  if (exclude_acclimation) {
-    data <- data[data$trial_phase != "acclimation", ]
+  temperatures <- suppressWarnings(as.numeric(data$core_T))
+  temperatures <- temperatures[is.finite(temperatures)]
+  if (length(temperatures) == 0L) {
+    stop("No valid `core_T` values remain after exclusions.", call. = FALSE)
   }
-  # Calculate the percentiles
-  Tavoid_lower <- quantile(data$core_T, percentiles[1], na.rm = TRUE, names = F)
-  Tavoid_upper <- quantile(data$core_T, percentiles[2], na.rm = TRUE, names = F)
-  
-  if (print_results) {
-    # Print values
-    print(paste("Tavoid Lower:", Tavoid_lower))
-    print(paste("Tavoid Upper:", Tavoid_upper)) 
+
+  values <- as.numeric(stats::quantile(
+    temperatures,
+    probs = percentiles,
+    na.rm = TRUE,
+    names = FALSE
+  ))
+  names(values) <- c("lower", "upper")
+
+  if (isTRUE(print_results)) {
+    message("Tavoid lower: ", round(values[1L], 3), " degrees Celsius")
+    message("Tavoid upper: ", round(values[2L], 3), " degrees Celsius")
   }
-  
-  return(c(Tavoid_lower, Tavoid_upper))
-  
+  values
 }

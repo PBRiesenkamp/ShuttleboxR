@@ -1,3 +1,23 @@
+# ShuttleboxR 0.0.0.9012
+
+- Added gravitation-aware analysis windows to `calc_Tpref()`, `calc_Tavoid()`,
+  `calc_Tbreadth()`, `calc_coreT_variance()`, `calc_extremes()`,
+  `calc_tot_distance()`, `calc_shuttles()`, `calc_occupancy()`, and
+  `plot_coreT_histogram()`.
+- `calc_gravitation()` now reports a duration from the selected origin: the
+  dynamic-period start when acclimation is excluded, or the recording start
+  otherwise.
+- `plot_T_segmented()` now shades the gravitation period, marks its cutoff, and
+  can calculate displayed thermal metrics from post-gravitation observations.
+- `calc_project_results()` can exclude gravitation separately for thermal and
+  activity metrics, reuses one gravitation estimate per fish, and records
+  analysis-window metadata and breakpoint validity.
+- When a required project-level gravitation estimate fails, users can choose a
+  warning with `NA` gravitation-dependent metrics or a stopping error.
+- Expanded the README and vignette with a check-then-calculate workflow,
+  guidance on interpreting segmented plots, and examples of whole-period versus
+  settled-period activity metrics.
+
 # ShuttleboxR 0.0.0.9011
 
 - Replaced the bundled single-trial example with the uploaded `Fish_14_13_2.txt` ShuttleSoft recording and updated the README, vignette, function examples, and generated help pages accordingly.

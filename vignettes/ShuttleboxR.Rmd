@@ -182,42 +182,162 @@ fish <- read_shuttlesoft(example_file)
 inspect(fish)
 ```
 
-## Step 2: calculate the main metrics
+## Step 2: inspect and calculate gravitation time before summarising thermal behaviour
+
+The first part of a dynamic shuttle-box trial is often a **gravitation period**.
+During this transition, the fish moves the system away from its starting
+conditions and towards the thermal region that it subsequently maintains.
+Temperatures experienced during this route can pull Tpref towards the starting
+temperature and can inflate Tbreadth, avoidance percentiles, core-temperature
+variation, and apparent exposure near the programmed limits.
+
+For that reason, the recommended workflow is:
+
+1. view the temperature trajectory with `plot_T_segmented()`;
+2. check that the estimated breakpoint is biologically plausible;
+3. calculate gravitation time once;
+4. pass that same value to later thermal calculations.
+
+```{r gravitation-workflow, fig.height=5.2}
+grav_time <- tryCatch(
+  calc_gravitation(
+    fish,
+    exclude_acclimation = FALSE,
+    print_results = FALSE
+  ),
+  error = function(e) {
+    warning(conditionMessage(e))
+    NA_real_
+  }
+)
+
+segmented_plot <- tryCatch(
+  plot_T_segmented(
+    fish,
+    exclude_acclimation = FALSE,
+    overlay_chamber_temp = TRUE,
+    exclude_gravitation = is.finite(grav_time),
+    gravitation_time = if (is.finite(grav_time)) grav_time else NULL
+  ),
+  error = function(e) {
+    ggplot2::ggplot(fish, ggplot2::aes(x = time_h, y = core_T)) +
+      ggplot2::geom_line() +
+      ggplot2::labs(
+        title = "Core body temperature through the example recording",
+        subtitle = paste("Segmented fit was not estimable:", conditionMessage(e)),
+        x = "Time (h)", y = "Core body temperature (°C)"
+      ) +
+      ggplot2::theme_classic()
+  }
+)
+segmented_plot
+```
+
+`grav_time` is a **duration**, not an absolute clock time. ShuttleboxR converts
+it into a cutoff as follows:
+
+- with `exclude_acclimation = TRUE`, cutoff = dynamic-period start + gravitation time;
+- with `exclude_acclimation = FALSE`, cutoff = recording start + gravitation time.
+
+`exclude_start_minutes` is measured from the same selected origin. When both a
+custom starting exclusion and gravitation exclusion are requested, ShuttleboxR
+uses whichever cutoff is later; the two durations are not added together.
+
+A segmented model is a screening tool rather than proof that the fish reached a
+stable preference. Inspect the plot for an implausible breakpoint, continued
+directional drift after the breakpoint, chamber-temperature failure, prolonged
+contact with limits, or too little information after the estimated cutoff. A
+poorly supported breakpoint should be investigated or supplied manually rather
+than accepted automatically.
+
+### Calculate settled thermal metrics
+
+The following code uses post-gravitation observations when a valid breakpoint
+was estimated. Passing the same `gravitation_time` to every function prevents
+small differences caused by repeatedly fitting the segmented model.
 
 ```{r basic-metrics}
-Tpref <- calc_Tpref(fish, print_results = FALSE)
-Tavoid <- calc_Tavoid(fish, print_results = FALSE)
+use_settled_window <- is.finite(grav_time)
+shared_thermal_args <- list(
+  data = fish,
+  exclude_acclimation = FALSE,
+  exclude_gravitation = use_settled_window,
+  gravitation_time = if (use_settled_window) grav_time else NULL,
+  print_results = FALSE
+)
+
+Tpref <- do.call(calc_Tpref, shared_thermal_args)
+Tavoid <- do.call(calc_Tavoid, shared_thermal_args)
 Tpref_range <- Tavoid[2] - Tavoid[1]
-Tbreadth <- calc_Tbreadth(fish, print_results = FALSE)
+Tbreadth <- do.call(calc_Tbreadth, shared_thermal_args)
+extremes <- do.call(calc_extremes, shared_thermal_args)
+core_T_sd <- calc_coreT_variance(
+  fish,
+  variance_type = "std_deviation",
+  exclude_acclimation = FALSE,
+  exclude_gravitation = use_settled_window,
+  gravitation_time = if (use_settled_window) grav_time else NULL
+)
+
+# Activity can describe either the complete selected period or settled
+# thermoregulation. Here it is retained for the whole recording.
 shuttles <- calc_shuttles(fish, print_results = FALSE)
 distance <- calc_tot_distance(fish, print_results = FALSE)
 tracking <- calc_track_accuracy(fish, print_results = FALSE)
 
 single_results <- data.frame(
   metric = c(
+    "Gravitation time (h)",
     "Tpref (°C)",
     "Lower Tavoid (°C)",
     "Upper Tavoid (°C)",
     "Tpref range (°C)",
     "Tbreadth (°C)",
+    "Core-temperature SD (°C)",
+    "Near lower limit (%)",
+    "Near upper limit (%)",
     "Number of shuttles",
     "Total distance (cm)",
     "Proportion successfully tracked"
   ),
   value = c(
-    Tpref, Tavoid[1], Tavoid[2], Tpref_range,
-    Tbreadth, shuttles, distance, tracking
+    grav_time, Tpref, Tavoid[1], Tavoid[2], Tpref_range,
+    Tbreadth, core_T_sd, extremes[1], extremes[2],
+    shuttles, distance, tracking
   )
 )
 
 knitr::kable(single_results, digits = 3)
 ```
 
+Thermal metrics calculated after gravitation describe the fish's **settled
+thermal behaviour**, rather than the route taken to reach it. This is generally
+the clearest interpretation for Tpref, Tavoid, Tpref range, Tbreadth,
+core-temperature variation, and time near limits.
+
+Distance, shuttling, and chamber occupancy are less clear-cut. Keep gravitation
+when the goal is whole-trial activity, but exclude it when the goal is activity
+specifically during settled thermoregulation:
+
+```{r activity-window-example, eval=FALSE}
+calc_shuttles(
+  fish,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+
+calc_tot_distance(
+  fish,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+```
+
 ### Tpref, avoidance temperatures and Tpref range
 
 `Tpref` is the central selected temperature. The default calculation is the
 median `core_T`, although the mean and mode are available. `Tavoid_lower` and
-`Tavoid_upper` are the lower and upper percentiles of the `core_T`
+`Tavoid_upper` are the lower and upper percentiles of the selected `core_T`
 distribution; the defaults are the 5th and 95th percentiles. Their difference,
 `Tpref_range`, is therefore the width of the central 90% of observations.
 
@@ -237,8 +357,8 @@ distribution:
 
 ### Explain it like I am five
 
-Imagine choosing two moments from the trial and looking at the fish's core
-temperature at those moments.
+Imagine choosing two moments from the analysed part of the trial and looking at
+the fish's core temperature at those moments.
 
 - If the two temperatures are almost the same, their difference is small.
 - If the two temperatures are far apart, their difference is large.
@@ -248,7 +368,9 @@ those differences. That average is `Tbreadth`.
 
 A fish that stays at almost the same temperature will therefore have a
 Tbreadth close to zero. A fish that regularly experiences temperatures far
-apart will have a larger Tbreadth.
+apart will have a larger Tbreadth. When gravitation is excluded, this value
+summarises the spread of the **settled** temperature distribution rather than
+including the initial journey from the starting conditions.
 
 ### The equation
 
@@ -275,8 +397,7 @@ calculation, so it does not need to construct an enormous table of every pair.
 
 The 10 °C/20 °C example is important. Its Tbreadth is much larger than that of
 a fish split between 20 °C and 21 °C because the two occupied parts of the
-distribution are much farther apart. Unlike the previous bin-based definition,
-the calculation therefore recognises the distance between peaks.
+distribution are much farther apart.
 
 ### What Tbreadth does not tell you
 
@@ -297,6 +418,8 @@ peaks. Use the value together with `plot_coreT_histogram()`:
 ```{r tbreadth-code}
 calc_Tbreadth(
   fish,
+  exclude_gravitation = use_settled_window,
+  gravitation_time = if (use_settled_window) grav_time else NULL,
   print_results = FALSE
 )
 ```
@@ -320,44 +443,24 @@ heating and cooling rates, and no abrupt interruptions or impossible values. A
 power cut or sensor failure may create a discontinuity that is obvious here but
 not obvious from a single summary metric.
 
-### Temperature trajectory, preference and gravitation
+### Revisit the temperature trajectory when interpreting other warnings
 
-`plot_T_segmented()` displays `core_T` over time together with Tpref, avoidance
-temperatures and the estimated gravitation breakpoint.
-
-```{r plot-segmented, fig.height=5.2}
-segmented_plot <- tryCatch({
-  invisible(capture.output(
-    p_segmented <- plot_T_segmented(
-      fish,
-      exclude_acclimation = FALSE,
-      overlay_chamber_temp = TRUE
-    )
-  ))
-  p_segmented
-}, error = function(e) {
-  ggplot2::ggplot(fish, ggplot2::aes(x = time_h, y = core_T)) +
-    ggplot2::geom_line() +
-    ggplot2::labs(
-      title = "Core body temperature through the example recording",
-      subtitle = paste("Segmented fit was not estimable:", conditionMessage(e)),
-      x = "Time (h)", y = "Core body temperature (°C)"
-    ) +
-    ggplot2::theme_classic()
-})
-segmented_plot
-```
-
-A useful segmented plot should show a biologically plausible approach toward a
-stable temperature region. Warning signs include an implausible breakpoint,
-continued directional drift after the estimated gravitation time, extended
-contact with system limits, or chamber temperatures that do not respond as
-expected.
+The segmented plot above should be revisited whenever a metric appears unusual.
+For example, a large Tbreadth may reflect a genuinely broad settled distribution,
+a bimodal pattern, or continued drift after an unreliable breakpoint. A high
+limit-exposure value may occur mainly during gravitation rather than after the
+fish settled. The trajectory provides the timing information needed to
+separate these explanations.
 
 ### Frequency distribution and thermal breadth
 
 ```{r core-temperature-histogram, fig.height=4.6}
-plot_coreT_histogram(fish, bin_size = 0.1)
+plot_coreT_histogram(
+  fish,
+  bin_size = 0.1,
+  exclude_gravitation = use_settled_window,
+  gravitation_time = if (use_settled_window) grav_time else NULL
+)
 ```
 
 This plot is the visual partner to Tbreadth. Tbreadth increases when commonly
@@ -418,12 +521,21 @@ project_data <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
-  Tavoid_percentiles = c(0.05, 0.95)
+  Tavoid_percentiles = c(0.05, 0.95),
+  exclude_gravitation_thermal = TRUE,
+  exclude_gravitation_activity = FALSE,
+  gravitation_failure = "warn"
 )
 ```
 
 The resulting `project_data` object contains one row per fish and can be passed
-to all project-level plots and screening functions.
+to all project-level plots and screening functions. Gravitation is estimated
+once per fish and the same value is reused for all thermal metrics. The output
+also records `gravitation_valid`, `gravitation_reference`,
+`thermal_metrics_start_h`, `activity_metrics_start_h`, and whether each metric
+set was calculated after gravitation. If a breakpoint cannot be estimated and
+`gravitation_failure = "warn"`, gravitation-dependent metrics are recorded as
+`NA` rather than silently reverting to the full trial.
 
 ### Route B: start from an existing project-summary CSV
 
@@ -437,6 +549,9 @@ project_data <- read_project_database(file.choose())
 This route does not use `read_shuttlesoft_project()` or
 `calc_project_results()`. It is appropriate only for a summary table, not a raw
 ShuttleSoft recording.
+ShuttleboxR cannot infer from summary values alone whether gravitation was
+excluded, so imported project databases should retain analysis-window columns
+or accompanying metadata describing how the metrics were calculated.
 
 The package includes an 85-fish example summary database, which is used for the
 remainder of this vignette:
@@ -758,16 +873,64 @@ fish_to_check <- all_fish[["Fish_17.txt"]]
 
 plot_T_gradient(fish_to_check)
 plot_tracking(fish_to_check)
-plot_T_segmented(fish_to_check)
-plot_coreT_histogram(fish_to_check)
+
+checked_grav_time <- calc_gravitation(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  print_results = FALSE
+)
+plot_T_segmented(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  gravitation_time = checked_grav_time,
+  exclude_gravitation = TRUE
+)
+plot_coreT_histogram(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  gravitation_time = checked_grav_time,
+  exclude_gravitation = TRUE
+)
 plot_heatmap(fish_to_check)
 plot_distance(fish_to_check)
 
-calc_Tpref(fish_to_check, print_results = FALSE)
-calc_Tavoid(fish_to_check, print_results = FALSE)
-calc_Tbreadth(fish_to_check, print_results = FALSE)
-calc_shuttles(fish_to_check, print_results = FALSE)
-calc_extremes(fish_to_check, print_results = FALSE)
+calc_Tpref(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = checked_grav_time,
+  print_results = FALSE
+)
+calc_Tavoid(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = checked_grav_time,
+  print_results = FALSE
+)
+calc_Tbreadth(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = checked_grav_time,
+  print_results = FALSE
+)
+calc_extremes(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = checked_grav_time,
+  print_results = FALSE
+)
+
+# Choose explicitly whether activity should cover the full dynamic period or
+# only settled thermoregulation.
+calc_shuttles(
+  fish_to_check,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = FALSE,
+  print_results = FALSE
+)
 ```
 
 A defensible decision process is:

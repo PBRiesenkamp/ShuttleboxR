@@ -1,45 +1,57 @@
-#' Calculate the temperature preference
+#' Calculate variation in core body temperature
 #'
-#' This function calculates the temperature preference for the trial
+#' Calculates the standard error, standard deviation, or coefficient of
+#' variation of `core_T` within the selected analysis window.
 #'
-#' @param data An organised shuttle-box dataframe with corrected core body temperature
-#' @param variance_type The method used for calculating the variance of core body temperature ("std_error", "std_deviation", "coeff_variation"). Default is "std_error".
-#' @param exclude_acclimation Exclude the acclimation period from variable calculation, default = F
-#' @param exclude_start_minutes Exclusion of time from the start of the trial onwards, in minutes. Default is 0
-#' @param exclude_end_minutes Exclusion of time from the end of the trial backwards, in minutes. Default is 0
-#' @return variance in core body temperature
+#' @param data An organised shuttle-box data frame containing `core_T`.
+#' @param variance_type One of `"std_error"`, `"std_deviation"`, or
+#'   `"coeff_variation"`.
+#' @param exclude_start_minutes Minutes omitted from the start of the selected
+#'   period. Default is 0.
+#' @param exclude_end_minutes Minutes omitted from the end of the recording.
+#'   Default is 0.
+#' @param exclude_acclimation Logical. Use only the dynamic period. Default is
+#'   `FALSE`.
+#' @param exclude_gravitation Logical. Exclude the transitional gravitation
+#'   period. Default is `FALSE`.
+#' @param gravitation_time Optional gravitation duration in hours, usually from
+#'   [calc_gravitation()].
+#'
+#' @return A single measure of variation in core body temperature.
 #' @export
+calc_coreT_variance <- function(
+    data,
+    variance_type = c("std_error", "std_deviation", "coeff_variation"),
+    exclude_start_minutes = 0,
+    exclude_end_minutes = 0,
+    exclude_acclimation = FALSE,
+    exclude_gravitation = FALSE,
+    gravitation_time = NULL) {
 
-calc_coreT_variance <- function(data, variance_type = c("std_error", "std_deviation", "coeff_variation"), exclude_start_minutes = 0, exclude_end_minutes = 0, exclude_acclimation = F) {
-  # Ensure the body core temperature column exists
-  if (!"core_T" %in% colnames(data)) {
-    stop("The dataset does not contain a 'core_T' column. Please run file_prepare and calc_coreT")
-  }
-  
-  # Convert exclude minutes to seconds
-  exclude_start_seconds <- exclude_start_minutes * 60
-  exclude_end_seconds <- exclude_end_minutes * 60
-  
-  if (exclude_acclimation) {
-    data <- data[data$trial_phase != "acclimation", ]
-  }
-  
-  # Exclude initial and final data if necessary
-  start_time <- exclude_start_seconds
-  end_time <- max(data$time_sec) - exclude_end_seconds
-  data <- data[data$time_sec >= start_time & data$time_sec <= end_time, ]
-  
-  # Select the variance type
   variance_type <- match.arg(variance_type)
-  
-  # Calculate the variance measure
-  if (variance_type == "std_error") {
-    variance <- sd(data$core_T, na.rm = TRUE) / sqrt(length(na.omit(data$core_T)))
-  } else if (variance_type == "std_deviation") {
-    variance <- sd(data$core_T, na.rm = TRUE)
-  } else if (variance_type == "coeff_variation") {
-    variance <- sd(data$core_T, na.rm = TRUE) / mean(data$core_T, na.rm = TRUE)
+  data <- .prepare_trial_window(
+    data,
+    exclude_start_minutes = exclude_start_minutes,
+    exclude_end_minutes = exclude_end_minutes,
+    exclude_acclimation = exclude_acclimation,
+    exclude_gravitation = exclude_gravitation,
+    gravitation_time = gravitation_time,
+    context = "core-temperature variation calculation"
+  )
+
+  if (!"core_T" %in% names(data)) {
+    stop("The dataset does not contain `core_T`.", call. = FALSE)
   }
-  
-  return(variance)
+  x <- suppressWarnings(as.numeric(data$core_T))
+  x <- x[is.finite(x)]
+  if (length(x) < 2L) {
+    stop("At least two valid `core_T` observations are required.", call. = FALSE)
+  }
+
+  switch(
+    variance_type,
+    std_error = stats::sd(x) / sqrt(length(x)),
+    std_deviation = stats::sd(x),
+    coeff_variation = stats::sd(x) / mean(x)
+  )
 }

@@ -2,30 +2,26 @@
 % Please edit documentation in R/calc_coreT_variance.R
 \name{calc_coreT_variance}
 \alias{calc_coreT_variance}
-\title{Calculate the temperature preference}
+\title{Calculate variation in core body temperature}
 \usage{
 calc_coreT_variance(
   data,
   variance_type = c("std_error", "std_deviation", "coeff_variation"),
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F
+  exclude_acclimation = FALSE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 }
 \arguments{
-\item{data}{An organised shuttle-box dataframe with corrected core body temperature}
-
-\item{variance_type}{The method used for calculating the variance of core body temperature ("std_error", "std_deviation", "coeff_variation"). Default is "std_error".}
-
-\item{exclude_start_minutes}{Exclusion of time from the start of the trial onwards, in minutes. Default is 0}
-
-\item{exclude_end_minutes}{Exclusion of time from the end of the trial backwards, in minutes. Default is 0}
-
-\item{exclude_acclimation}{Exclude the acclimation period from variable calculation, default = F}
+\item{data}{An organised shuttle-box data frame containing \code{core_T}.}
+\item{variance_type}{One of \code{"std_error"}, \code{"std_deviation"}, or \code{"coeff_variation"}.}
+\item{exclude_start_minutes}{Minutes omitted from the start of the selected period.}
+\item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
+\item{exclude_acclimation}{Use only the dynamic period.}
+\item{exclude_gravitation}{Exclude the transitional gravitation period.}
+\item{gravitation_time}{Optional gravitation duration in hours.}
 }
-\value{
-variance in core body temperature
-}
-\description{
-This function calculates the temperature preference for the trial
-}
+\value{A single measure of core-temperature variation.}
+\description{Calculates variation in core temperature within the selected analysis window.}
