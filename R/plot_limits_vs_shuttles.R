@@ -48,12 +48,12 @@ plot_limits_vs_shuttles <- function(proj_data,
   ]
   plot_data$.label_id <- as.character(plot_data[[id_col]])
 
-  limits_q1 <- stats::quantile(plot_data$t_near_limits, 0.25, na.rm = TRUE)
-  limits_q3 <- stats::quantile(plot_data$t_near_limits, 0.75, na.rm = TRUE)
+  limits_q1 <- stats::quantile(plot_data$t_near_limits, 0.25, na.rm = TRUE, names = FALSE)
+  limits_q3 <- stats::quantile(plot_data$t_near_limits, 0.75, na.rm = TRUE, names = FALSE)
   cutoffs <- c(
     limits_high = limits_q3 + limits_iqr_multiplier * (limits_q3 - limits_q1),
-    shuttles_low = stats::quantile(plot_data$nr_shuttles, lower_quantile, na.rm = TRUE),
-    shuttles_high = stats::quantile(plot_data$nr_shuttles, upper_quantile, na.rm = TRUE)
+    shuttles_low = stats::quantile(plot_data$nr_shuttles, lower_quantile, na.rm = TRUE, names = FALSE),
+    shuttles_high = stats::quantile(plot_data$nr_shuttles, upper_quantile, na.rm = TRUE, names = FALSE)
   )
 
   plot_data$.review_case <- .classify_limits_activity(

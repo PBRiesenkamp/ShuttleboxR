@@ -48,12 +48,12 @@ plot_limits_vs_distance <- function(proj_data,
   ]
   plot_data$.label_id <- as.character(plot_data[[id_col]])
 
-  limits_q1 <- stats::quantile(plot_data$t_near_limits, 0.25, na.rm = TRUE)
-  limits_q3 <- stats::quantile(plot_data$t_near_limits, 0.75, na.rm = TRUE)
+  limits_q1 <- stats::quantile(plot_data$t_near_limits, 0.25, na.rm = TRUE, names = FALSE)
+  limits_q3 <- stats::quantile(plot_data$t_near_limits, 0.75, na.rm = TRUE, names = FALSE)
   cutoffs <- c(
     limits_high = limits_q3 + limits_iqr_multiplier * (limits_q3 - limits_q1),
-    distance_low = stats::quantile(plot_data$tot_distance, lower_quantile, na.rm = TRUE),
-    distance_high = stats::quantile(plot_data$tot_distance, upper_quantile, na.rm = TRUE)
+    distance_low = stats::quantile(plot_data$tot_distance, lower_quantile, na.rm = TRUE, names = FALSE),
+    distance_high = stats::quantile(plot_data$tot_distance, upper_quantile, na.rm = TRUE, names = FALSE)
   )
 
   plot_data$.review_case <- .classify_limits_activity(

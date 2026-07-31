@@ -30,7 +30,7 @@ interpretable project dataset. It follows three steps:
 The same logic operates at two linked levels:
 
 - **Branch 1: a single trial**, used to understand one fish in detail.
-- **Branch 2: the complete project**, used to compare all fish in a study and help identify
+- **Branch 2: the complete project**, used to compare all fish and identify
   trials that deserve closer inspection.
 
 ```text
@@ -51,11 +51,31 @@ Raw shuttle-box recordings
 
 The package does **not** automatically decide that an unusual fish should be
 excluded. A project-level flag is the beginning of an investigation, not the
-end of one!
+end of one.
 
 ```{r load-package}
 library(ShuttleboxR)
 ```
+
+## The inspection logic
+
+A fish may stand out for several different reasons, and those reasons lead to
+different follow-up checks.
+
+| Project-level signal | Possible interpretation | Useful single-trial checks |
+|---|---|---|
+| Very low distance and very few shuttles | Inactivity, poor health, stress, tracking failure, or genuinely sedentary behaviour | `plot_heatmap()`, `plot_tracking()`, `plot_distance()` |
+| Many shuttles but little total distance | Repeated doorway crossings, localised movement, or a tracking artefact | `plot_heatmap()`, `animate_movements()`, `plot_tracking()` |
+| High distance and high shuttling | High activity, active thermoregulation, or possible agitation/stress | `plot_interval()`, `plot_speed_coreT()`, `plot_heatmap()` |
+| Substantial time near the upper limit | Preferred temperatures may exceed the programmed range, or the fish may not be regulating effectively | `plot_T_gradient()`, `plot_T_segmented()`, `plot_coreT_histogram()` |
+| Substantial time near the lower limit | Preferred temperatures may fall below the programmed range, or the fish may not be regulating effectively | `plot_T_gradient()`, `plot_T_segmented()`, `plot_coreT_histogram()` |
+| Multivariate PCA outlier | An unusual combination of several otherwise plausible metrics | Use PCA arrows and `outlier_details` to choose the most relevant single-trial plots |
+
+The same pattern can have different meanings in different species. A low number
+of shuttles may be normal for a sedentary species, while any sustained exposure
+to a programmed safety limit is usually more concerning. Exclusion should be
+based on a documented technical or biological reason, not simply on distance
+from the project mean.
 
 # Branch 1: analyse and inspect one fish
 
@@ -149,6 +169,7 @@ distribution:
 - `Tbreadth` describes **how far apart** the temperatures experienced by the
   fish were.
 
+### Explain it like I am five
 
 Imagine choosing two moments from the trial and looking at the fish's core
 temperature at those moments.
@@ -188,7 +209,8 @@ calculation, so it does not need to construct an enormous table of every pair.
 
 The 10 °C/20 °C example is important. Its Tbreadth is much larger than that of
 a fish split between 20 °C and 21 °C because the two occupied parts of the
-distribution are much farther apart.
+distribution are much farther apart. Unlike the previous bin-based definition,
+the calculation therefore recognises the distance between peaks.
 
 ### What Tbreadth does not tell you
 
@@ -203,6 +225,8 @@ peaks. Use the value together with `plot_coreT_histogram()`:
 - `Tbreadth` summarises the overall spread in one number;
 - the histogram shows whether that spread is narrow, broad, skewed, or
   multimodal.
+
+`Tbreadth` is not a measure of physiological thermal tolerance.
 
 ```{r tbreadth-code}
 calc_Tbreadth(
@@ -279,7 +303,8 @@ skewed, or multimodal. Multiple peaks may represent distinct phases of behaviour
 and should be compared with `plot_T_segmented()` and the full temperature-through-
 time record.
 
-The `bin_size` argument here changes how the histogram is drawn.
+The `bin_size` argument here changes only how the histogram is drawn. It no
+longer changes the value calculated by `calc_Tbreadth()`.
 
 ### Tracking and spatial behaviour
 
@@ -298,7 +323,7 @@ Poor tracking can inflate or suppress distance and may create false shuttles.
 A heatmap concentrated in one tiny area can indicate inactivity, a tracking lock,
 or a fish that did not engage with the thermal gradient. A broad heatmap is not
 automatically better: location should be interpreted alongside chamber
-occupancy, shuttling, temperature, and species ecology.
+occupancy, shuttling, temperature and species ecology.
 
 # Branch 2: screen the complete project
 
@@ -347,7 +372,7 @@ univariate_flags <- plot_histograms(project_data)
 
 The returned table identifies fish that are unusual for individual metrics.
 This is useful for finding, for example, exceptionally low distance, an unusual
-Tpref, or substantial time near limits. A univariate flag does not reveal whether
+Tpref or substantial time near limits. A univariate flag does not reveal whether
 the value is technically invalid or biologically meaningful.
 
 ## Step 3: inspect upper and lower limit exposure separately
@@ -457,6 +482,10 @@ but the available gradient or limits may not have allowed it to stabilise.
 PCA is useful when no single metric fully explains why a fish is unusual. It
 compresses correlated metrics into principal components.
 
+Use a deliberately chosen set of variables. Avoid automatically including every
+numeric column, and avoid including several mathematically redundant variables
+unless that redundancy is scientifically intended.
+
 ```{r project-pca, fig.height=5.8, fig.width=7.5}
 pca_data <- project_data[c(
   "fileID",
@@ -528,7 +557,8 @@ inactivity or poor tracking.
   map. It can detect isolated points even when the project contains more than
   one cluster.
 
-Agreement between the methods is a strong reason for closer inspection. Disagreement is also informative: a fish can
+Agreement between the methods is a strong reason for closer inspection, but
+neither method proves invalidity. Disagreement is also informative: a fish can
 be globally unusual without being locally isolated, or locally isolated without
 being far from the overall centre.
 
@@ -555,7 +585,7 @@ calc_shuttles(fish_to_check, print_results = FALSE)
 calc_extremes(fish_to_check, print_results = FALSE)
 ```
 
-A suggested decision process is:
+A defensible decision process is:
 
 1. **Flag** an unusual metric or combination of metrics.
 2. **Inspect** the original temperature, tracking and movement records.
@@ -568,9 +598,9 @@ A suggested decision process is:
    sensitivity analysis.
 
 A fish should not be excluded merely because it is statistically unusual.
-Indeed, unusual values can be real biological variation! Conversely, a technically
+Unusual values can be genuine biological variation. Conversely, a technically
 flawed trial can require exclusion even when its summary metrics do not appear
-extreme (e.g. when tracking metrics are very low).
+extreme.
 
 ## Getting help
 

@@ -39,10 +39,10 @@ plot_upper_vs_lower_extremes <- function(proj_data,
   ]
   plot_data$.label_id <- as.character(plot_data[[id_col]])
 
-  lower_q1 <- stats::quantile(plot_data$t_near_min, 0.25, na.rm = TRUE)
-  lower_q3 <- stats::quantile(plot_data$t_near_min, 0.75, na.rm = TRUE)
-  upper_q1 <- stats::quantile(plot_data$t_near_max, 0.25, na.rm = TRUE)
-  upper_q3 <- stats::quantile(plot_data$t_near_max, 0.75, na.rm = TRUE)
+  lower_q1 <- stats::quantile(plot_data$t_near_min, 0.25, na.rm = TRUE, names = FALSE)
+  lower_q3 <- stats::quantile(plot_data$t_near_min, 0.75, na.rm = TRUE, names = FALSE)
+  upper_q1 <- stats::quantile(plot_data$t_near_max, 0.25, na.rm = TRUE, names = FALSE)
+  upper_q3 <- stats::quantile(plot_data$t_near_max, 0.75, na.rm = TRUE, names = FALSE)
 
   cutoffs <- c(
     lower_limit_high = lower_q3 + iqr_multiplier * (lower_q3 - lower_q1),

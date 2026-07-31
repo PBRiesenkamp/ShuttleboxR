@@ -40,7 +40,7 @@ Raw shuttle-box recordings
 ShuttleboxR supports quality control and data exploration. It does **not**
 automatically decide that a fish should be excluded, and it does not replace the
 statistical analysis appropriate to a study. A trial that appears unusual at the
-project level should be checked against its raw temperature, tracking, and
+project level should be checked against its raw temperature, tracking and
 behavioural records, and interpreted in the context of the species and
 experimental design.
 
@@ -124,6 +124,13 @@ Imagine choosing two moments from the trial and asking how different the fish's
 core temperature was at those moments. Repeat that for every possible pair and
 take the average. That average is `Tbreadth`.
 
+- A fish that remains at nearly one temperature has a Tbreadth close to 0 °C.
+- Equal time at 20 °C and 21 °C gives a Tbreadth of 0.5 °C.
+- Equal time at 10 °C and 20 °C gives a Tbreadth of 5 °C.
+
+The final example gives 5 °C, rather than 10 °C, because half of the possible
+pairs compare two equal temperatures and half compare temperatures 10 °C apart.
+
 `Tbreadth` is **not centred on Tpref**, does not define a lower and upper
 boundary, and does not depend on histogram bin size. It summarises overall
 spread, while `plot_coreT_histogram()` shows whether that spread is symmetrical,
@@ -158,7 +165,7 @@ animate_movements(fish)
 ```
 
 These plots can reveal interruptions in temperature control, poor tracking,
-prolonged inactivity, extensive time near system limits, doorway use, or other
+prolonged inactivity, extensive time near system limits, doorway use or other
 patterns that deserve closer examination.
 
 ## Branch 2: inspect a complete project
@@ -200,7 +207,7 @@ project_results <- calc_project_results(
 ```
 
 This creates a project-level database containing thermal, activity, occupancy,
-tracking, and movement metrics for every trial.
+tracking and movement metrics for every trial.
 
 An existing project-results CSV can instead be loaded with:
 
@@ -268,12 +275,12 @@ plot_heatmap(fish_to_check)
 
 A fish should only be excluded when there is a clear, documented reason that the
 trial is technically flawed or does not provide a valid measure of the intended
-behaviour. Unusual behaviour may also be real biological variation!
+behaviour. Unusual behaviour can also be genuine biological variation.
 
 ## Recalculating core temperature is optional
 
-ShuttleSoft files normally already contain `core_T`. Use `calc_coreT()`
-if those values need to be replaced and appropriate thermal-lag coefficients
+ShuttleSoft files normally already contain `core_T`. Only use `calc_coreT()`
+when those values need to be replaced and appropriate thermal-lag coefficients
 are available:
 
 ```r

@@ -42,10 +42,10 @@ plot_distance_vs_shuttles <- function(proj_data,
   plot_data$.label_id <- as.character(plot_data[[id_col]])
 
   cutoffs <- c(
-    distance_low = stats::quantile(plot_data$tot_distance, lower_quantile, na.rm = TRUE),
-    distance_high = stats::quantile(plot_data$tot_distance, upper_quantile, na.rm = TRUE),
-    shuttles_low = stats::quantile(plot_data$nr_shuttles, lower_quantile, na.rm = TRUE),
-    shuttles_high = stats::quantile(plot_data$nr_shuttles, upper_quantile, na.rm = TRUE)
+    distance_low = stats::quantile(plot_data$tot_distance, lower_quantile, na.rm = TRUE, names = FALSE),
+    distance_high = stats::quantile(plot_data$tot_distance, upper_quantile, na.rm = TRUE, names = FALSE),
+    shuttles_low = stats::quantile(plot_data$nr_shuttles, lower_quantile, na.rm = TRUE, names = FALSE),
+    shuttles_high = stats::quantile(plot_data$nr_shuttles, upper_quantile, na.rm = TRUE, names = FALSE)
   )
 
   plot_data$.review_case <- .classify_distance_shuttles(plot_data, cutoffs)

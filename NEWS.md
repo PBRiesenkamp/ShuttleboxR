@@ -1,3 +1,8 @@
+# ShuttleboxR 0.0.0.9007
+
+- Fixed vignette-building failures in the project-level screening plots. Quantile values are now stored without inherited percentile names, so cutoff lookups such as `lower_limit_high`, `distance_low`, and `shuttles_high` work correctly.
+- Applied the same correction to `plot_upper_vs_lower_extremes()`, `plot_distance_vs_shuttles()`, `plot_limits_vs_distance()`, and `plot_limits_vs_shuttles()`.
+
 # ShuttleboxR 0.0.0.9006
 
 - Replaced the original bin-diversity definition of `Tbreadth` with the mean
