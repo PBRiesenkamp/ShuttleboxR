@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,8 @@
 <div class="section level2">
 <h2 id="preview-the-vignette">Preview the vignette<a class="anchor" aria-label="anchor" href="#preview-the-vignette"></a></h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">build_rmd</span><span class="op">(</span><span class="st">"vignettes/ShuttleboxR.Rmd"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">render</a></span><span class="op">(</span><span class="st">"vignettes/ShuttleboxR.Rmd"</span><span class="op">)</span></span></code></pre></div>
+<p>This creates <code>vignettes/ShuttleboxR.html</code> in the project folder.</p>
 <p>To install the package with the vignette included:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span>build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -91,6 +92,14 @@
 <li>Click <strong>Commit to master</strong>.</li>
 <li>Click <strong>Push origin</strong>.</li>
 </ol></div>
+<div class="section level2">
+<h2 id="pca-reproducibility">PCA reproducibility<a class="anchor" aria-label="anchor" href="#pca-reproducibility"></a></h2>
+<p>Always supply the <code>variables</code> argument when using <code><a href="reference/pca.html">pca()</a></code> in examples or analyses. This prevents a future numeric column from changing the PCA without the user noticing. Report <code>mahalanobis_th</code>, <code>dbscan_th</code>, <code>dbscan_minPts</code>, and <code>flag_rule</code> alongside the selected variables.</p>
+</div>
+<div class="section level2">
+<h2 id="plotting-convention">Plotting convention<a class="anchor" aria-label="anchor" href="#plotting-convention"></a></h2>
+<p>All ggplot-based package figures use <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">ggplot2::theme_classic()</a></code> so figures have a consistent appearance without gridlines. Apply the same theme to any new plot functions and to plots returned by helper packages such as factoextra.</p>
+</div>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

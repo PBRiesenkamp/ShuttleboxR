@@ -83,6 +83,20 @@ labels trial phases and identifies shuttles between chambers. The
 existing `core_T` values produced by ShuttleSoft are retained by
 default.
 
+A complete example recording is included with the package and is used
+throughout the vignette:
+
+``` r
+
+example_file <- system.file(
+  "extdata",
+  "Fish_7_13_2.csv",
+  package = "ShuttleboxR"
+)
+
+fish <- read_shuttlesoft(example_file)
+```
+
 When the recording includes a separate acclimation period, provide the
 clock time at which the dynamic trial began:
 
@@ -251,9 +265,32 @@ unusual behaviour:
 ``` r
 
 plot_distance_vs_shuttles(project_results, label_points = FALSE)
-plot_limits_vs_distance(project_results, label_points = FALSE)
-plot_limits_vs_shuttles(project_results, label_points = FALSE)
+plot_limits_vs_distance(
+  project_results,
+  highlight_cases = TRUE,
+  limit_threshold = 10,
+  label_points = FALSE
+)
+plot_limits_vs_shuttles(
+  project_results,
+  highlight_cases = TRUE,
+  limit_threshold = 10,
+  label_points = FALSE
+)
+plot_upper_vs_lower_extremes(
+  project_results,
+  lower_limit_threshold = 10,
+  upper_limit_threshold = 10
+)
 ```
+
+The default limit-exposure rule is direct and interpretable: a fish is
+flagged when more than 10% of analysed observations occurred near the
+programmed limits. This avoids IQR thresholds collapsing to zero in
+projects where most fish never approach either limit. Adjust
+`limit_threshold`, `lower_limit_threshold`, and `upper_limit_threshold`
+to match the study design. Project-relative alternatives remain
+available through `limit_method = "quantile"` or `limit_method = "iqr"`.
 
 A correlation matrix or PCA can provide a multivariate overview:
 
@@ -268,16 +305,32 @@ correlation_matrix(
 )
 
 project_pca <- pca(
-  project_results[c(
-    "fileID", "Tpref", "Tavoid_lower", "Tavoid_upper",
+  project_results,
+  variables = c(
+    "Tpref", "Tavoid_lower", "Tavoid_upper",
     "tot_distance", "nr_shuttles", "t_near_limits"
-  )],
+  ),
+  mahalanobis_th = 0.99,
+  dbscan_th = 1.5,
+  dbscan_minPts = 4,
+  flag_rule = "both",
   print_labels = FALSE
 )
 
 project_pca$plots$biplot
-project_pca$outliers
+project_pca$screening
+project_pca$outlier_details
 ```
+
+The PCA variables are supplied explicitly because the PCA can change
+greatly if variables are added or removed, even when the project dataset
+contains the same fish. The default `flag_rule = "both"` highlights only
+fish identified by both Mahalanobis distance and DBSCAN. Use
+`flag_rule = "either"` for a more sensitive screen. Increasing
+`mahalanobis_th` or `dbscan_th` will generally reduce the number of fish
+flagged; `dbscan_minPts` controls the minimum local neighbourhood size.
+These settings identify fish for closer inspection, not automatic
+exclusion.
 
 When the project database was generated with the current version of
 [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md),

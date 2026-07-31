@@ -90,14 +90,14 @@ When `trial_start` is omitted, the complete recording is treated as
 trial data. The `core_T` values already present in the ShuttleSoft file
 are retained unless the user explicitly recalculates them.
 
-This vignette uses a shortened example recording included with the
+This vignette uses a clean, complete example recording included with the
 package:
 
 ``` r
 
 example_file <- system.file(
   "extdata",
-  "Fish_8_13_3_example.csv",
+  "Fish_7_13_2.csv",
   package = "ShuttleboxR"
 )
 
@@ -138,16 +138,16 @@ single_results <- data.frame(
 knitr::kable(single_results, digits = 3)
 ```
 
-| metric                          |     value |
-|:--------------------------------|----------:|
-| Tpref (°C)                      |    13.720 |
-| Lower Tavoid (°C)               |    12.560 |
-| Upper Tavoid (°C)               |    18.300 |
-| Tpref range (°C)                |     5.740 |
-| Tbreadth (°C)                   |     2.015 |
-| Number of shuttles              |    37.000 |
-| Total distance (cm)             | 25630.970 |
-| Proportion successfully tracked |     1.000 |
+| metric                          |      value |
+|:--------------------------------|-----------:|
+| Tpref (°C)                      |     17.530 |
+| Lower Tavoid (°C)               |     13.780 |
+| Upper Tavoid (°C)               |     19.730 |
+| Tpref range (°C)                |      5.950 |
+| Tbreadth (°C)                   |      2.177 |
+| Number of shuttles              |    988.000 |
+| Total distance (cm)             | 194477.940 |
+| Proportion successfully tracked |      1.000 |
 
 #### Tpref, avoidance temperatures and Tpref range
 
@@ -241,7 +241,7 @@ calc_Tbreadth(
   fish,
   print_results = FALSE
 )
-#> [1] 2.015353
+#> [1] 2.176951
 ```
 
 ### Step 3: inspect whether the trial is interpretable
@@ -292,7 +292,7 @@ segmented_plot <- tryCatch({
       subtitle = paste("Segmented fit was not estimable:", conditionMessage(e)),
       x = "Time (h)", y = "Core body temperature (°C)"
     ) +
-    ggplot2::theme_light()
+    ggplot2::theme_classic()
 })
 segmented_plot
 ```
@@ -445,42 +445,54 @@ extreme_review$plot
 knitr::kable(extreme_review$cases, digits = 2)
 ```
 
-|     | fileID              | t_near_min | t_near_max | review_reason                |
-|:----|:--------------------|-----------:|-----------:|:-----------------------------|
-| 8   | Fish_8_13_2         |       0.00 |      59.55 | High upper-limit exposure    |
-| 13  | Fish_13_13_3        |      18.80 |       0.00 | High lower-limit exposure    |
-| 17  | Fish_17_20_2_rev    |      27.89 |       0.09 | High exposure to both limits |
-| 23  | Fish_23_20_3        |       0.00 |       4.71 | High upper-limit exposure    |
-| 33  | Fish_33_20_3        |       0.00 |      34.49 | High upper-limit exposure    |
-| 41  | Fish_41_20_2_rev_B  |       0.85 |       0.00 | High lower-limit exposure    |
-| 44  | Fish_44_20_2_rev_S  |       0.00 |       1.67 | High upper-limit exposure    |
-| 45  | Fish_45_20_3_rev_B  |       0.00 |       1.18 | High upper-limit exposure    |
-| 46  | Fish_46_20_2_S      |       0.00 |      19.54 | High upper-limit exposure    |
-| 47  | Fish_47_20_3_B      |       2.60 |       0.00 | High lower-limit exposure    |
-| 48  | Fish_48_13_2_S      |      41.86 |       0.00 | High lower-limit exposure    |
-| 50  | Fish_50_20_2_S_long |       0.62 |       0.89 | High exposure to both limits |
-| 52  | Fish_52_20_2_S      |      26.39 |      31.14 | High exposure to both limits |
-| 53  | Fish_53_13_2_S      |      22.46 |       0.00 | High lower-limit exposure    |
-| 55  | Fish_55_13_2_rev_S  |      34.50 |       0.78 | High exposure to both limits |
-| 57  | Fish_57_20_2_rev_S  |       0.00 |      65.85 | High upper-limit exposure    |
-| 58  | Fish_58_20_3_rev_B  |       8.68 |       0.00 | High lower-limit exposure    |
-| 59  | Fish_59_13_2_rev_S  |       0.00 |      60.63 | High upper-limit exposure    |
-| 60  | Fish_60_13_3_rev_B  |       1.15 |       0.00 | High lower-limit exposure    |
-| 63  | Fish_63_20_2_rev_S  |       0.00 |      38.50 | High upper-limit exposure    |
-| 66  | Fish_66_20_3_B      |       1.87 |       0.00 | High lower-limit exposure    |
-| 71  | Fish_71_20_3_rev_B  |       0.00 |      11.53 | High upper-limit exposure    |
-| 77  | Fish_77_20_2_B      |       0.00 |       1.94 | High upper-limit exposure    |
-| 81  | Fish_81_20_2_rev_B  |       2.71 |       0.02 | High exposure to both limits |
+|     | fileID             | t_near_min | t_near_max | review_reason                   |
+|:----|:-------------------|-----------:|-----------:|:--------------------------------|
+| 8   | Fish_8_13_2        |       0.00 |      59.55 | Above upper-limit threshold     |
+| 13  | Fish_13_13_3       |      18.80 |       0.00 | Above lower-limit threshold     |
+| 17  | Fish_17_20_2_rev   |      27.89 |       0.09 | Above lower-limit threshold     |
+| 33  | Fish_33_20_3       |       0.00 |      34.49 | Above upper-limit threshold     |
+| 46  | Fish_46_20_2_S     |       0.00 |      19.54 | Above upper-limit threshold     |
+| 48  | Fish_48_13_2_S     |      41.86 |       0.00 | Above lower-limit threshold     |
+| 52  | Fish_52_20_2_S     |      26.39 |      31.14 | Above thresholds at both limits |
+| 53  | Fish_53_13_2_S     |      22.46 |       0.00 | Above lower-limit threshold     |
+| 55  | Fish_55_13_2_rev_S |      34.50 |       0.78 | Above lower-limit threshold     |
+| 57  | Fish_57_20_2_rev_S |       0.00 |      65.85 | Above upper-limit threshold     |
+| 59  | Fish_59_13_2_rev_S |       0.00 |      60.63 | Above upper-limit threshold     |
+| 63  | Fish_63_20_2_rev_S |       0.00 |      38.50 | Above upper-limit threshold     |
+| 71  | Fish_71_20_3_rev_B |       0.00 |      11.53 | Above upper-limit threshold     |
+
+By default, the dashed lines mark **10% of analysed observations** near
+each limit. This direct percentage threshold is easier to interpret than
+a project-level IQR rule and remains meaningful when most fish have zero
+exposure. A point is highlighted only when it exceeds the relevant
+threshold; any small non-zero value is no longer treated as “high”
+exposure.
 
 Interpretation:
 
-- **High upper-limit exposure:** the fish may prefer warmer conditions
+- **Above upper-limit threshold:** the fish may prefer warmer conditions
   than the programmed range permits, or it may have failed to move away
   from the warm extreme.
-- **High lower-limit exposure:** the analogous concern at the cold end.
-- **High exposure to both limits:** may indicate unusually wide
+- **Above lower-limit threshold:** the analogous concern at the cold
+  end.
+- **Above thresholds at both limits:** may indicate unusually wide
   exploration, unstable system behaviour, tracking problems, or settings
   poorly matched to the species.
+
+The thresholds can be changed explicitly, for example:
+
+``` r
+
+plot_upper_vs_lower_extremes(
+  project_data,
+  lower_limit_threshold = 5,
+  upper_limit_threshold = 5
+)
+```
+
+Project-relative alternatives remain available through
+`limit_method = "quantile"` or `limit_method = "iqr"`, but these should
+be used with care in datasets containing many zero values.
 
 The next checks should be
 [`plot_T_gradient()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_gradient.md),
@@ -502,9 +514,16 @@ A bivariate plot can identify three kinds of cases:
     total movement.
 
 The optional review guides below use the 5th and 95th project quantiles
-for movement and shuttling. Time near limits is screened using
-`Q3 + 1.5 × IQR`. These thresholds are transparent starting points, not
-universal biological cutoffs.
+for movement and shuttling. By default, limit exposure is flagged only
+when more than **10% of analysed observations** occurred near the
+programmed limits. This absolute threshold is a transparent starting
+point, not a universal biological cutoff, and can be changed with
+`limit_threshold`.
+
+The older project-relative approaches remain available with
+`limit_method = "quantile"` or `limit_method = "iqr"`. The absolute
+method is the default because IQR and quantile thresholds can collapse
+towards zero when most fish never approach the limits.
 
 #### Distance versus shuttling
 
@@ -572,11 +591,11 @@ limits_distance_review$plot
 
 ![](ShuttleboxR_files/figure-html/limits-distance-review-1.png)
 
-A fish with **high limit exposure and low movement** may have remained
-near a limit without responding. A fish with **high limit exposure and
-high movement** may have been actively searching but unable to reach a
-suitable temperature, which can indicate that the programmed range was
-inappropriate.
+A fish **above the limit-exposure threshold with low movement** may have
+remained near a limit without responding. A fish **above the threshold
+with high movement** may have been actively searching but unable to
+reach a suitable temperature, which can indicate that the programmed
+range was inappropriate.
 
 #### Limit exposure versus shuttling
 
@@ -592,10 +611,10 @@ limits_shuttles_review$plot
 
 ![](ShuttleboxR_files/figure-html/limits-shuttles-review-1.png)
 
-High limit exposure with few shuttles suggests little corrective
-behaviour. High limit exposure with many shuttles suggests that the fish
-was responding but the available gradient or limits may not have allowed
-it to stabilise.
+Exposure above the threshold with few shuttles suggests little
+corrective behaviour. Exposure above the threshold with many shuttles
+suggests that the fish was responding but the available gradient or
+limits may not have allowed it to stabilise.
 
 ### Step 5: interpret PCA as a map of multivariate behaviour
 
@@ -609,21 +628,21 @@ scientifically intended.
 
 ``` r
 
-pca_data <- project_data[c(
-  "fileID",
-  "Tpref",
-  "Tpref_range",
-  "grav_time",
-  "tot_distance",
-  "nr_shuttles",
-  "t_near_max",
-  "t_near_min"
-)]
-
 project_pca <- pca(
-  pca_data,
-  mahalanobis_th = 0.975,
-  dbscan_th = 1,
+  project_data,
+  variables = c(
+    "Tpref",
+    "Tpref_range",
+    "grav_time",
+    "tot_distance",
+    "nr_shuttles",
+    "t_near_max",
+    "t_near_min"
+  ),
+  mahalanobis_th = 0.99,
+  dbscan_th = 1.5,
+  dbscan_minPts = 4,
+  flag_rule = "both",
   print_labels = FALSE,
   highlight_outliers = TRUE
 )
@@ -671,24 +690,17 @@ inspect next, but `outlier_details` makes that link more explicit:
 knitr::kable(project_pca$outlier_details, digits = 2)
 ```
 
-| fileID | methods | mahalanobis_distance | potential_drivers |
-|:---|:---|---:|:---|
-| Fish_8_13_2 | Mahalanobis + DBSCAN | 23.41 | t_near_max high (4.2 SD); grav_time low (-3 SD); tot_distance high (2.4 SD) |
-| Fish_28_13_3_rev | Mahalanobis + DBSCAN | 23.43 | nr_shuttles high (4.9 SD); tot_distance high (1.4 SD); Tpref_range low (-1.1 SD) |
-| Fish_48_13_2_S | Mahalanobis + DBSCAN | 30.77 | t_near_min high (5.2 SD); grav_time high (3.7 SD); Tpref low (-3.2 SD) |
-| Fish_49_13_3_B | Mahalanobis | 15.22 | grav_time high (3.7 SD); Tpref_range low (-0.7 SD); tot_distance low (-0.4 SD) |
-| Fish_52_20_2_S | Mahalanobis + DBSCAN | 15.15 | t_near_min high (3.1 SD); Tpref_range high (3 SD); t_near_max high (2.1 SD) |
-| Fish_55_13_2_rev_S | Mahalanobis + DBSCAN | 16.72 | t_near_min high (4.2 SD); Tpref_range high (2.7 SD); Tpref low (-2.4 SD) |
-| Fish_57_20_2_rev_S | Mahalanobis + DBSCAN | 21.17 | t_near_max high (4.7 SD); Tpref high (2.2 SD); grav_time low (-1.2 SD) |
-| Fish_59_13_2_rev_S | Mahalanobis + DBSCAN | 20.63 | t_near_max high (4.3 SD); Tpref high (2.2 SD); Tpref_range high (1.9 SD) |
-| Fish_76_20_2_B_long | Mahalanobis | 14.39 | grav_time high (3.2 SD); Tpref_range high (1.4 SD); tot_distance low (-1 SD) |
-| Fish_13_13_3 | DBSCAN | 9.14 | Tpref low (-3.4 SD); t_near_min high (2.2 SD); nr_shuttles low (-1.2 SD) |
-| Fish_17_20_2_rev | DBSCAN | 11.71 | t_near_min high (3.3 SD); Tpref_range high (2.4 SD); tot_distance high (1.6 SD) |
-| Fish_33_20_3 | DBSCAN | 6.35 | t_near_max high (2.3 SD); Tpref high (1.7 SD); nr_shuttles low (-0.5 SD) |
-| Fish_46_20_2_S | DBSCAN | 6.60 | Tpref_range high (1.7 SD); tot_distance high (1.5 SD); t_near_max high (1.2 SD) |
-| Fish_53_13_2_S | DBSCAN | 10.88 | Tpref low (-3.1 SD); t_near_min high (2.6 SD); Tpref_range high (1.2 SD) |
-| Fish_63_20_2_rev_S | DBSCAN | 9.33 | t_near_max high (2.6 SD); Tpref_range high (2.3 SD); tot_distance low (-1.5 SD) |
-| Fish_81_20_2_rev_B | DBSCAN | 5.64 | Tpref_range high (2.1 SD); tot_distance low (-2 SD); Tpref low (-1.4 SD) |
+| fileID | methods | flagged | mahalanobis_distance | potential_drivers |
+|:---|:---|:---|---:|:---|
+| Fish_8_13_2 | Mahalanobis + DBSCAN | TRUE | 23.41 | t_near_max high (4.2 SD); grav_time low (-3 SD); tot_distance high (2.4 SD) |
+| Fish_28_13_3_rev | Mahalanobis | FALSE | 23.43 | nr_shuttles high (4.9 SD); tot_distance high (1.4 SD); Tpref_range low (-1.1 SD) |
+| Fish_48_13_2_S | Mahalanobis + DBSCAN | TRUE | 30.77 | t_near_min high (5.2 SD); grav_time high (3.7 SD); Tpref low (-3.2 SD) |
+| Fish_49_13_3_B | Mahalanobis | FALSE | 15.22 | grav_time high (3.7 SD); Tpref_range low (-0.7 SD); tot_distance low (-0.4 SD) |
+| Fish_52_20_2_S | Mahalanobis + DBSCAN | TRUE | 15.15 | t_near_min high (3.1 SD); Tpref_range high (3 SD); t_near_max high (2.1 SD) |
+| Fish_55_13_2_rev_S | Mahalanobis + DBSCAN | TRUE | 16.72 | t_near_min high (4.2 SD); Tpref_range high (2.7 SD); Tpref low (-2.4 SD) |
+| Fish_57_20_2_rev_S | Mahalanobis + DBSCAN | TRUE | 21.17 | t_near_max high (4.7 SD); Tpref high (2.2 SD); grav_time low (-1.2 SD) |
+| Fish_59_13_2_rev_S | Mahalanobis + DBSCAN | TRUE | 20.63 | t_near_max high (4.3 SD); Tpref high (2.2 SD); Tpref_range high (1.9 SD) |
+| Fish_63_20_2_rev_S | DBSCAN | FALSE | 9.33 | t_near_max high (2.6 SD); Tpref_range high (2.3 SD); tot_distance low (-1.5 SD) |
 
 `potential_drivers` lists the original measurements that are most
 unusually high or low for each flagged fish, expressed in project
@@ -710,9 +722,52 @@ but neither method proves invalidity. Disagreement is also informative:
 a fish can be globally unusual without being locally isolated, or
 locally isolated without being far from the overall centre.
 
-The thresholds control sensitivity. A smaller `mahalanobis_th` or
-`dbscan_th` will generally flag more fish. Thresholds should be reported
-and, where possible, checked for robustness.
+The thresholds and flagging rule control sensitivity:
+
+- Increasing `mahalanobis_th` makes the Mahalanobis screen more
+  conservative. For example, `0.99` requires a fish to be farther from
+  the multivariate centre than `0.975`.
+- Increasing `dbscan_th` allows points farther apart to remain in the
+  same local neighbourhood, and therefore usually reduces the number
+  classified as noise.
+- `dbscan_minPts` sets how many neighbouring points are needed to form a
+  dense region. Its effect depends on sample size and the structure of
+  the data, so it should be checked rather than interpreted in
+  isolation.
+- `flag_rule = "both"` highlights only fish detected by both methods and
+  is the most conservative choice. `"either"` highlights fish detected
+  by at least one method, while `"mahalanobis"` and `"dbscan"` use only
+  the named screen.
+
+The method-level detections remain available in `project_pca$outliers`.
+The fish-level table `project_pca$screening` shows which method detected
+each fish and whether it was selected under the chosen `flag_rule`:
+
+``` r
+
+knitr::kable(
+  subset(project_pca$screening, mahalanobis | dbscan),
+  digits = 2
+)
+```
+
+|  | fileID | mahalanobis | dbscan | methods | detected_by_both | flagged | flag_rule | mahalanobis_distance |
+|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| Fish_8_13_2 | Fish_8_13_2 | TRUE | TRUE | Mahalanobis + DBSCAN | TRUE | TRUE | both | 23.41 |
+| Fish_28_13_3_rev | Fish_28_13_3_rev | TRUE | FALSE | Mahalanobis | FALSE | FALSE | both | 23.43 |
+| Fish_48_13_2_S | Fish_48_13_2_S | TRUE | TRUE | Mahalanobis + DBSCAN | TRUE | TRUE | both | 30.77 |
+| Fish_49_13_3_B | Fish_49_13_3_B | TRUE | FALSE | Mahalanobis | FALSE | FALSE | both | 15.22 |
+| Fish_52_20_2_S | Fish_52_20_2_S | TRUE | TRUE | Mahalanobis + DBSCAN | TRUE | TRUE | both | 15.15 |
+| Fish_55_13_2_rev_S | Fish_55_13_2_rev_S | TRUE | TRUE | Mahalanobis + DBSCAN | TRUE | TRUE | both | 16.72 |
+| Fish_57_20_2_rev_S | Fish_57_20_2_rev_S | TRUE | TRUE | Mahalanobis + DBSCAN | TRUE | TRUE | both | 21.17 |
+| Fish_59_13_2_rev_S | Fish_59_13_2_rev_S | TRUE | TRUE | Mahalanobis + DBSCAN | TRUE | TRUE | both | 20.63 |
+| Fish_63_20_2_rev_S | Fish_63_20_2_rev_S | FALSE | TRUE | DBSCAN | FALSE | FALSE | both | 9.33 |
+
+PCA results depend on the variables included. Adding or removing
+variables can rotate the axes and substantially change the plot even
+when the fish have not changed. For that reason, the variables are
+supplied explicitly above and should always be reported with the
+thresholds and flagging rule.
 
 ### Step 6: return flagged fish to the raw trial
 

@@ -33,8 +33,10 @@ comments in `R`.
 
 ``` r
 
-devtools::build_rmd("vignettes/ShuttleboxR.Rmd")
+rmarkdown::render("vignettes/ShuttleboxR.Rmd")
 ```
+
+This creates `vignettes/ShuttleboxR.html` in the project folder.
 
 To install the package with the vignette included:
 
@@ -78,3 +80,20 @@ Pages have been enabled.
 2.  Enter a brief summary of the update.
 3.  Click **Commit to master**.
 4.  Click **Push origin**.
+
+## PCA reproducibility
+
+Always supply the `variables` argument when using
+[`pca()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/pca.md)
+in examples or analyses. This prevents a future numeric column from
+changing the PCA without the user noticing. Report `mahalanobis_th`,
+`dbscan_th`, `dbscan_minPts`, and `flag_rule` alongside the selected
+variables.
+
+## Plotting convention
+
+All ggplot-based package figures use
+[`ggplot2::theme_classic()`](https://ggplot2.tidyverse.org/reference/ggtheme.html)
+so figures have a consistent appearance without gridlines. Apply the
+same theme to any new plot functions and to plots returned by helper
+packages such as factoextra.

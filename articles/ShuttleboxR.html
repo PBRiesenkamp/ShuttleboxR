@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -210,12 +210,12 @@ acclimation and trial phases when a trial start is provided.</p>
 treated as trial data. The <code>core_T</code> values already present in
 the ShuttleSoft file are retained unless the user explicitly
 recalculates them.</p>
-<p>This vignette uses a shortened example recording included with the
-package:</p>
+<p>This vignette uses a clean, complete example recording included with
+the package:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"extdata"</span>,</span>
-<span>  <span class="st">"Fish_8_13_3_example.csv"</span>,</span>
+<span>  <span class="st">"Fish_7_13_2.csv"</span>,</span>
 <span>  package <span class="op">=</span> <span class="st">"ShuttleboxR"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -261,31 +261,31 @@ package:</p>
 <tbody>
 <tr class="odd">
 <td align="left">Tpref (°C)</td>
-<td align="right">13.720</td>
+<td align="right">17.530</td>
 </tr>
 <tr class="even">
 <td align="left">Lower Tavoid (°C)</td>
-<td align="right">12.560</td>
+<td align="right">13.780</td>
 </tr>
 <tr class="odd">
 <td align="left">Upper Tavoid (°C)</td>
-<td align="right">18.300</td>
+<td align="right">19.730</td>
 </tr>
 <tr class="even">
 <td align="left">Tpref range (°C)</td>
-<td align="right">5.740</td>
+<td align="right">5.950</td>
 </tr>
 <tr class="odd">
 <td align="left">Tbreadth (°C)</td>
-<td align="right">2.015</td>
+<td align="right">2.177</td>
 </tr>
 <tr class="even">
 <td align="left">Number of shuttles</td>
-<td align="right">37.000</td>
+<td align="right">988.000</td>
 </tr>
 <tr class="odd">
 <td align="left">Total distance (cm)</td>
-<td align="right">25630.970</td>
+<td align="right">194477.940</td>
 </tr>
 <tr class="even">
 <td align="left">Proportion successfully tracked</td>
@@ -426,7 +426,7 @@ tolerance.</p>
 <span>  <span class="va">fish</span>,</span>
 <span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2.015353</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2.176951</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -474,7 +474,7 @@ gravitation breakpoint.</p>
 <span>      subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Segmented fit was not estimable:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>      x <span class="op">=</span> <span class="st">"Time (h)"</span>, y <span class="op">=</span> <span class="st">"Core body temperature (°C)"</span></span>
 <span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">segmented_plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/plot-segmented-1.png" class="r-plt" alt="" width="672"></p>
@@ -594,11 +594,11 @@ separate plot is therefore an important quality-control step.</p>
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">extreme_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="4%">
-<col width="27%">
+<col width="3%">
+<col width="25%">
 <col width="14%">
 <col width="14%">
-<col width="39%">
+<col width="42%">
 </colgroup>
 <thead><tr class="header">
 <th align="left"></th>
@@ -613,185 +613,125 @@ separate plot is therefore an important quality-control step.</p>
 <td align="left">Fish_8_13_2</td>
 <td align="right">0.00</td>
 <td align="right">59.55</td>
-<td align="left">High upper-limit exposure</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 <tr class="even">
 <td align="left">13</td>
 <td align="left">Fish_13_13_3</td>
 <td align="right">18.80</td>
 <td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
+<td align="left">Above lower-limit threshold</td>
 </tr>
 <tr class="odd">
 <td align="left">17</td>
 <td align="left">Fish_17_20_2_rev</td>
 <td align="right">27.89</td>
 <td align="right">0.09</td>
-<td align="left">High exposure to both limits</td>
+<td align="left">Above lower-limit threshold</td>
 </tr>
 <tr class="even">
-<td align="left">23</td>
-<td align="left">Fish_23_20_3</td>
-<td align="right">0.00</td>
-<td align="right">4.71</td>
-<td align="left">High upper-limit exposure</td>
-</tr>
-<tr class="odd">
 <td align="left">33</td>
 <td align="left">Fish_33_20_3</td>
 <td align="right">0.00</td>
 <td align="right">34.49</td>
-<td align="left">High upper-limit exposure</td>
-</tr>
-<tr class="even">
-<td align="left">41</td>
-<td align="left">Fish_41_20_2_rev_B</td>
-<td align="right">0.85</td>
-<td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
-</tr>
-<tr class="odd">
-<td align="left">44</td>
-<td align="left">Fish_44_20_2_rev_S</td>
-<td align="right">0.00</td>
-<td align="right">1.67</td>
-<td align="left">High upper-limit exposure</td>
-</tr>
-<tr class="even">
-<td align="left">45</td>
-<td align="left">Fish_45_20_3_rev_B</td>
-<td align="right">0.00</td>
-<td align="right">1.18</td>
-<td align="left">High upper-limit exposure</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 <tr class="odd">
 <td align="left">46</td>
 <td align="left">Fish_46_20_2_S</td>
 <td align="right">0.00</td>
 <td align="right">19.54</td>
-<td align="left">High upper-limit exposure</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 <tr class="even">
-<td align="left">47</td>
-<td align="left">Fish_47_20_3_B</td>
-<td align="right">2.60</td>
-<td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
-</tr>
-<tr class="odd">
 <td align="left">48</td>
 <td align="left">Fish_48_13_2_S</td>
 <td align="right">41.86</td>
 <td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
-</tr>
-<tr class="even">
-<td align="left">50</td>
-<td align="left">Fish_50_20_2_S_long</td>
-<td align="right">0.62</td>
-<td align="right">0.89</td>
-<td align="left">High exposure to both limits</td>
+<td align="left">Above lower-limit threshold</td>
 </tr>
 <tr class="odd">
 <td align="left">52</td>
 <td align="left">Fish_52_20_2_S</td>
 <td align="right">26.39</td>
 <td align="right">31.14</td>
-<td align="left">High exposure to both limits</td>
+<td align="left">Above thresholds at both limits</td>
 </tr>
 <tr class="even">
 <td align="left">53</td>
 <td align="left">Fish_53_13_2_S</td>
 <td align="right">22.46</td>
 <td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
+<td align="left">Above lower-limit threshold</td>
 </tr>
 <tr class="odd">
 <td align="left">55</td>
 <td align="left">Fish_55_13_2_rev_S</td>
 <td align="right">34.50</td>
 <td align="right">0.78</td>
-<td align="left">High exposure to both limits</td>
+<td align="left">Above lower-limit threshold</td>
 </tr>
 <tr class="even">
 <td align="left">57</td>
 <td align="left">Fish_57_20_2_rev_S</td>
 <td align="right">0.00</td>
 <td align="right">65.85</td>
-<td align="left">High upper-limit exposure</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 <tr class="odd">
-<td align="left">58</td>
-<td align="left">Fish_58_20_3_rev_B</td>
-<td align="right">8.68</td>
-<td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
-</tr>
-<tr class="even">
 <td align="left">59</td>
 <td align="left">Fish_59_13_2_rev_S</td>
 <td align="right">0.00</td>
 <td align="right">60.63</td>
-<td align="left">High upper-limit exposure</td>
-</tr>
-<tr class="odd">
-<td align="left">60</td>
-<td align="left">Fish_60_13_3_rev_B</td>
-<td align="right">1.15</td>
-<td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 <tr class="even">
 <td align="left">63</td>
 <td align="left">Fish_63_20_2_rev_S</td>
 <td align="right">0.00</td>
 <td align="right">38.50</td>
-<td align="left">High upper-limit exposure</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 <tr class="odd">
-<td align="left">66</td>
-<td align="left">Fish_66_20_3_B</td>
-<td align="right">1.87</td>
-<td align="right">0.00</td>
-<td align="left">High lower-limit exposure</td>
-</tr>
-<tr class="even">
 <td align="left">71</td>
 <td align="left">Fish_71_20_3_rev_B</td>
 <td align="right">0.00</td>
 <td align="right">11.53</td>
-<td align="left">High upper-limit exposure</td>
-</tr>
-<tr class="odd">
-<td align="left">77</td>
-<td align="left">Fish_77_20_2_B</td>
-<td align="right">0.00</td>
-<td align="right">1.94</td>
-<td align="left">High upper-limit exposure</td>
-</tr>
-<tr class="even">
-<td align="left">81</td>
-<td align="left">Fish_81_20_2_rev_B</td>
-<td align="right">2.71</td>
-<td align="right">0.02</td>
-<td align="left">High exposure to both limits</td>
+<td align="left">Above upper-limit threshold</td>
 </tr>
 </tbody>
 </table>
+<p>By default, the dashed lines mark <strong>10% of analysed
+observations</strong> near each limit. This direct percentage threshold
+is easier to interpret than a project-level IQR rule and remains
+meaningful when most fish have zero exposure. A point is highlighted
+only when it exceeds the relevant threshold; any small non-zero value is
+no longer treated as “high” exposure.</p>
 <p>Interpretation:</p>
 <ul>
 <li>
-<strong>High upper-limit exposure:</strong> the fish may prefer
+<strong>Above upper-limit threshold:</strong> the fish may prefer
 warmer conditions than the programmed range permits, or it may have
 failed to move away from the warm extreme.</li>
 <li>
-<strong>High lower-limit exposure:</strong> the analogous concern at
-the cold end.</li>
+<strong>Above lower-limit threshold:</strong> the analogous concern
+at the cold end.</li>
 <li>
-<strong>High exposure to both limits:</strong> may indicate
+<strong>Above thresholds at both limits:</strong> may indicate
 unusually wide exploration, unstable system behaviour, tracking
 problems, or settings poorly matched to the species.</li>
 </ul>
+<p>The thresholds can be changed explicitly, for example:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_upper_vs_lower_extremes.html">plot_upper_vs_lower_extremes</a></span><span class="op">(</span></span>
+<span>  <span class="va">project_data</span>,</span>
+<span>  lower_limit_threshold <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  upper_limit_threshold <span class="op">=</span> <span class="fl">5</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Project-relative alternatives remain available through
+<code>limit_method = "quantile"</code> or
+<code>limit_method = "iqr"</code>, but these should be used with care in
+datasets containing many zero values.</p>
 <p>The next checks should be <code><a href="../reference/plot_T_gradient.html">plot_T_gradient()</a></code>,
 <code><a href="../reference/plot_T_segmented.html">plot_T_segmented()</a></code> and <code><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code>
 for the flagged fish.</p>
@@ -814,13 +754,20 @@ plausible but form an unexpected combination, such as many shuttles with
 little total movement.</li>
 </ol>
 <p>The optional review guides below use the 5th and 95th project
-quantiles for movement and shuttling. Time near limits is screened using
-<code>Q3 + 1.5 × IQR</code>. These thresholds are transparent starting
-points, not universal biological cutoffs.</p>
+quantiles for movement and shuttling. By default, limit exposure is
+flagged only when more than <strong>10% of analysed
+observations</strong> occurred near the programmed limits. This absolute
+threshold is a transparent starting point, not a universal biological
+cutoff, and can be changed with <code>limit_threshold</code>.</p>
+<p>The older project-relative approaches remain available with
+<code>limit_method = "quantile"</code> or
+<code>limit_method = "iqr"</code>. The absolute method is the default
+because IQR and quantile thresholds can collapse towards zero when most
+fish never approach the limits.</p>
 <div class="section level4">
 <h4 id="distance-versus-shuttling">Distance versus shuttling<a class="anchor" aria-label="anchor" href="#distance-versus-shuttling"></a>
 </h4>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distance_shuttle_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -828,7 +775,7 @@ points, not universal biological cutoffs.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/distance-shuttle-review-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -1008,7 +955,7 @@ highly active thermoregulation or agitation.</li>
 <div class="section level4">
 <h4 id="limit-exposure-versus-distance">Limit exposure versus distance<a class="anchor" aria-label="anchor" href="#limit-exposure-versus-distance"></a>
 </h4>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">limits_distance_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_limits_vs_distance.html">plot_limits_vs_distance</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1016,16 +963,16 @@ highly active thermoregulation or agitation.</li>
 <span><span class="op">)</span></span>
 <span><span class="va">limits_distance_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/limits-distance-review-1.png" class="r-plt" alt="" width="672"></p>
-<p>A fish with <strong>high limit exposure and low movement</strong> may
-have remained near a limit without responding. A fish with <strong>high
-limit exposure and high movement</strong> may have been actively
-searching but unable to reach a suitable temperature, which can indicate
-that the programmed range was inappropriate.</p>
+<p>A fish <strong>above the limit-exposure threshold with low
+movement</strong> may have remained near a limit without responding. A
+fish <strong>above the threshold with high movement</strong> may have
+been actively searching but unable to reach a suitable temperature,
+which can indicate that the programmed range was inappropriate.</p>
 </div>
 <div class="section level4">
 <h4 id="limit-exposure-versus-shuttling">Limit exposure versus shuttling<a class="anchor" aria-label="anchor" href="#limit-exposure-versus-shuttling"></a>
 </h4>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">limits_shuttles_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_limits_vs_shuttles.html">plot_limits_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1033,10 +980,10 @@ that the programmed range was inappropriate.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">limits_shuttles_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/limits-shuttles-review-1.png" class="r-plt" alt="" width="672"></p>
-<p>High limit exposure with few shuttles suggests little corrective
-behaviour. High limit exposure with many shuttles suggests that the fish
-was responding but the available gradient or limits may not have allowed
-it to stabilise.</p>
+<p>Exposure above the threshold with few shuttles suggests little
+corrective behaviour. Exposure above the threshold with many shuttles
+suggests that the fish was responding but the available gradient or
+limits may not have allowed it to stabilise.</p>
 </div>
 </div>
 <div class="section level3">
@@ -1048,22 +995,22 @@ unusual. It compresses correlated metrics into principal components.</p>
 including every numeric column, and avoid including several
 mathematically redundant variables unless that redundancy is
 scientifically intended.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pca_data</span> <span class="op">&lt;-</span> <span class="va">project_data</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"fileID"</span>,</span>
-<span>  <span class="st">"Tpref"</span>,</span>
-<span>  <span class="st">"Tpref_range"</span>,</span>
-<span>  <span class="st">"grav_time"</span>,</span>
-<span>  <span class="st">"tot_distance"</span>,</span>
-<span>  <span class="st">"nr_shuttles"</span>,</span>
-<span>  <span class="st">"t_near_max"</span>,</span>
-<span>  <span class="st">"t_near_min"</span></span>
-<span><span class="op">)</span><span class="op">]</span></span>
-<span></span>
-<span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pca.html">pca</a></span><span class="op">(</span></span>
-<span>  <span class="va">pca_data</span>,</span>
-<span>  mahalanobis_th <span class="op">=</span> <span class="fl">0.975</span>,</span>
-<span>  dbscan_th <span class="op">=</span> <span class="fl">1</span>,</span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pca.html">pca</a></span><span class="op">(</span></span>
+<span>  <span class="va">project_data</span>,</span>
+<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Tpref"</span>,</span>
+<span>    <span class="st">"Tpref_range"</span>,</span>
+<span>    <span class="st">"grav_time"</span>,</span>
+<span>    <span class="st">"tot_distance"</span>,</span>
+<span>    <span class="st">"nr_shuttles"</span>,</span>
+<span>    <span class="st">"t_near_max"</span>,</span>
+<span>    <span class="st">"t_near_min"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  mahalanobis_th <span class="op">=</span> <span class="fl">0.99</span>,</span>
+<span>  dbscan_th <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  dbscan_minPts <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  flag_rule <span class="op">=</span> <span class="st">"both"</span>,</span>
 <span>  print_labels <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  highlight_outliers <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -1079,7 +1026,7 @@ of variation, PC2 the next largest, and so on. The PC1-PC2 biplot is
 only a two-dimensional view. If PC1 and PC2 explain a modest fraction of
 total variation, fish can be unusual in later components even when they
 do not appear extreme on the biplot.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">biplot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/pca-biplot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
@@ -1111,18 +1058,20 @@ is likely to have a relatively low value.</li>
 <p>Flagged fish are circled and labelled. The arrows suggest what to
 inspect next, but <code>outlier_details</code> makes that link more
 explicit:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">outlier_details</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="13%">
+<col width="12%">
 <col width="14%">
+<col width="5%">
 <col width="14%">
-<col width="56%">
+<col width="54%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">fileID</th>
 <th align="left">methods</th>
+<th align="left">flagged</th>
 <th align="right">mahalanobis_distance</th>
 <th align="left">potential_drivers</th>
 </tr></thead>
@@ -1130,13 +1079,15 @@ explicit:</p>
 <tr class="odd">
 <td align="left">Fish_8_13_2</td>
 <td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
 <td align="right">23.41</td>
 <td align="left">t_near_max high (4.2 SD); grav_time low (-3 SD);
 tot_distance high (2.4 SD)</td>
 </tr>
 <tr class="even">
 <td align="left">Fish_28_13_3_rev</td>
-<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">Mahalanobis</td>
+<td align="left">FALSE</td>
 <td align="right">23.43</td>
 <td align="left">nr_shuttles high (4.9 SD); tot_distance high (1.4 SD);
 Tpref_range low (-1.1 SD)</td>
@@ -1144,6 +1095,7 @@ Tpref_range low (-1.1 SD)</td>
 <tr class="odd">
 <td align="left">Fish_48_13_2_S</td>
 <td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
 <td align="right">30.77</td>
 <td align="left">t_near_min high (5.2 SD); grav_time high (3.7 SD);
 Tpref low (-3.2 SD)</td>
@@ -1151,6 +1103,7 @@ Tpref low (-3.2 SD)</td>
 <tr class="even">
 <td align="left">Fish_49_13_3_B</td>
 <td align="left">Mahalanobis</td>
+<td align="left">FALSE</td>
 <td align="right">15.22</td>
 <td align="left">grav_time high (3.7 SD); Tpref_range low (-0.7 SD);
 tot_distance low (-0.4 SD)</td>
@@ -1158,6 +1111,7 @@ tot_distance low (-0.4 SD)</td>
 <tr class="odd">
 <td align="left">Fish_52_20_2_S</td>
 <td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
 <td align="right">15.15</td>
 <td align="left">t_near_min high (3.1 SD); Tpref_range high (3 SD);
 t_near_max high (2.1 SD)</td>
@@ -1165,6 +1119,7 @@ t_near_max high (2.1 SD)</td>
 <tr class="even">
 <td align="left">Fish_55_13_2_rev_S</td>
 <td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
 <td align="right">16.72</td>
 <td align="left">t_near_min high (4.2 SD); Tpref_range high (2.7 SD);
 Tpref low (-2.4 SD)</td>
@@ -1172,6 +1127,7 @@ Tpref low (-2.4 SD)</td>
 <tr class="odd">
 <td align="left">Fish_57_20_2_rev_S</td>
 <td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
 <td align="right">21.17</td>
 <td align="left">t_near_max high (4.7 SD); Tpref high (2.2 SD);
 grav_time low (-1.2 SD)</td>
@@ -1179,65 +1135,18 @@ grav_time low (-1.2 SD)</td>
 <tr class="even">
 <td align="left">Fish_59_13_2_rev_S</td>
 <td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
 <td align="right">20.63</td>
 <td align="left">t_near_max high (4.3 SD); Tpref high (2.2 SD);
 Tpref_range high (1.9 SD)</td>
 </tr>
 <tr class="odd">
-<td align="left">Fish_76_20_2_B_long</td>
-<td align="left">Mahalanobis</td>
-<td align="right">14.39</td>
-<td align="left">grav_time high (3.2 SD); Tpref_range high (1.4 SD);
-tot_distance low (-1 SD)</td>
-</tr>
-<tr class="even">
-<td align="left">Fish_13_13_3</td>
-<td align="left">DBSCAN</td>
-<td align="right">9.14</td>
-<td align="left">Tpref low (-3.4 SD); t_near_min high (2.2 SD);
-nr_shuttles low (-1.2 SD)</td>
-</tr>
-<tr class="odd">
-<td align="left">Fish_17_20_2_rev</td>
-<td align="left">DBSCAN</td>
-<td align="right">11.71</td>
-<td align="left">t_near_min high (3.3 SD); Tpref_range high (2.4 SD);
-tot_distance high (1.6 SD)</td>
-</tr>
-<tr class="even">
-<td align="left">Fish_33_20_3</td>
-<td align="left">DBSCAN</td>
-<td align="right">6.35</td>
-<td align="left">t_near_max high (2.3 SD); Tpref high (1.7 SD);
-nr_shuttles low (-0.5 SD)</td>
-</tr>
-<tr class="odd">
-<td align="left">Fish_46_20_2_S</td>
-<td align="left">DBSCAN</td>
-<td align="right">6.60</td>
-<td align="left">Tpref_range high (1.7 SD); tot_distance high (1.5 SD);
-t_near_max high (1.2 SD)</td>
-</tr>
-<tr class="even">
-<td align="left">Fish_53_13_2_S</td>
-<td align="left">DBSCAN</td>
-<td align="right">10.88</td>
-<td align="left">Tpref low (-3.1 SD); t_near_min high (2.6 SD);
-Tpref_range high (1.2 SD)</td>
-</tr>
-<tr class="odd">
 <td align="left">Fish_63_20_2_rev_S</td>
 <td align="left">DBSCAN</td>
+<td align="left">FALSE</td>
 <td align="right">9.33</td>
 <td align="left">t_near_max high (2.6 SD); Tpref_range high (2.3 SD);
 tot_distance low (-1.5 SD)</td>
-</tr>
-<tr class="even">
-<td align="left">Fish_81_20_2_rev_B</td>
-<td align="left">DBSCAN</td>
-<td align="right">5.64</td>
-<td align="left">Tpref_range high (2.1 SD); tot_distance low (-2 SD);
-Tpref low (-1.4 SD)</td>
 </tr>
 </tbody>
 </table>
@@ -1267,16 +1176,171 @@ inspection, but neither method proves invalidity. Disagreement is also
 informative: a fish can be globally unusual without being locally
 isolated, or locally isolated without being far from the overall
 centre.</p>
-<p>The thresholds control sensitivity. A smaller
-<code>mahalanobis_th</code> or <code>dbscan_th</code> will generally
-flag more fish. Thresholds should be reported and, where possible,
-checked for robustness.</p>
+<p>The thresholds and flagging rule control sensitivity:</p>
+<ul>
+<li>Increasing <code>mahalanobis_th</code> makes the Mahalanobis screen
+more conservative. For example, <code>0.99</code> requires a fish to be
+farther from the multivariate centre than <code>0.975</code>.</li>
+<li>Increasing <code>dbscan_th</code> allows points farther apart to
+remain in the same local neighbourhood, and therefore usually reduces
+the number classified as noise.</li>
+<li>
+<code>dbscan_minPts</code> sets how many neighbouring points are
+needed to form a dense region. Its effect depends on sample size and the
+structure of the data, so it should be checked rather than interpreted
+in isolation.</li>
+<li>
+<code>flag_rule = "both"</code> highlights only fish detected by
+both methods and is the most conservative choice. <code>"either"</code>
+highlights fish detected by at least one method, while
+<code>"mahalanobis"</code> and <code>"dbscan"</code> use only the named
+screen.</li>
+</ul>
+<p>The method-level detections remain available in
+<code>project_pca$outliers</code>. The fish-level table
+<code>project_pca$screening</code> shows which method detected each fish
+and whether it was selected under the chosen <code>flag_rule</code>:</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">screening</span>, <span class="va">mahalanobis</span> <span class="op">|</span> <span class="va">dbscan</span><span class="op">)</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="14%">
+<col width="14%">
+<col width="8%">
+<col width="5%">
+<col width="15%">
+<col width="12%">
+<col width="5%">
+<col width="7%">
+<col width="15%">
+</colgroup>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">fileID</th>
+<th align="left">mahalanobis</th>
+<th align="left">dbscan</th>
+<th align="left">methods</th>
+<th align="left">detected_by_both</th>
+<th align="left">flagged</th>
+<th align="left">flag_rule</th>
+<th align="right">mahalanobis_distance</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fish_8_13_2</td>
+<td align="left">Fish_8_13_2</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">both</td>
+<td align="right">23.41</td>
+</tr>
+<tr class="even">
+<td align="left">Fish_28_13_3_rev</td>
+<td align="left">Fish_28_13_3_rev</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">Mahalanobis</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">both</td>
+<td align="right">23.43</td>
+</tr>
+<tr class="odd">
+<td align="left">Fish_48_13_2_S</td>
+<td align="left">Fish_48_13_2_S</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">both</td>
+<td align="right">30.77</td>
+</tr>
+<tr class="even">
+<td align="left">Fish_49_13_3_B</td>
+<td align="left">Fish_49_13_3_B</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">Mahalanobis</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">both</td>
+<td align="right">15.22</td>
+</tr>
+<tr class="odd">
+<td align="left">Fish_52_20_2_S</td>
+<td align="left">Fish_52_20_2_S</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">both</td>
+<td align="right">15.15</td>
+</tr>
+<tr class="even">
+<td align="left">Fish_55_13_2_rev_S</td>
+<td align="left">Fish_55_13_2_rev_S</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">both</td>
+<td align="right">16.72</td>
+</tr>
+<tr class="odd">
+<td align="left">Fish_57_20_2_rev_S</td>
+<td align="left">Fish_57_20_2_rev_S</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">both</td>
+<td align="right">21.17</td>
+</tr>
+<tr class="even">
+<td align="left">Fish_59_13_2_rev_S</td>
+<td align="left">Fish_59_13_2_rev_S</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">Mahalanobis + DBSCAN</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">both</td>
+<td align="right">20.63</td>
+</tr>
+<tr class="odd">
+<td align="left">Fish_63_20_2_rev_S</td>
+<td align="left">Fish_63_20_2_rev_S</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">DBSCAN</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">both</td>
+<td align="right">9.33</td>
+</tr>
+</tbody>
+</table>
+<p>PCA results depend on the variables included. Adding or removing
+variables can rotate the axes and substantially change the plot even
+when the fish have not changed. For that reason, the variables are
+supplied explicitly above and should always be reported with the
+thresholds and flagging rule.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="step-6-return-flagged-fish-to-the-raw-trial">Step 6: return flagged fish to the raw trial<a class="anchor" aria-label="anchor" href="#step-6-return-flagged-fish-to-the-raw-trial"></a>
 </h3>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish_to_check</span> <span class="op">&lt;-</span> <span class="va">all_fish</span><span class="op">[[</span><span class="st">"Fish_17.txt"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
@@ -1319,12 +1383,12 @@ metrics do not appear extreme.</p>
 <h3 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h3>
 <p>Open the help page for any function with, for example:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">calc_Tbreadth</span></span>
 <span><span class="op">?</span><span class="va">plot_distance_vs_shuttles</span></span>
 <span><span class="op">?</span><span class="va">pca</span></span></code></pre></div>
 <p>List all package help pages with:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
