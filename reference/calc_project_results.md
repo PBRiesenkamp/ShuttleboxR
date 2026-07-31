@@ -3,8 +3,10 @@
 Calculates the standard ShuttleboxR metrics for every trial in a list,
 such as the object returned by
 [`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md).
-The output now includes effective selected thermal breadth from
-[`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md).
+The output includes selected thermal breadth from
+[`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
+calculated as the mean pairwise difference among observed core
+temperatures.
 
 ## Usage
 
@@ -19,7 +21,6 @@ calc_project_results(
   exclude_end_minutes = 0,
   Tpref_method = "median",
   Tavoid_percentiles = c(0.05, 0.95),
-  Tbreadth_bin_size = 0.1,
   textremes_threshold = expression(0.2 * (max(df$max_T) - max(df$min_T))),
   core_T_variance_type = "std_error"
 )
@@ -70,12 +71,6 @@ calc_project_results(
   Lower and upper percentiles used by
   [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md).
   Default is `c(0.05, 0.95)`.
-
-- Tbreadth_bin_size:
-
-  Bin width in degrees Celsius used by
-  [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md).
-  Default is 0.1.
 
 - textremes_threshold:
 

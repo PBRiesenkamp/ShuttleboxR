@@ -25,7 +25,7 @@ fish.
 - [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md)
   : Calculate the avoidance temperatures
 - [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md)
-  : Calculate effective selected thermal breadth
+  : Calculate selected thermal breadth
 - [`calc_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_extremes.md)
   : Calculate the time spent near the extremes
 - [`calc_tot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_tot_distance.md)
@@ -92,6 +92,8 @@ review.
   : Plot distance versus time spent near limits across project data
 - [`plot_limits_vs_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_limits_vs_shuttles.md)
   : Plot time spent near limits versus shuttles across project data
+- [`plot_upper_vs_lower_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_upper_vs_lower_extremes.md)
+  : Plot upper versus lower temperature-limit exposure
 - [`correlation_matrix()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/correlation_matrix.md)
   : Plot a correlation matrix of selected shuttle-box metrics
 - [`pca()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/pca.md)

@@ -1,9 +1,10 @@
 # Plot the distribution of core body temperatures
 
 Plots the percentage of observations within fixed-width `core_T` bins.
-The plot can show the midpoint of the most frequently occupied
-temperature bin and the effective selected thermal breadth calculated
-from the same bins.
+The histogram shows distribution shape, while the subtitle can report
+median `Tpref` and Tbreadth. Tbreadth is calculated from the original
+observations as the mean pairwise temperature difference; the visual
+`bin_size` does not affect its value.
 
 ## Usage
 
@@ -27,8 +28,8 @@ plot_coreT_histogram(
 
 - bin_size:
 
-  Width of the temperature bins in degrees Celsius. Default is 0.1. Use
-  the same value when comparing animals.
+  Width of the displayed temperature bins in degrees Celsius. Default is
+  0.1. This affects only the appearance of the histogram.
 
 - exclude_start_minutes:
 
@@ -44,13 +45,13 @@ plot_coreT_histogram(
 
 - show_Tpref:
 
-  Logical. Show a dashed line at the midpoint of the most frequently
-  occupied temperature bin. Default is `TRUE`.
+  Logical. Show a dashed line at median `core_T`, the default definition
+  of `Tpref`. Default is `TRUE`.
 
 - show_Tbreadth:
 
-  Logical. Report effective selected thermal breadth in the plot
-  subtitle. Default is `TRUE`.
+  Logical. Report selected thermal breadth in the plot subtitle. Default
+  is `TRUE`.
 
 ## Value
 

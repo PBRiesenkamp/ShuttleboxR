@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,20 @@
       <small>Source: <a href="https://github.com/PBRiesenkamp/ShuttleboxR/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9007" id="shuttleboxr-0009007">ShuttleboxR 0.0.0.9007<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009007"></a></h2>
+<ul><li>Fixed vignette-building failures in the project-level screening plots. Quantile values are now stored without inherited percentile names, so cutoff lookups such as <code>lower_limit_high</code>, <code>distance_low</code>, and <code>shuttles_high</code> work correctly.</li>
+<li>Applied the same correction to <code><a href="../reference/plot_upper_vs_lower_extremes.html">plot_upper_vs_lower_extremes()</a></code>, <code><a href="../reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles()</a></code>, <code><a href="../reference/plot_limits_vs_distance.html">plot_limits_vs_distance()</a></code>, and <code><a href="../reference/plot_limits_vs_shuttles.html">plot_limits_vs_shuttles()</a></code>.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9006" id="shuttleboxr-0009006">ShuttleboxR 0.0.0.9006<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009006"></a></h2>
+<ul><li>Replaced the original bin-diversity definition of <code>Tbreadth</code> with the mean absolute difference between pairs of observed core temperatures (the Gini mean difference).</li>
+<li>
+<code><a href="../reference/calc_Tbreadth.html">calc_Tbreadth()</a></code> now accounts for the actual distance between occupied temperatures, does not use histogram bins, and is not centred on <code>Tpref</code>.</li>
+<li>Updated <code><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code> so its bin width affects only the visual histogram; the displayed Tbreadth is calculated from the original observations. The Tpref line now shows median core temperature.</li>
+<li>Rewrote the README, vignette, examples and help pages with plain-language and worked explanations, including the 50% at 10 degrees Celsius / 50% at 20 degrees Celsius example.</li>
+<li>Removed the obsolete <code>Tbreadth_bin_size</code> argument from <code><a href="../reference/calc_project_results.html">calc_project_results()</a></code>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.9004" id="shuttleboxr-0009004">ShuttleboxR 0.0.0.9004<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009004"></a></h2>
 <ul><li>Reframed the README, vignette, package overview and website reference index around the package’s three-stage workflow: import and organise, calculate metrics, and inspect and troubleshoot.</li>

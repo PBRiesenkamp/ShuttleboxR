@@ -123,15 +123,36 @@ The thermal metrics answer related but distinct questions:
 - `Tavoid_lower` and `Tavoid_upper` are lower and upper percentiles of
   the `core_T` distribution.
 - `Tpref_range` is the difference between those avoidance temperatures.
-- `Tbreadth` uses the full frequency distribution and becomes larger
-  when time is distributed more broadly and evenly across temperatures.
+- `Tbreadth` describes how far apart the temperatures experienced by the
+  fish were. It is the average absolute difference between the
+  temperatures at two randomly selected observations from the trial.
 
-`Tbreadth` is expressed in degrees Celsius but is not a physiological
-tolerance limit. Use the same `bin_size` for every fish being compared:
+### What does Tbreadth mean?
+
+Imagine choosing two moments from the trial and asking how different the
+fish’s core temperature was at those moments. Repeat that for every
+possible pair and take the average. That average is `Tbreadth`.
+
+- A fish that remains at nearly one temperature has a Tbreadth close to
+  0 °C.
+- Equal time at 20 °C and 21 °C gives a Tbreadth of 0.5 °C.
+- Equal time at 10 °C and 20 °C gives a Tbreadth of 5 °C.
+
+The final example gives 5 °C, rather than 10 °C, because half of the
+possible pairs compare two equal temperatures and half compare
+temperatures 10 °C apart.
+
+`Tbreadth` is **not centred on Tpref**, does not define a lower and
+upper boundary, and does not depend on histogram bin size. It summarises
+overall spread, while
+[`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md)
+shows whether that spread is symmetrical, skewed, or split into multiple
+peaks.
 
 ``` r
 
-calc_Tbreadth(fish, bin_size = 0.1)
+calc_Tbreadth(fish)
+plot_coreT_histogram(fish)
 ```
 
 ### 3. Inspect the trial
@@ -201,8 +222,7 @@ project_results <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
-  Tavoid_percentiles = c(0.05, 0.95),
-  Tbreadth_bin_size = 0.1
+  Tavoid_percentiles = c(0.05, 0.95)
 )
 ```
 
