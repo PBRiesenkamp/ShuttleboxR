@@ -41,6 +41,80 @@ investigation, not the end of one.
 library(ShuttleboxR)
 ```
 
+### Choose your starting point
+
+The correct import function depends on the structure of the data you
+already have. ShuttleboxR has three entry points:
+
+| Starting data | Import function | Resulting object | What happens next |
+|----|----|----|----|
+| One raw ShuttleSoft trial for one fish | [`read_shuttlesoft()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft.md) | `fish`: time-by-time observations for one trial | Calculate and inspect that fish |
+| A folder of raw ShuttleSoft trials, one file per fish | [`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md) | `all_fish`: a named list of raw trials | Use [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md) to create `project_data` |
+| One existing project-summary CSV, with one row per fish | [`read_project_database()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_project_database.md) | `project_data`: the project summary table | Go directly to project-level plots and screening |
+
+#### Starting point 1: one raw trial file
+
+``` r
+
+fish <- read_shuttlesoft(file.choose())
+```
+
+Use this route when the file contains the time-by-time ShuttleSoft
+recording for one fish. The individual-level functions then calculate
+and inspect that trial.
+
+#### Starting point 2: a folder of raw trial files
+
+``` r
+
+all_fish <- read_shuttlesoft_project(
+  directory = choose.dir()
+)
+
+project_data <- calc_project_results(all_fish)
+```
+
+The Windows dialogue created by `choose.dir()` displays folders rather
+than the individual `.txt` or `.csv` files inside them. Navigate to the
+folder containing all raw trial files and click **Select Folder**.
+`all_fish` is a list containing the raw time series for each fish;
+`project_data` is the one-row-per-fish summary table calculated from
+those trials.
+
+#### Starting point 3: an existing project-summary CSV
+
+``` r
+
+project_data <- read_project_database(file.choose())
+```
+
+Use this route when the CSV already contains one row per fish and
+columns such as `Tpref`, `nr_shuttles`, `tot_distance` and
+`t_near_limits`. This route goes straight to the project-level
+inspection functions. Do not import a summary table with
+[`read_shuttlesoft()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft.md)
+or
+[`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md),
+because those functions expect raw time-series recordings.
+
+``` text
+One raw fish file     -> read_shuttlesoft()         -> fish
+Folder of raw files   -> read_shuttlesoft_project() -> all_fish
+                                                |
+                                                v
+                                     calc_project_results()
+                                                |
+                                                v
+                                           project_data
+
+Existing summary CSV -> read_project_database()    -> project_data
+```
+
+An existing summary file can only provide metrics already stored in that
+file. For example, `Tbreadth` cannot be reconstructed from `Tpref` and
+avoidance temperatures alone; it must either be present in the summary
+table or be recalculated from the raw trial recordings.
+
 ### The inspection logic
 
 A fish may stand out for several different reasons, and those reasons
@@ -357,9 +431,13 @@ temperature and species ecology.
 
 ## Branch 2: screen the complete project
 
-### Step 1: compile one row of metrics per fish
+### Step 1: create or import the project-level summary table
 
-Import all raw files from one folder:
+There are two routes into Branch 2.
+
+#### Route A: start from a folder of raw trial files
+
+Import all raw `.txt` or `.csv` recordings from one folder:
 
 ``` r
 
@@ -368,11 +446,16 @@ all_fish <- read_shuttlesoft_project(
 )
 ```
 
-Then calculate the same metrics for every fish:
+The folder-selection dialogue shows folders rather than individual
+files. Select the folder that contains all raw trials. The resulting
+`all_fish` object is a named list containing one time-series dataset per
+fish.
+
+Then calculate the same summary metrics for every fish:
 
 ``` r
 
-project_results <- calc_project_results(
+project_data <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
@@ -380,8 +463,28 @@ project_results <- calc_project_results(
 )
 ```
 
-An existing project-results CSV can be loaded directly. The package
-includes an 85-fish example database:
+The resulting `project_data` object contains one row per fish and can be
+passed to all project-level plots and screening functions.
+
+#### Route B: start from an existing project-summary CSV
+
+When a CSV already contains one row per fish and the required summary
+columns, load it directly:
+
+``` r
+
+project_data <- read_project_database(file.choose())
+```
+
+This route does not use
+[`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md)
+or
+[`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md).
+It is appropriate only for a summary table, not a raw ShuttleSoft
+recording.
+
+The package includes an 85-fish example summary database, which is used
+for the remainder of this vignette:
 
 ``` r
 

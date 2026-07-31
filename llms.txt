@@ -66,6 +66,74 @@ Then load the package:
 library(ShuttleboxR)
 ```
 
+## Choose your starting point
+
+The correct import function depends on what kind of file or files you
+already have. ShuttleboxR supports three starting points:
+
+| Starting data | Import function | Resulting object | Next step |
+|----|----|----|----|
+| One raw ShuttleSoft trial for one fish | [`read_shuttlesoft()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft.md) | `fish`: time-by-time observations for one fish | Calculate and inspect single-trial metrics |
+| A folder of raw ShuttleSoft trials, one file per fish | [`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md) | `all_fish`: a named list of raw fish trials | Use [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md) to create `project_data` |
+| One existing project-summary CSV, with one row per fish | [`read_project_database()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_project_database.md) | `project_data`: the project-level summary table | Go directly to project-level inspection |
+
+### One raw trial file
+
+``` r
+
+fish <- read_shuttlesoft(file.choose())
+```
+
+Use this route when the selected file contains the time-by-time
+ShuttleSoft recording for one fish.
+
+### A folder of raw trial files
+
+``` r
+
+all_fish <- read_shuttlesoft_project(
+  directory = choose.dir()
+)
+
+project_data <- calc_project_results(all_fish)
+```
+
+The Windows dialogue created by `choose.dir()` displays folders rather
+than the individual `.txt` or `.csv` files inside them. Navigate to the
+folder containing all raw trial files and click **Select Folder**.
+`all_fish` is a list of raw trials; `project_data` is the resulting
+one-row-per-fish summary table.
+
+### An existing project-summary file
+
+``` r
+
+project_data <- read_project_database(file.choose())
+```
+
+Use this route when the selected CSV already contains one row per fish
+and summary columns such as `Tpref`, `nr_shuttles`, `tot_distance` and
+`t_near_limits`. Do not pass an existing project-summary table through
+[`read_shuttlesoft()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft.md)
+or
+[`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md),
+because those functions expect raw time-series recordings.
+
+In brief:
+
+``` text
+One raw fish file     -> read_shuttlesoft()         -> fish
+Folder of raw files   -> read_shuttlesoft_project() -> all_fish
+                                                |
+                                                v
+                                     calc_project_results()
+                                                |
+                                                v
+                                           project_data
+
+Existing summary CSV -> read_project_database()    -> project_data
+```
+
 ## Branch 1: analyse and inspect one fish
 
 ### 1. Import and organise
@@ -200,10 +268,14 @@ doorway use or other patterns that deserve closer examination.
 
 ## Branch 2: inspect a complete project
 
-### 1. Import all trials
+### 1. Create or import `project_data`
 
-Place the raw files for a project in one folder and import them as a
-named list:
+There are two routes into the project-level workflow.
+
+**Route A: start from a folder of raw trial files**
+
+Place the raw `.txt` or `.csv` files for all fish in one folder and
+import them as a named list:
 
 ``` r
 
@@ -212,8 +284,9 @@ all_fish <- read_shuttlesoft_project(
 )
 ```
 
-A metadata table is optional. It is useful when individual files have
-different trial start times:
+The folder-selection window shows folders, not the individual trial
+files. Select the folder containing all raw recordings. A metadata table
+is optional and is useful when files have different trial start times:
 
 ``` r
 
@@ -228,11 +301,11 @@ all_fish <- read_shuttlesoft_project(
 )
 ```
 
-### 2. Calculate one row of results per fish
+Calculate one row of summary metrics per fish:
 
 ``` r
 
-project_results <- calc_project_results(
+project_data <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
@@ -240,23 +313,31 @@ project_results <- calc_project_results(
 )
 ```
 
-This creates a project-level database containing thermal, activity,
-occupancy, tracking and movement metrics for every trial.
+**Route B: start from an existing project-summary CSV**
 
-An existing project-results CSV can instead be loaded with:
+When the CSV already contains one row per fish and the required summary
+metrics, import it directly:
 
 ``` r
 
-project_results <- read_project_database(file.choose())
+project_data <- read_project_database(file.choose())
 ```
 
-### 3. Flag unusual trials for individual review
+This route skips
+[`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md)
+and
+[`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md).
+It does not calculate metrics that are absent from the summary file; for
+example, `Tbreadth` must be recalculated from the original raw trials if
+it is not already present.
+
+### 2. Flag unusual trials for individual review
 
 Start with the distributions of key metrics:
 
 ``` r
 
-possible_outliers <- plot_histograms(project_results)
+possible_outliers <- plot_histograms(project_data)
 ```
 
 Then inspect relationships that can distinguish different kinds of
@@ -266,26 +347,26 @@ because it separates overall movement from movement between chambers:
 ``` r
 
 distance_shuttle_review <- plot_distance_vs_shuttles(
-  project_results,
+  project_data,
   highlight_cases = TRUE,
   return_cases = TRUE
 )
 distance_shuttle_review$plot
 
 plot_limits_vs_distance(
-  project_results,
+  project_data,
   highlight_cases = TRUE,
   limit_threshold = 10,
   label_points = FALSE
 )
 plot_limits_vs_shuttles(
-  project_results,
+  project_data,
   highlight_cases = TRUE,
   limit_threshold = 10,
   label_points = FALSE
 )
 plot_upper_vs_lower_extremes(
-  project_results,
+  project_data,
   lower_limit_threshold = 10,
   upper_limit_threshold = 10
 )
@@ -307,7 +388,7 @@ metrics and unexpected combinations before running PCA:
 ``` r
 
 correlation_matrix(
-  project_results,
+  project_data,
   columns = c(
     "Tpref", "Tpref_range", "grav_time",
     "tot_distance", "nr_shuttles", "t_near_limits"
@@ -320,7 +401,7 @@ PCA then provides a complementary multivariate overview:
 ``` r
 
 project_pca <- pca(
-  project_results,
+  project_data,
   variables = c(
     "Tpref", "Tavoid_lower", "Tavoid_upper",
     "tot_distance", "nr_shuttles", "t_near_limits"

@@ -112,6 +112,105 @@ of an investigation, not the end of one.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PBRiesenkamp/ShuttleboxR" class="external-link">ShuttleboxR</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="choose-your-starting-point">Choose your starting point<a class="anchor" aria-label="anchor" href="#choose-your-starting-point"></a>
+</h3>
+<p>The correct import function depends on the structure of the data you
+already have. ShuttleboxR has three entry points:</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Starting data</th>
+<th>Import function</th>
+<th>Resulting object</th>
+<th>What happens next</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>One raw ShuttleSoft trial for one fish</td>
+<td><code><a href="../reference/read_shuttlesoft.html">read_shuttlesoft()</a></code></td>
+<td>
+<code>fish</code>: time-by-time observations for one trial</td>
+<td>Calculate and inspect that fish</td>
+</tr>
+<tr class="even">
+<td>A folder of raw ShuttleSoft trials, one file per fish</td>
+<td><code><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code></td>
+<td>
+<code>all_fish</code>: a named list of raw trials</td>
+<td>Use <code><a href="../reference/calc_project_results.html">calc_project_results()</a></code> to create
+<code>project_data</code>
+</td>
+</tr>
+<tr class="odd">
+<td>One existing project-summary CSV, with one row per fish</td>
+<td><code><a href="../reference/read_project_database.html">read_project_database()</a></code></td>
+<td>
+<code>project_data</code>: the project summary table</td>
+<td>Go directly to project-level plots and screening</td>
+</tr>
+</tbody>
+</table>
+<div class="section level4">
+<h4 id="starting-point-1-one-raw-trial-file">Starting point 1: one raw trial file<a class="anchor" aria-label="anchor" href="#starting-point-1-one-raw-trial-file"></a>
+</h4>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_shuttlesoft.html">read_shuttlesoft</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Use this route when the file contains the time-by-time ShuttleSoft
+recording for one fish. The individual-level functions then calculate
+and inspect that trial.</p>
+</div>
+<div class="section level4">
+<h4 id="starting-point-2-a-folder-of-raw-trial-files">Starting point 2: a folder of raw trial files<a class="anchor" aria-label="anchor" href="#starting-point-2-a-folder-of-raw-trial-files"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all_fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project</a></span><span class="op">(</span></span>
+<span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span><span class="va">all_fish</span><span class="op">)</span></span></code></pre></div>
+<p>The Windows dialogue created by <code>choose.dir()</code> displays
+folders rather than the individual <code>.txt</code> or
+<code>.csv</code> files inside them. Navigate to the folder containing
+all raw trial files and click <strong>Select Folder</strong>.
+<code>all_fish</code> is a list containing the raw time series for each
+fish; <code>project_data</code> is the one-row-per-fish summary table
+calculated from those trials.</p>
+</div>
+<div class="section level4">
+<h4 id="starting-point-3-an-existing-project-summary-csv">Starting point 3: an existing project-summary CSV<a class="anchor" aria-label="anchor" href="#starting-point-3-an-existing-project-summary-csv"></a>
+</h4>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_project_database.html">read_project_database</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Use this route when the CSV already contains one row per fish and
+columns such as <code>Tpref</code>, <code>nr_shuttles</code>,
+<code>tot_distance</code> and <code>t_near_limits</code>. This route
+goes straight to the project-level inspection functions. Do not import a
+summary table with <code><a href="../reference/read_shuttlesoft.html">read_shuttlesoft()</a></code> or
+<code><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code>, because those functions expect
+raw time-series recordings.</p>
+<pre class="text"><code>One raw fish file     -&gt; read_shuttlesoft()         -&gt; fish
+Folder of raw files   -&gt; read_shuttlesoft_project() -&gt; all_fish
+                                                |
+                                                v
+                                     calc_project_results()
+                                                |
+                                                v
+                                           project_data
+
+Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code></pre>
+<p>An existing summary file can only provide metrics already stored in
+that file. For example, <code>Tbreadth</code> cannot be reconstructed
+from <code>Tpref</code> and avoidance temperatures alone; it must either
+be present in the summary table or be recalculated from the raw trial
+recordings.</p>
+</div>
+</div>
+<div class="section level3">
 <h3 id="the-inspection-logic">The inspection logic<a class="anchor" aria-label="anchor" href="#the-inspection-logic"></a>
 </h3>
 <p>A fish may stand out for several different reasons, and those reasons
@@ -195,13 +294,13 @@ biological reason, not simply on distance from the project mean.</p>
 </h3>
 <p>Select a ShuttleSoft <code>.txt</code> file or <code>.csv</code>
 export:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_shuttlesoft.html">read_shuttlesoft</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/read_shuttlesoft.html">read_shuttlesoft()</a></code> imports and prepares the recording.
 It creates elapsed seconds and hours, identifies shuttle events,
 converts required columns to the expected formats, and labels
 acclimation and trial phases when a trial start is provided.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_shuttlesoft.html">read_shuttlesoft</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  trial_start <span class="op">=</span> <span class="st">"13:30:00"</span></span>
@@ -212,7 +311,7 @@ the ShuttleSoft file are retained unless the user explicitly
 recalculates them.</p>
 <p>This vignette uses a clean, complete example recording included with
 the package:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"extdata"</span>,</span>
 <span>  <span class="st">"Fish_14_13_2.txt"</span>,</span>
@@ -226,7 +325,7 @@ the package:</p>
 <div class="section level3">
 <h3 id="step-2-calculate-the-main-metrics">Step 2: calculate the main metrics<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-main-metrics"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Tpref</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">Tavoid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">Tpref_range</span> <span class="op">&lt;-</span> <span class="va">Tavoid</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">Tavoid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
@@ -421,7 +520,7 @@ multimodal.</li>
 </ul>
 <p><code>Tbreadth</code> is not a measure of physiological thermal
 tolerance.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span></span>
 <span>  <span class="va">fish</span>,</span>
 <span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -441,7 +540,7 @@ thermoregulation?</li>
 <div class="section level4">
 <h4 id="chamber-temperatures-and-system-operation">Chamber temperatures and system operation<a class="anchor" aria-label="anchor" href="#chamber-temperatures-and-system-operation"></a>
 </h4>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/plot-gradient-1.png" class="r-plt" alt="" width="672"></p>
 <p>Look for a stable difference between the warm and cold chambers,
@@ -456,7 +555,7 @@ metric.</p>
 <p><code><a href="../reference/plot_T_segmented.html">plot_T_segmented()</a></code> displays <code>core_T</code> over
 time together with Tpref, avoidance temperatures and the estimated
 gravitation breakpoint.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">segmented_plot</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span></span>
 <span>    <span class="va">p_segmented</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span></span>
@@ -487,7 +586,7 @@ do not respond as expected.</p>
 <div class="section level4">
 <h4 id="frequency-distribution-and-thermal-breadth">Frequency distribution and thermal breadth<a class="anchor" aria-label="anchor" href="#frequency-distribution-and-thermal-breadth"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish</span>, bin_size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/core-temperature-histogram-1.png" class="r-plt" alt="" width="672"></p>
 <p>This plot is the visual partner to Tbreadth. Tbreadth increases when
@@ -506,13 +605,13 @@ histogram is drawn. It no longer changes the value calculated by
 <div class="section level4">
 <h4 id="tracking-and-spatial-behaviour">Tracking and spatial behaviour<a class="anchor" aria-label="anchor" href="#tracking-and-spatial-behaviour"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span></span>
 <span>  <span class="va">tracking_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_tracking.html">plot_tracking</a></span><span class="op">(</span><span class="va">fish</span>, interval_minutes <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tracking_plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/tracking-plot-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/heatmap-plot-1.png" class="r-plt" alt="" width="672"></p>
 <p>Poor tracking can inflate or suppress distance and may create false
@@ -528,24 +627,47 @@ temperature and species ecology.</p>
 <h2 id="branch-2-screen-the-complete-project">Branch 2: screen the complete project<a class="anchor" aria-label="anchor" href="#branch-2-screen-the-complete-project"></a>
 </h2>
 <div class="section level3">
-<h3 id="step-1-compile-one-row-of-metrics-per-fish">Step 1: compile one row of metrics per fish<a class="anchor" aria-label="anchor" href="#step-1-compile-one-row-of-metrics-per-fish"></a>
+<h3 id="step-1-create-or-import-the-project-level-summary-table">Step 1: create or import the project-level summary table<a class="anchor" aria-label="anchor" href="#step-1-create-or-import-the-project-level-summary-table"></a>
 </h3>
-<p>Import all raw files from one folder:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>There are two routes into Branch 2.</p>
+<div class="section level4">
+<h4 id="route-a-start-from-a-folder-of-raw-trial-files">Route A: start from a folder of raw trial files<a class="anchor" aria-label="anchor" href="#route-a-start-from-a-folder-of-raw-trial-files"></a>
+</h4>
+<p>Import all raw <code>.txt</code> or <code>.csv</code> recordings from
+one folder:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project</a></span><span class="op">(</span></span>
 <span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Then calculate the same metrics for every fish:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">project_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span></span>
+<p>The folder-selection dialogue shows folders rather than individual
+files. Select the folder that contains all raw trials. The resulting
+<code>all_fish</code> object is a named list containing one time-series
+dataset per fish.</p>
+<p>Then calculate the same summary metrics for every fish:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span></span>
 <span>  <span class="va">all_fish</span>,</span>
 <span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  Tpref_method <span class="op">=</span> <span class="st">"median"</span>,</span>
 <span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>An existing project-results CSV can be loaded directly. The package
-includes an 85-fish example database:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>The resulting <code>project_data</code> object contains one row per
+fish and can be passed to all project-level plots and screening
+functions.</p>
+</div>
+<div class="section level4">
+<h4 id="route-b-start-from-an-existing-project-summary-csv">Route B: start from an existing project-summary CSV<a class="anchor" aria-label="anchor" href="#route-b-start-from-an-existing-project-summary-csv"></a>
+</h4>
+<p>When a CSV already contains one row per fish and the required summary
+columns, load it directly:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_project_database.html">read_project_database</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>This route does not use <code><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code> or
+<code><a href="../reference/calc_project_results.html">calc_project_results()</a></code>. It is appropriate only for a
+summary table, not a raw ShuttleSoft recording.</p>
+<p>The package includes an 85-fish example summary database, which is
+used for the remainder of this vignette:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"extdata"</span>,</span>
 <span>  <span class="st">"project_database_example.csv"</span>,</span>
@@ -557,10 +679,11 @@ does not contain that metric. Tbreadth must be recalculated from the
 original time-series data; it cannot be reconstructed from Tpref and
 avoidance temperatures alone.</p>
 </div>
+</div>
 <div class="section level3">
 <h3 id="step-2-begin-with-univariate-distributions">Step 2: begin with univariate distributions<a class="anchor" aria-label="anchor" href="#step-2-begin-with-univariate-distributions"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">univariate_flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_histograms.html">plot_histograms</a></span><span class="op">(</span><span class="va">project_data</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/project-histograms-1.png" class="r-plt" alt="" width="768"></p>
 <pre><code><span><span class="co">#&gt; TableGrob (3 x 2) "arrange": 6 grobs</span></span>
@@ -583,14 +706,14 @@ biologically meaningful.</p>
 <p>The combined <code>t_near_limits</code> value can conceal whether a
 fish repeatedly reached the upper limit, the lower limit, or both. The
 separate plot is therefore an important quality-control step.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">extreme_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_upper_vs_lower_extremes.html">plot_upper_vs_lower_extremes</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  return_cases <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">extreme_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/upper-lower-extremes-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">extreme_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -722,7 +845,7 @@ unusually wide exploration, unstable system behaviour, tracking
 problems, or settings poorly matched to the species.</li>
 </ul>
 <p>The thresholds can be changed explicitly, for example:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_upper_vs_lower_extremes.html">plot_upper_vs_lower_extremes</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  lower_limit_threshold <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -772,7 +895,7 @@ distance describes overall activity, whereas the number of shuttles
 describes movement between the two chambers. The plot can therefore
 distinguish inactivity from active movement that does not involve
 thermal regulation.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distance_shuttle_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -780,7 +903,7 @@ thermal regulation.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/distance-shuttle-review-1.png" class="r-plt" alt="" width="720"></p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -960,7 +1083,7 @@ highly active thermoregulation or agitation.</li>
 <div class="section level4">
 <h4 id="limit-exposure-versus-distance">Limit exposure versus distance<a class="anchor" aria-label="anchor" href="#limit-exposure-versus-distance"></a>
 </h4>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">limits_distance_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_limits_vs_distance.html">plot_limits_vs_distance</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -977,7 +1100,7 @@ which can indicate that the programmed range was inappropriate.</p>
 <div class="section level4">
 <h4 id="limit-exposure-versus-shuttling">Limit exposure versus shuttling<a class="anchor" aria-label="anchor" href="#limit-exposure-versus-shuttling"></a>
 </h4>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">limits_shuttles_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_limits_vs_shuttles.html">plot_limits_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -998,7 +1121,7 @@ limits may not have allowed it to stabilise.</p>
 particular fish. A bivariate matrix provides a wider overview by
 displaying every pairwise relationship among a selected set of project
 metrics in one figure.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_correlations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correlation_matrix.html">correlation_matrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -1039,7 +1162,7 @@ unusual. It compresses correlated metrics into principal components.</p>
 including every numeric column, and avoid including several
 mathematically redundant variables unless that redundancy is
 scientifically intended.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pca.html">pca</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -1070,7 +1193,7 @@ of variation, PC2 the next largest, and so on. The PC1-PC2 biplot is
 only a two-dimensional view. If PC1 and PC2 explain a modest fraction of
 total variation, fish can be unusual in later components even when they
 do not appear extreme on the biplot.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">biplot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/pca-biplot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
@@ -1102,7 +1225,7 @@ is likely to have a relatively low value.</li>
 <p>Flagged fish are circled and labelled. The arrows suggest what to
 inspect next, but <code>outlier_details</code> makes that link more
 explicit:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">outlier_details</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1244,7 +1367,7 @@ screen.</li>
 <code>project_pca$outliers</code>. The fish-level table
 <code>project_pca$screening</code> shows which method detected each fish
 and whether it was selected under the chosen <code>flag_rule</code>:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">screening</span>, <span class="va">mahalanobis</span> <span class="op">|</span> <span class="va">dbscan</span><span class="op">)</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">2</span></span>
@@ -1384,7 +1507,7 @@ thresholds and flagging rule.</p>
 <div class="section level3">
 <h3 id="step-7-return-flagged-fish-to-the-raw-trial">Step 7: return flagged fish to the raw trial<a class="anchor" aria-label="anchor" href="#step-7-return-flagged-fish-to-the-raw-trial"></a>
 </h3>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish_to_check</span> <span class="op">&lt;-</span> <span class="va">all_fish</span><span class="op">[[</span><span class="st">"Fish_17.txt"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
@@ -1427,12 +1550,12 @@ metrics do not appear extreme.</p>
 <h3 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h3>
 <p>Open the help page for any function with, for example:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">calc_Tbreadth</span></span>
 <span><span class="op">?</span><span class="va">plot_distance_vs_shuttles</span></span>
 <span><span class="op">?</span><span class="va">pca</span></span></code></pre></div>
 <p>List all package help pages with:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
