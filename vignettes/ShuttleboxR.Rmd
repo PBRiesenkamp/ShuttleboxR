@@ -108,7 +108,7 @@ This vignette uses a clean, complete example recording included with the package
 ```{r import-example}
 example_file <- system.file(
   "extdata",
-  "Fish_7_13_2.csv",
+  "Fish_14_13_2.txt",
   package = "ShuttleboxR"
 )
 
@@ -449,7 +449,12 @@ most fish never approach the limits.
 
 ### Distance versus shuttling
 
-```{r distance-shuttle-review, fig.height=5.8}
+This is a useful first project-level comparison because total distance describes
+overall activity, whereas the number of shuttles describes movement between the
+two chambers. The plot can therefore distinguish inactivity from active movement
+that does not involve thermal regulation.
+
+```{r distance-shuttle-review, fig.height=5.8, fig.width=7.5}
 distance_shuttle_review <- plot_distance_vs_shuttles(
   project_data,
   highlight_cases = TRUE,
@@ -504,7 +509,44 @@ behaviour. Exposure above the threshold with many shuttles suggests that the
 fish was responding but the available gradient or limits may not have allowed
 it to stabilise.
 
-## Step 5: interpret PCA as a map of multivariate behaviour
+## Step 5: view the wider pattern with a bivariate matrix
+
+The targeted plots above are best for identifying and labelling particular fish.
+A bivariate matrix provides a wider overview by displaying every pairwise
+relationship among a selected set of project metrics in one figure.
+
+```{r project-bivariate-matrix, fig.height=8, fig.width=8}
+project_correlations <- correlation_matrix(
+  project_data,
+  columns = c(
+    "Tpref",
+    "Tpref_range",
+    "grav_time",
+    "tot_distance",
+    "nr_shuttles",
+    "t_near_limits"
+  )
+)
+```
+
+Read the matrix as follows:
+
+- Variable names appear along the diagonal.
+- The lower panels show the individual fish and a smooth trend for each pair of
+  metrics.
+- The upper panels show the Pearson correlation coefficient. Values near 1 or
+  -1 indicate strong positive or negative relationships; values near 0 indicate
+  little linear association.
+- A point separated from the main cloud in one lower panel may represent an
+  unusual combination of otherwise plausible measurements.
+
+The matrix is particularly useful for detecting redundant variables before PCA.
+For example, two strongly correlated metrics can contribute very similar
+information. It does not label individual fish, so a suspicious relationship
+should be followed up with the corresponding targeted bivariate plot and then
+with the original single-trial record.
+
+## Step 6: interpret PCA as a map of multivariate behaviour
 
 PCA is useful when no single metric fully explains why a fish is unusual. It
 compresses correlated metrics into principal components.
@@ -619,7 +661,7 @@ rotate the axes and substantially change the plot even when the fish have not
 changed. For that reason, the variables are supplied explicitly above and
 should always be reported with the thresholds and flagging rule.
 
-## Step 6: return flagged fish to the raw trial
+## Step 7: return flagged fish to the raw trial
 
 ```{r review-loop, eval=FALSE}
 fish_to_check <- all_fish[["Fish_17.txt"]]

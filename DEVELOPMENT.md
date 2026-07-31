@@ -84,3 +84,11 @@ Always supply the `variables` argument when using `pca()` in examples or analyse
 All ggplot-based package figures use `ggplot2::theme_classic()` so figures have
 a consistent appearance without gridlines. Apply the same theme to any new plot
 functions and to plots returned by helper packages such as factoextra.
+
+
+## Bundled examples
+
+The current single-trial example is `inst/extdata/Fish_14_13_2.txt`. When the
+example changes, update the filename in the README, vignette, roxygen examples,
+and generated help pages, and verify that the vignette still renders from a
+clean package installation.

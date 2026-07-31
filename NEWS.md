@@ -1,3 +1,9 @@
+# ShuttleboxR 0.0.0.9011
+
+- Replaced the bundled single-trial example with the uploaded `Fish_14_13_2.txt` ShuttleSoft recording and updated the README, vignette, function examples, and generated help pages accordingly.
+- Made the distance-versus-shuttles review plot a more explicit part of the project-level vignette workflow.
+- Added a rendered bivariate matrix to the vignette using `correlation_matrix()`, together with guidance on reading the scatterplot panels, smooth trends, and correlation coefficients and on using the matrix before PCA.
+
 # ShuttleboxR 0.0.0.9010
 
 - Replaced the default IQR screen for temperature-limit exposure with a direct 10% exposure threshold in `plot_limits_vs_distance()`, `plot_limits_vs_shuttles()`, and `plot_upper_vs_lower_extremes()`.

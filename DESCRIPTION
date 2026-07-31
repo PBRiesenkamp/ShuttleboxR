@@ -1,6 +1,6 @@
 Package: ShuttleboxR
 Title: Data Preparation and Exploration for Shuttle-Box Temperature Experiments
-Version: 0.0.0.9010
+Version: 0.0.0.9011
 Authors@R: 
     person("Pieter", "Riesenkamp", , "p.b.riesenkamp@student.rug.nl", role = c("aut", "cre"))
 Description: Provides a structured workflow for importing and organising
