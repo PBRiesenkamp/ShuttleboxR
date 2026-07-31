@@ -10,13 +10,13 @@ Source:
 [`DESCRIPTION`](https://github.com/PBRiesenkamp/ShuttleboxR/blob/master/DESCRIPTION)
 
 Riesenkamp P (2026). *ShuttleboxR: Data Preparation and Exploration for
-Shuttle-Box Temperature Experiments*. R package version 0.0.0.9010,
+Shuttle-Box Temperature Experiments*. R package version 0.0.0.9011,
 <https://github.com/PBRiesenkamp/ShuttleboxR>.
 
     @Manual{,
       title = {ShuttleboxR: Data Preparation and Exploration for Shuttle-Box Temperature Experiments},
       author = {Pieter Riesenkamp},
       year = {2026},
-      note = {R package version 0.0.0.9010},
+      note = {R package version 0.0.0.9011},
       url = {https://github.com/PBRiesenkamp/ShuttleboxR},
     }

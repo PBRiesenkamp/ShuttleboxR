@@ -67,7 +67,7 @@ further customised.
 
 ``` r
 example_file <- system.file(
-  "extdata", "Fish_7_13_2.csv",
+  "extdata", "Fish_14_13_2.txt",
   package = "ShuttleboxR"
 )
 fish <- read_shuttlesoft(example_file)

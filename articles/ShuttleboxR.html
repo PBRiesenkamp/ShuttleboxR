@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -215,7 +215,7 @@ the package:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"extdata"</span>,</span>
-<span>  <span class="st">"Fish_7_13_2.csv"</span>,</span>
+<span>  <span class="st">"Fish_14_13_2.txt"</span>,</span>
 <span>  package <span class="op">=</span> <span class="st">"ShuttleboxR"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -261,31 +261,31 @@ the package:</p>
 <tbody>
 <tr class="odd">
 <td align="left">Tpref (°C)</td>
-<td align="right">17.530</td>
+<td align="right">16.620</td>
 </tr>
 <tr class="even">
 <td align="left">Lower Tavoid (°C)</td>
-<td align="right">13.780</td>
+<td align="right">13.730</td>
 </tr>
 <tr class="odd">
 <td align="left">Upper Tavoid (°C)</td>
-<td align="right">19.730</td>
+<td align="right">19.070</td>
 </tr>
 <tr class="even">
 <td align="left">Tpref range (°C)</td>
-<td align="right">5.950</td>
+<td align="right">5.340</td>
 </tr>
 <tr class="odd">
 <td align="left">Tbreadth (°C)</td>
-<td align="right">2.177</td>
+<td align="right">2.058</td>
 </tr>
 <tr class="even">
 <td align="left">Number of shuttles</td>
-<td align="right">988.000</td>
+<td align="right">1576.000</td>
 </tr>
 <tr class="odd">
 <td align="left">Total distance (cm)</td>
-<td align="right">194477.940</td>
+<td align="right">229782.970</td>
 </tr>
 <tr class="even">
 <td align="left">Proportion successfully tracked</td>
@@ -426,7 +426,7 @@ tolerance.</p>
 <span>  <span class="va">fish</span>,</span>
 <span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2.176951</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 2.057776</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -767,6 +767,11 @@ fish never approach the limits.</p>
 <div class="section level4">
 <h4 id="distance-versus-shuttling">Distance versus shuttling<a class="anchor" aria-label="anchor" href="#distance-versus-shuttling"></a>
 </h4>
+<p>This is a useful first project-level comparison because total
+distance describes overall activity, whereas the number of shuttles
+describes movement between the two chambers. The plot can therefore
+distinguish inactivity from active movement that does not involve
+thermal regulation.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distance_shuttle_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
@@ -774,7 +779,7 @@ fish never approach the limits.</p>
 <span>  return_cases <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="ShuttleboxR_files/figure-html/distance-shuttle-review-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="ShuttleboxR_files/figure-html/distance-shuttle-review-1.png" class="r-plt" alt="" width="720"></p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -987,7 +992,46 @@ limits may not have allowed it to stabilise.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="step-5-interpret-pca-as-a-map-of-multivariate-behaviour">Step 5: interpret PCA as a map of multivariate behaviour<a class="anchor" aria-label="anchor" href="#step-5-interpret-pca-as-a-map-of-multivariate-behaviour"></a>
+<h3 id="step-5-view-the-wider-pattern-with-a-bivariate-matrix">Step 5: view the wider pattern with a bivariate matrix<a class="anchor" aria-label="anchor" href="#step-5-view-the-wider-pattern-with-a-bivariate-matrix"></a>
+</h3>
+<p>The targeted plots above are best for identifying and labelling
+particular fish. A bivariate matrix provides a wider overview by
+displaying every pairwise relationship among a selected set of project
+metrics in one figure.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">project_correlations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correlation_matrix.html">correlation_matrix</a></span><span class="op">(</span></span>
+<span>  <span class="va">project_data</span>,</span>
+<span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Tpref"</span>,</span>
+<span>    <span class="st">"Tpref_range"</span>,</span>
+<span>    <span class="st">"grav_time"</span>,</span>
+<span>    <span class="st">"tot_distance"</span>,</span>
+<span>    <span class="st">"nr_shuttles"</span>,</span>
+<span>    <span class="st">"t_near_limits"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="ShuttleboxR_files/figure-html/project-bivariate-matrix-1.png" class="r-plt" alt="" width="768"></p>
+<p>Read the matrix as follows:</p>
+<ul>
+<li>Variable names appear along the diagonal.</li>
+<li>The lower panels show the individual fish and a smooth trend for
+each pair of metrics.</li>
+<li>The upper panels show the Pearson correlation coefficient. Values
+near 1 or -1 indicate strong positive or negative relationships; values
+near 0 indicate little linear association.</li>
+<li>A point separated from the main cloud in one lower panel may
+represent an unusual combination of otherwise plausible
+measurements.</li>
+</ul>
+<p>The matrix is particularly useful for detecting redundant variables
+before PCA. For example, two strongly correlated metrics can contribute
+very similar information. It does not label individual fish, so a
+suspicious relationship should be followed up with the corresponding
+targeted bivariate plot and then with the original single-trial
+record.</p>
+</div>
+<div class="section level3">
+<h3 id="step-6-interpret-pca-as-a-map-of-multivariate-behaviour">Step 6: interpret PCA as a map of multivariate behaviour<a class="anchor" aria-label="anchor" href="#step-6-interpret-pca-as-a-map-of-multivariate-behaviour"></a>
 </h3>
 <p>PCA is useful when no single metric fully explains why a fish is
 unusual. It compresses correlated metrics into principal components.</p>
@@ -995,7 +1039,7 @@ unusual. It compresses correlated metrics into principal components.</p>
 including every numeric column, and avoid including several
 mathematically redundant variables unless that redundancy is
 scientifically intended.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pca.html">pca</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -1026,7 +1070,7 @@ of variation, PC2 the next largest, and so on. The PC1-PC2 biplot is
 only a two-dimensional view. If PC1 and PC2 explain a modest fraction of
 total variation, fish can be unusual in later components even when they
 do not appear extreme on the biplot.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">biplot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/pca-biplot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
@@ -1058,7 +1102,7 @@ is likely to have a relatively low value.</li>
 <p>Flagged fish are circled and labelled. The arrows suggest what to
 inspect next, but <code>outlier_details</code> makes that link more
 explicit:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">outlier_details</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1200,7 +1244,7 @@ screen.</li>
 <code>project_pca$outliers</code>. The fish-level table
 <code>project_pca$screening</code> shows which method detected each fish
 and whether it was selected under the chosen <code>flag_rule</code>:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">screening</span>, <span class="va">mahalanobis</span> <span class="op">|</span> <span class="va">dbscan</span><span class="op">)</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">2</span></span>
@@ -1338,9 +1382,9 @@ thresholds and flagging rule.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="step-6-return-flagged-fish-to-the-raw-trial">Step 6: return flagged fish to the raw trial<a class="anchor" aria-label="anchor" href="#step-6-return-flagged-fish-to-the-raw-trial"></a>
+<h3 id="step-7-return-flagged-fish-to-the-raw-trial">Step 7: return flagged fish to the raw trial<a class="anchor" aria-label="anchor" href="#step-7-return-flagged-fish-to-the-raw-trial"></a>
 </h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish_to_check</span> <span class="op">&lt;-</span> <span class="va">all_fish</span><span class="op">[[</span><span class="st">"Fish_17.txt"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
@@ -1383,12 +1427,12 @@ metrics do not appear extreme.</p>
 <h3 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h3>
 <p>Open the help page for any function with, for example:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">calc_Tbreadth</span></span>
 <span><span class="op">?</span><span class="va">plot_distance_vs_shuttles</span></span>
 <span><span class="op">?</span><span class="va">pca</span></span></code></pre></div>
 <p>List all package help pages with:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

@@ -97,7 +97,7 @@ package:
 
 example_file <- system.file(
   "extdata",
-  "Fish_7_13_2.csv",
+  "Fish_14_13_2.txt",
   package = "ShuttleboxR"
 )
 
@@ -140,13 +140,13 @@ knitr::kable(single_results, digits = 3)
 
 | metric                          |      value |
 |:--------------------------------|-----------:|
-| Tpref (°C)                      |     17.530 |
-| Lower Tavoid (°C)               |     13.780 |
-| Upper Tavoid (°C)               |     19.730 |
-| Tpref range (°C)                |      5.950 |
-| Tbreadth (°C)                   |      2.177 |
-| Number of shuttles              |    988.000 |
-| Total distance (cm)             | 194477.940 |
+| Tpref (°C)                      |     16.620 |
+| Lower Tavoid (°C)               |     13.730 |
+| Upper Tavoid (°C)               |     19.070 |
+| Tpref range (°C)                |      5.340 |
+| Tbreadth (°C)                   |      2.058 |
+| Number of shuttles              |   1576.000 |
+| Total distance (cm)             | 229782.970 |
 | Proportion successfully tracked |      1.000 |
 
 #### Tpref, avoidance temperatures and Tpref range
@@ -241,7 +241,7 @@ calc_Tbreadth(
   fish,
   print_results = FALSE
 )
-#> [1] 2.176951
+#> [1] 2.057776
 ```
 
 ### Step 3: inspect whether the trial is interpretable
@@ -527,6 +527,12 @@ towards zero when most fish never approach the limits.
 
 #### Distance versus shuttling
 
+This is a useful first project-level comparison because total distance
+describes overall activity, whereas the number of shuttles describes
+movement between the two chambers. The plot can therefore distinguish
+inactivity from active movement that does not involve thermal
+regulation.
+
 ``` r
 
 distance_shuttle_review <- plot_distance_vs_shuttles(
@@ -616,7 +622,48 @@ corrective behaviour. Exposure above the threshold with many shuttles
 suggests that the fish was responding but the available gradient or
 limits may not have allowed it to stabilise.
 
-### Step 5: interpret PCA as a map of multivariate behaviour
+### Step 5: view the wider pattern with a bivariate matrix
+
+The targeted plots above are best for identifying and labelling
+particular fish. A bivariate matrix provides a wider overview by
+displaying every pairwise relationship among a selected set of project
+metrics in one figure.
+
+``` r
+
+project_correlations <- correlation_matrix(
+  project_data,
+  columns = c(
+    "Tpref",
+    "Tpref_range",
+    "grav_time",
+    "tot_distance",
+    "nr_shuttles",
+    "t_near_limits"
+  )
+)
+```
+
+![](ShuttleboxR_files/figure-html/project-bivariate-matrix-1.png)
+
+Read the matrix as follows:
+
+- Variable names appear along the diagonal.
+- The lower panels show the individual fish and a smooth trend for each
+  pair of metrics.
+- The upper panels show the Pearson correlation coefficient. Values near
+  1 or -1 indicate strong positive or negative relationships; values
+  near 0 indicate little linear association.
+- A point separated from the main cloud in one lower panel may represent
+  an unusual combination of otherwise plausible measurements.
+
+The matrix is particularly useful for detecting redundant variables
+before PCA. For example, two strongly correlated metrics can contribute
+very similar information. It does not label individual fish, so a
+suspicious relationship should be followed up with the corresponding
+targeted bivariate plot and then with the original single-trial record.
+
+### Step 6: interpret PCA as a map of multivariate behaviour
 
 PCA is useful when no single metric fully explains why a fish is
 unusual. It compresses correlated metrics into principal components.
@@ -769,7 +816,7 @@ when the fish have not changed. For that reason, the variables are
 supplied explicitly above and should always be reported with the
 thresholds and flagging rule.
 
-### Step 6: return flagged fish to the raw trial
+### Step 7: return flagged fish to the raw trial
 
 ``` r
 

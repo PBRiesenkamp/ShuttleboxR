@@ -83,14 +83,14 @@ labels trial phases and identifies shuttles between chambers. The
 existing `core_T` values produced by ShuttleSoft are retained by
 default.
 
-A complete example recording is included with the package and is used
-throughout the vignette:
+A complete ShuttleSoft text recording is included with the package and
+is used throughout the vignette:
 
 ``` r
 
 example_file <- system.file(
   "extdata",
-  "Fish_7_13_2.csv",
+  "Fish_14_13_2.txt",
   package = "ShuttleboxR"
 )
 
@@ -260,11 +260,18 @@ possible_outliers <- plot_histograms(project_results)
 ```
 
 Then inspect relationships that can distinguish different kinds of
-unusual behaviour:
+unusual behaviour. Distance versus shuttles is a useful first comparison
+because it separates overall movement from movement between chambers:
 
 ``` r
 
-plot_distance_vs_shuttles(project_results, label_points = FALSE)
+distance_shuttle_review <- plot_distance_vs_shuttles(
+  project_results,
+  highlight_cases = TRUE,
+  return_cases = TRUE
+)
+distance_shuttle_review$plot
+
 plot_limits_vs_distance(
   project_results,
   highlight_cases = TRUE,
@@ -292,17 +299,25 @@ projects where most fish never approach either limit. Adjust
 to match the study design. Project-relative alternatives remain
 available through `limit_method = "quantile"` or `limit_method = "iqr"`.
 
-A correlation matrix or PCA can provide a multivariate overview:
+A bivariate matrix shows all selected pairwise relationships together.
+The lower panels contain scatterplots and smooth trends, while the upper
+panels show Pearson correlations. It is useful for seeing redundant
+metrics and unexpected combinations before running PCA:
 
 ``` r
 
 correlation_matrix(
   project_results,
   columns = c(
-    "Tpref", "Tavoid_lower", "Tavoid_upper",
+    "Tpref", "Tpref_range", "grav_time",
     "tot_distance", "nr_shuttles", "t_near_limits"
   )
 )
+```
+
+PCA then provides a complementary multivariate overview:
+
+``` r
 
 project_pca <- pca(
   project_results,

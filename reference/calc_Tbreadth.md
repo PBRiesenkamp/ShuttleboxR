@@ -74,12 +74,12 @@ boundaries, and is not a physiological thermal-tolerance limit.
 
 ``` r
 example_file <- system.file(
-  "extdata", "Fish_7_13_2.csv",
+  "extdata", "Fish_14_13_2.txt",
   package = "ShuttleboxR"
 )
 fish <- read_shuttlesoft(example_file)
 calc_Tbreadth(fish, print_results = FALSE)
-#> [1] 2.176951
+#> [1] 2.057776
 
 # Simple examples
 calc_Tbreadth(data.frame(core_T = rep(20, 100)), print_results = FALSE)
