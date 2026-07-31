@@ -1,6 +1,6 @@
-# Calculate the temperature preference
+# Calculate temperature preference
 
-This function calculates the temperature preference for the trial
+Calculates the centre of the selected core-temperature distribution.
 
 ## Usage
 
@@ -8,10 +8,12 @@ This function calculates the temperature preference for the trial
 calc_Tpref(
   data,
   method = c("median", "mean", "mode"),
-  exclude_acclimation = F,
+  exclude_acclimation = FALSE,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  print_results = T
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -19,32 +21,43 @@ calc_Tpref(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `core_T`.
 
 - method:
 
-  The method used for calculation of temperature preference ("median",
-  "mean", "mode"). Default is "median".
+  Calculation method: `"median"`, `"mean"`, or `"mode"`.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the result.
+
+- exclude_gravitation:
+
+  Exclude the transitional gravitation period.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours, usually from
+  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md).
 
 ## Value
 
-the temperature preference
+A single temperature preference in degrees Celsius.
+
+## Details
+
+When gravitation is excluded, its duration is added to the
+dynamic-period start if acclimation is excluded, or to the recording
+start otherwise.

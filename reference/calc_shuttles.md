@@ -1,7 +1,6 @@
 # Calculate the number of shuttles
 
-This function calculates the total number of times the subject shuttled
-during the trial
+Counts shuttles within the selected analysis window.
 
 ## Usage
 
@@ -10,8 +9,10 @@ calc_shuttles(
   data,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -19,27 +20,32 @@ calc_shuttles(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `shuttle`.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the result.
+
+- exclude_gravitation:
+
+  Exclude the transitional gravitation period.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours.
 
 ## Value
 
-The total number of shuttles
+The number of chamber transitions.

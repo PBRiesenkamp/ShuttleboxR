@@ -183,19 +183,91 @@ The structure can be checked with:
 inspect(fish)
 ```
 
-### 2. Calculate shuttle-box metrics
+### 2. Inspect gravitation before calculating thermal metrics
+
+The early dynamic phase often represents a transition from the starting
+conditions towards the fish’s settled thermal region. Including this
+**gravitation period** can pull Tpref towards the starting temperature
+and inflate Tbreadth, avoidance percentiles, core-temperature variation,
+and time near limits.
+
+First inspect the trial and calculate gravitation time:
 
 ``` r
 
-calc_Tpref(fish, exclude_acclimation = TRUE)
-calc_Tavoid(fish, exclude_acclimation = TRUE)
-calc_Tbreadth(fish, exclude_acclimation = TRUE)
-calc_gravitation(fish)
+grav_time <- calc_gravitation(
+  fish,
+  exclude_acclimation = TRUE,
+  print_results = FALSE
+)
+
+plot_T_segmented(
+  fish,
+  exclude_acclimation = TRUE,
+  gravitation_time = grav_time,
+  exclude_gravitation = TRUE
+)
+```
+
+`grav_time` is a duration in hours. With `exclude_acclimation = TRUE`,
+it is added to the start of the dynamic period; with `FALSE`, it is
+added to the start of the complete recording. When
+`exclude_start_minutes` is also supplied, the later of the custom start
+and the gravitation cutoff is used.
+
+After checking that the breakpoint is plausible, reuse the same value:
+
+``` r
+
+calc_Tpref(
+  fish,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+calc_Tavoid(
+  fish,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+calc_Tbreadth(
+  fish,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+calc_extremes(
+  fish,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+calc_coreT_variance(
+  fish,
+  variance_type = "std_deviation",
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
+```
+
+These values describe **settled thermal behaviour**. Distance,
+shuttling, and occupancy can either cover the complete selected period
+or only the settled period, depending on the question:
+
+``` r
+
+# Whole dynamic-period activity
 calc_shuttles(fish, exclude_acclimation = TRUE)
-calc_occupancy(fish, exclude_acclimation = TRUE)
-calc_tot_distance(fish, exclude_acclimation = TRUE)
-calc_extremes(fish, exclude_acclimation = TRUE)
-calc_track_accuracy(fish)
+
+# Activity during settled thermoregulation
+calc_shuttles(
+  fish,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
 ```
 
 The thermal metrics answer related but distinct questions:
@@ -203,29 +275,25 @@ The thermal metrics answer related but distinct questions:
 - `Tpref` summarises the central selected temperature; the default is
   median `core_T`.
 - `Tavoid_lower` and `Tavoid_upper` are lower and upper percentiles of
-  the `core_T` distribution.
+  the selected `core_T` distribution.
 - `Tpref_range` is the difference between those avoidance temperatures.
 - `Tbreadth` describes how far apart the temperatures experienced by the
-  fish were. It is the average absolute difference between the
-  temperatures at two randomly selected observations from the trial.
+  fish were. It is the average absolute difference between temperatures
+  at two randomly selected observations from the analysed period.
 
 ### What does Tbreadth mean?
 
-Imagine choosing two moments from the trial and asking how different the
-fish’s core temperature was at those moments. Repeat that for every
-possible pair and take the average. That average is `Tbreadth`.
+Imagine choosing two moments from the analysed part of the trial and
+asking how different the fish’s core temperature was. Repeat that for
+every possible pair and take the average. That average is `Tbreadth`.
 
 - A fish that remains at nearly one temperature has a Tbreadth close to
   0 °C.
 - Equal time at 20 °C and 21 °C gives a Tbreadth of 0.5 °C.
 - Equal time at 10 °C and 20 °C gives a Tbreadth of 5 °C.
 
-The final example gives 5 °C, rather than 10 °C, because half of the
-possible pairs compare two equal temperatures and half compare
-temperatures 10 °C apart.
-
-`Tbreadth` is **not centred on Tpref**, does not define a lower and
-upper boundary, and does not depend on histogram bin size. It summarises
+`Tbreadth` is **not centred on Tpref**, does not define lower and upper
+boundaries, and does not depend on histogram bin size. It summarises
 overall spread, while
 [`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md)
 shows whether that spread is symmetrical, skewed, or split into multiple
@@ -233,8 +301,12 @@ peaks.
 
 ``` r
 
-calc_Tbreadth(fish)
-plot_coreT_histogram(fish)
+plot_coreT_histogram(
+  fish,
+  exclude_acclimation = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = grav_time
+)
 ```
 
 ### 3. Inspect the trial
@@ -309,9 +381,19 @@ project_data <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
-  Tavoid_percentiles = c(0.05, 0.95)
+  Tavoid_percentiles = c(0.05, 0.95),
+  exclude_gravitation_thermal = TRUE,
+  exclude_gravitation_activity = FALSE,
+  gravitation_failure = "warn"
 )
 ```
+
+Here the thermal distribution metrics are calculated after gravitation,
+while distance, shuttling, and occupancy retain the complete dynamic
+period. The output records whether gravitation was valid and the start
+time used for each metric group. When a breakpoint cannot be estimated,
+`gravitation_failure = "warn"` records `NA` for metrics that require a
+post-gravitation window rather than silently using the full trial.
 
 **Route B: start from an existing project-summary CSV**
 
@@ -329,7 +411,10 @@ and
 [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md).
 It does not calculate metrics that are absent from the summary file; for
 example, `Tbreadth` must be recalculated from the original raw trials if
-it is not already present.
+it is not already present. It also cannot determine retrospectively
+whether gravitation was excluded. The summary file should therefore
+retain columns or accompanying metadata that record the calculation
+window used.
 
 ### 2. Flag unusual trials for individual review
 
@@ -514,25 +599,25 @@ fish.
 - [`calc_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_distance.md)
   : Calculate the cumulative distance
 - [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md)
-  : Calculate the temperature preference
+  : Calculate temperature preference
 - [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md)
-  : Calculate the avoidance temperatures
+  : Calculate avoidance temperatures
 - [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md)
   : Calculate selected thermal breadth
 - [`calc_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_extremes.md)
-  : Calculate the time spent near the extremes
+  : Calculate exposure near programmed temperature limits
 - [`calc_tot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_tot_distance.md)
-  : Calculate the total distance
+  : Calculate total distance moved
 - [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
-  : Calculate the gravitation period
+  : Calculate gravitation time
 - [`calc_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_shuttles.md)
   : Calculate the number of shuttles
 - [`calc_occupancy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_occupancy.md)
-  : Calculate the occupancy times
+  : Calculate chamber occupancy
 - [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md)
-  : Calculate the temperature preference
+  : Calculate variation in core body temperature
 - [`calc_track_accuracy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_track_accuracy.md)
-  : Calculate the tracking accuracy
+  : Calculate tracking accuracy
 
 ## Single trials: inspect and troubleshoot
 
@@ -541,7 +626,7 @@ Check temperature control, tracking and fish behaviour within a trial.
 - [`plot_T_gradient()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_gradient.md)
   : Plot the temperatures in each side of the shuttlebox over time
 - [`plot_T_segmented()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md)
-  : Plot the core body temperature during the trial
+  : Plot temperature trajectory and gravitation breakpoint
 - [`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md)
   : Plot the distribution of core body temperatures
 - [`plot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_distance.md)

@@ -1,7 +1,7 @@
-# Calculate the avoidance temperatures
+# Calculate avoidance temperatures
 
-This function calculates the upper and lower avoidance temperature for
-the trial
+Calculates percentile boundaries of the selected core-temperature
+distribution.
 
 ## Usage
 
@@ -11,8 +11,10 @@ calc_Tavoid(
   percentiles = c(0.05, 0.95),
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -20,32 +22,37 @@ calc_Tavoid(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `core_T`.
 
 - percentiles:
 
-  The lower and upper percentile for lower and upper avoidance
-  temperature calculation resp. Default is c(0.05, 0.95)
+  Lower and upper percentiles.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the results.
+
+- exclude_gravitation:
+
+  Exclude the transitional gravitation period.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours, usually from
+  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md).
 
 ## Value
 
-the upper and lower avoidance temperature
+A two-element vector containing lower and upper avoidance temperatures.

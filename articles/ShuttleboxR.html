@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -323,31 +323,133 @@ the package:</p>
 <span><span class="co">#&gt; [1] "No errors were found in the dataset"</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="step-2-calculate-the-main-metrics">Step 2: calculate the main metrics<a class="anchor" aria-label="anchor" href="#step-2-calculate-the-main-metrics"></a>
+<h3 id="step-2-inspect-and-calculate-gravitation-time-before-summarising-thermal-behaviour">Step 2: inspect and calculate gravitation time before summarising
+thermal behaviour<a class="anchor" aria-label="anchor" href="#step-2-inspect-and-calculate-gravitation-time-before-summarising-thermal-behaviour"></a>
 </h3>
+<p>The first part of a dynamic shuttle-box trial is often a
+<strong>gravitation period</strong>. During this transition, the fish
+moves the system away from its starting conditions and towards the
+thermal region that it subsequently maintains. Temperatures experienced
+during this route can pull Tpref towards the starting temperature and
+can inflate Tbreadth, avoidance percentiles, core-temperature variation,
+and apparent exposure near the programmed limits.</p>
+<p>For that reason, the recommended workflow is:</p>
+<ol style="list-style-type: decimal">
+<li>view the temperature trajectory with
+<code><a href="../reference/plot_T_segmented.html">plot_T_segmented()</a></code>;</li>
+<li>check that the estimated breakpoint is biologically plausible;</li>
+<li>calculate gravitation time once;</li>
+<li>pass that same value to later thermal calculations.</li>
+</ol>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Tpref</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">Tavoid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">grav_time</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/calc_gravitation.html">calc_gravitation</a></span><span class="op">(</span></span>
+<span>    <span class="va">fish</span>,</span>
+<span>    exclude_acclimation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="cn">NA_real_</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">segmented_plot</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span></span>
+<span>    <span class="va">fish</span>,</span>
+<span>    exclude_acclimation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    overlay_chamber_temp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    exclude_gravitation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">grav_time</span><span class="op">)</span>,</span>
+<span>    gravitation_time <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">grav_time</span><span class="op">)</span><span class="op">)</span> <span class="va">grav_time</span> <span class="kw">else</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">fish</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_h</span>, y <span class="op">=</span> <span class="va">core_T</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>      <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>      <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>        title <span class="op">=</span> <span class="st">"Core body temperature through the example recording"</span>,</span>
+<span>        subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Segmented fit was not estimable:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>        x <span class="op">=</span> <span class="st">"Time (h)"</span>, y <span class="op">=</span> <span class="st">"Core body temperature (°C)"</span></span>
+<span>      <span class="op">)</span> <span class="op">+</span></span>
+<span>      <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">segmented_plot</span></span></code></pre></div>
+<p><img src="ShuttleboxR_files/figure-html/gravitation-workflow-1.png" class="r-plt" alt="" width="672"></p>
+<p><code>grav_time</code> is a <strong>duration</strong>, not an
+absolute clock time. ShuttleboxR converts it into a cutoff as
+follows:</p>
+<ul>
+<li>with <code>exclude_acclimation = TRUE</code>, cutoff =
+dynamic-period start + gravitation time;</li>
+<li>with <code>exclude_acclimation = FALSE</code>, cutoff = recording
+start + gravitation time.</li>
+</ul>
+<p><code>exclude_start_minutes</code> is measured from the same selected
+origin. When both a custom starting exclusion and gravitation exclusion
+are requested, ShuttleboxR uses whichever cutoff is later; the two
+durations are not added together.</p>
+<p>A segmented model is a screening tool rather than proof that the fish
+reached a stable preference. Inspect the plot for an implausible
+breakpoint, continued directional drift after the breakpoint,
+chamber-temperature failure, prolonged contact with limits, or too
+little information after the estimated cutoff. A poorly supported
+breakpoint should be investigated or supplied manually rather than
+accepted automatically.</p>
+<div class="section level4">
+<h4 id="calculate-settled-thermal-metrics">Calculate settled thermal metrics<a class="anchor" aria-label="anchor" href="#calculate-settled-thermal-metrics"></a>
+</h4>
+<p>The following code uses post-gravitation observations when a valid
+breakpoint was estimated. Passing the same <code>gravitation_time</code>
+to every function prevents small differences caused by repeatedly
+fitting the segmented model.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">use_settled_window</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">grav_time</span><span class="op">)</span></span>
+<span><span class="va">shared_thermal_args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="va">use_settled_window</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">use_settled_window</span><span class="op">)</span> <span class="va">grav_time</span> <span class="kw">else</span> <span class="cn">NULL</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">Tpref</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">calc_Tpref</span>, <span class="va">shared_thermal_args</span><span class="op">)</span></span>
+<span><span class="va">Tavoid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">calc_Tavoid</span>, <span class="va">shared_thermal_args</span><span class="op">)</span></span>
 <span><span class="va">Tpref_range</span> <span class="op">&lt;-</span> <span class="va">Tavoid</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">Tavoid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">Tbreadth</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">Tbreadth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">calc_Tbreadth</span>, <span class="va">shared_thermal_args</span><span class="op">)</span></span>
+<span><span class="va">extremes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">calc_extremes</span>, <span class="va">shared_thermal_args</span><span class="op">)</span></span>
+<span><span class="va">core_T_sd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_coreT_variance.html">calc_coreT_variance</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  variance_type <span class="op">=</span> <span class="st">"std_deviation"</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="va">use_settled_window</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">use_settled_window</span><span class="op">)</span> <span class="va">grav_time</span> <span class="kw">else</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Activity can describe either the complete selected period or settled</span></span>
+<span><span class="co"># thermoregulation. Here it is retained for the whole recording.</span></span>
 <span><span class="va">shuttles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">distance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_tot_distance.html">calc_tot_distance</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">tracking</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_track_accuracy.html">calc_track_accuracy</a></span><span class="op">(</span><span class="va">fish</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">single_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Gravitation time (h)"</span>,</span>
 <span>    <span class="st">"Tpref (°C)"</span>,</span>
 <span>    <span class="st">"Lower Tavoid (°C)"</span>,</span>
 <span>    <span class="st">"Upper Tavoid (°C)"</span>,</span>
 <span>    <span class="st">"Tpref range (°C)"</span>,</span>
 <span>    <span class="st">"Tbreadth (°C)"</span>,</span>
+<span>    <span class="st">"Core-temperature SD (°C)"</span>,</span>
+<span>    <span class="st">"Near lower limit (%)"</span>,</span>
+<span>    <span class="st">"Near upper limit (%)"</span>,</span>
 <span>    <span class="st">"Number of shuttles"</span>,</span>
 <span>    <span class="st">"Total distance (cm)"</span>,</span>
 <span>    <span class="st">"Proportion successfully tracked"</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="va">Tpref</span>, <span class="va">Tavoid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">Tavoid</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">Tpref_range</span>,</span>
-<span>    <span class="va">Tbreadth</span>, <span class="va">shuttles</span>, <span class="va">distance</span>, <span class="va">tracking</span></span>
+<span>    <span class="va">grav_time</span>, <span class="va">Tpref</span>, <span class="va">Tavoid</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">Tavoid</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">Tpref_range</span>,</span>
+<span>    <span class="va">Tbreadth</span>, <span class="va">core_T_sd</span>, <span class="va">extremes</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">extremes</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>,</span>
+<span>    <span class="va">shuttles</span>, <span class="va">distance</span>, <span class="va">tracking</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -359,24 +461,40 @@ the package:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="left">Gravitation time (h)</td>
+<td align="right">7.100</td>
+</tr>
+<tr class="even">
 <td align="left">Tpref (°C)</td>
-<td align="right">16.620</td>
+<td align="right">17.280</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Lower Tavoid (°C)</td>
-<td align="right">13.730</td>
-</tr>
-<tr class="odd">
-<td align="left">Upper Tavoid (°C)</td>
-<td align="right">19.070</td>
+<td align="right">15.390</td>
 </tr>
 <tr class="even">
-<td align="left">Tpref range (°C)</td>
-<td align="right">5.340</td>
+<td align="left">Upper Tavoid (°C)</td>
+<td align="right">19.230</td>
 </tr>
 <tr class="odd">
+<td align="left">Tpref range (°C)</td>
+<td align="right">3.840</td>
+</tr>
+<tr class="even">
 <td align="left">Tbreadth (°C)</td>
-<td align="right">2.058</td>
+<td align="right">1.452</td>
+</tr>
+<tr class="odd">
+<td align="left">Core-temperature SD (°C)</td>
+<td align="right">1.261</td>
+</tr>
+<tr class="even">
+<td align="left">Near lower limit (%)</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Near upper limit (%)</td>
+<td align="right">0.000</td>
 </tr>
 <tr class="even">
 <td align="left">Number of shuttles</td>
@@ -392,6 +510,27 @@ the package:</p>
 </tr>
 </tbody>
 </table>
+<p>Thermal metrics calculated after gravitation describe the fish’s
+<strong>settled thermal behaviour</strong>, rather than the route taken
+to reach it. This is generally the clearest interpretation for Tpref,
+Tavoid, Tpref range, Tbreadth, core-temperature variation, and time near
+limits.</p>
+<p>Distance, shuttling, and chamber occupancy are less clear-cut. Keep
+gravitation when the goal is whole-trial activity, but exclude it when
+the goal is activity specifically during settled thermoregulation:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/calc_tot_distance.html">calc_tot_distance</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level4">
 <h4 id="tpref-avoidance-temperatures-and-tpref-range">Tpref, avoidance temperatures and Tpref range<a class="anchor" aria-label="anchor" href="#tpref-avoidance-temperatures-and-tpref-range"></a>
 </h4>
@@ -399,9 +538,9 @@ the package:</p>
 calculation is the median <code>core_T</code>, although the mean and
 mode are available. <code>Tavoid_lower</code> and
 <code>Tavoid_upper</code> are the lower and upper percentiles of the
-<code>core_T</code> distribution; the defaults are the 5th and 95th
-percentiles. Their difference, <code>Tpref_range</code>, is therefore
-the width of the central 90% of observations.</p>
+selected <code>core_T</code> distribution; the defaults are the 5th and
+95th percentiles. Their difference, <code>Tpref_range</code>, is
+therefore the width of the central 90% of observations.</p>
 <p>These metrics describe the centre and percentile boundaries of the
 distribution, but they do not describe how observations are distributed
 <em>within</em> those boundaries.</p>
@@ -426,8 +565,8 @@ temperatures experienced by the fish were.</li>
 <div class="section level4">
 <h4 id="explain-it-like-i-am-five">Explain it like I am five<a class="anchor" aria-label="anchor" href="#explain-it-like-i-am-five"></a>
 </h4>
-<p>Imagine choosing two moments from the trial and looking at the fish’s
-core temperature at those moments.</p>
+<p>Imagine choosing two moments from the analysed part of the trial and
+looking at the fish’s core temperature at those moments.</p>
 <ul>
 <li>If the two temperatures are almost the same, their difference is
 small.</li>
@@ -439,7 +578,10 @@ average of all those differences. That average is
 <code>Tbreadth</code>.</p>
 <p>A fish that stays at almost the same temperature will therefore have
 a Tbreadth close to zero. A fish that regularly experiences temperatures
-far apart will have a larger Tbreadth.</p>
+far apart will have a larger Tbreadth. When gravitation is excluded,
+this value summarises the spread of the <strong>settled</strong>
+temperature distribution rather than including the initial journey from
+the starting conditions.</p>
 </div>
 <div class="section level4">
 <h4 id="the-equation">The equation<a class="anchor" aria-label="anchor" href="#the-equation"></a>
@@ -496,9 +638,7 @@ near 20 °C</td>
 </table>
 <p>The 10 °C/20 °C example is important. Its Tbreadth is much larger
 than that of a fish split between 20 °C and 21 °C because the two
-occupied parts of the distribution are much farther apart. Unlike the
-previous bin-based definition, the calculation therefore recognises the
-distance between peaks.</p>
+occupied parts of the distribution are much farther apart.</p>
 </div>
 <div class="section level4">
 <h4 id="what-tbreadth-does-not-tell-you">What Tbreadth does not tell you<a class="anchor" aria-label="anchor" href="#what-tbreadth-does-not-tell-you"></a>
@@ -520,12 +660,14 @@ multimodal.</li>
 </ul>
 <p><code>Tbreadth</code> is not a measure of physiological thermal
 tolerance.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span></span>
 <span>  <span class="va">fish</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="va">use_settled_window</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">use_settled_window</span><span class="op">)</span> <span class="va">grav_time</span> <span class="kw">else</span> <span class="cn">NULL</span>,</span>
 <span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2.057776</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 1.452014</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -540,7 +682,7 @@ thermoregulation?</li>
 <div class="section level4">
 <h4 id="chamber-temperatures-and-system-operation">Chamber temperatures and system operation<a class="anchor" aria-label="anchor" href="#chamber-temperatures-and-system-operation"></a>
 </h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/plot-gradient-1.png" class="r-plt" alt="" width="672"></p>
 <p>Look for a stable difference between the warm and cold chambers,
@@ -550,44 +692,27 @@ discontinuity that is obvious here but not obvious from a single summary
 metric.</p>
 </div>
 <div class="section level4">
-<h4 id="temperature-trajectory-preference-and-gravitation">Temperature trajectory, preference and gravitation<a class="anchor" aria-label="anchor" href="#temperature-trajectory-preference-and-gravitation"></a>
+<h4 id="revisit-the-temperature-trajectory-when-interpreting-other-warnings">Revisit the temperature trajectory when interpreting other
+warnings<a class="anchor" aria-label="anchor" href="#revisit-the-temperature-trajectory-when-interpreting-other-warnings"></a>
 </h4>
-<p><code><a href="../reference/plot_T_segmented.html">plot_T_segmented()</a></code> displays <code>core_T</code> over
-time together with Tpref, avoidance temperatures and the estimated
-gravitation breakpoint.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">segmented_plot</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span><span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span></span>
-<span>    <span class="va">p_segmented</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span></span>
-<span>      <span class="va">fish</span>,</span>
-<span>      exclude_acclimation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>      overlay_chamber_temp <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">p_segmented</span></span>
-<span><span class="op">}</span>, error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">fish</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time_h</span>, y <span class="op">=</span> <span class="va">core_T</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>      title <span class="op">=</span> <span class="st">"Core body temperature through the example recording"</span>,</span>
-<span>      subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Segmented fit was not estimable:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>      x <span class="op">=</span> <span class="st">"Time (h)"</span>, y <span class="op">=</span> <span class="st">"Core body temperature (°C)"</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="va">segmented_plot</span></span></code></pre></div>
-<p><img src="ShuttleboxR_files/figure-html/plot-segmented-1.png" class="r-plt" alt="" width="672"></p>
-<p>A useful segmented plot should show a biologically plausible approach
-toward a stable temperature region. Warning signs include an implausible
-breakpoint, continued directional drift after the estimated gravitation
-time, extended contact with system limits, or chamber temperatures that
-do not respond as expected.</p>
+<p>The segmented plot above should be revisited whenever a metric
+appears unusual. For example, a large Tbreadth may reflect a genuinely
+broad settled distribution, a bimodal pattern, or continued drift after
+an unreliable breakpoint. A high limit-exposure value may occur mainly
+during gravitation rather than after the fish settled. The trajectory
+provides the timing information needed to separate these
+explanations.</p>
 </div>
 <div class="section level4">
 <h4 id="frequency-distribution-and-thermal-breadth">Frequency distribution and thermal breadth<a class="anchor" aria-label="anchor" href="#frequency-distribution-and-thermal-breadth"></a>
 </h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish</span>, bin_size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  bin_size <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="va">use_settled_window</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">use_settled_window</span><span class="op">)</span> <span class="va">grav_time</span> <span class="kw">else</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/core-temperature-histogram-1.png" class="r-plt" alt="" width="672"></p>
 <p>This plot is the visual partner to Tbreadth. Tbreadth increases when
 commonly experienced temperatures are farther apart, while the histogram
@@ -605,13 +730,13 @@ histogram is drawn. It no longer changes the value calculated by
 <div class="section level4">
 <h4 id="tracking-and-spatial-behaviour">Tracking and spatial behaviour<a class="anchor" aria-label="anchor" href="#tracking-and-spatial-behaviour"></a>
 </h4>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span></span>
 <span>  <span class="va">tracking_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_tracking.html">plot_tracking</a></span><span class="op">(</span><span class="va">fish</span>, interval_minutes <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tracking_plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/tracking-plot-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/heatmap-plot-1.png" class="r-plt" alt="" width="672"></p>
 <p>Poor tracking can inflate or suppress distance and may create false
@@ -635,7 +760,7 @@ temperature and species ecology.</p>
 </h4>
 <p>Import all raw <code>.txt</code> or <code>.csv</code> recordings from
 one folder:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project</a></span><span class="op">(</span></span>
 <span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -644,30 +769,44 @@ files. Select the folder that contains all raw trials. The resulting
 <code>all_fish</code> object is a named list containing one time-series
 dataset per fish.</p>
 <p>Then calculate the same summary metrics for every fish:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span></span>
 <span>  <span class="va">all_fish</span>,</span>
 <span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  Tpref_method <span class="op">=</span> <span class="st">"median"</span>,</span>
-<span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span></span>
+<span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  exclude_gravitation_thermal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation_activity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  gravitation_failure <span class="op">=</span> <span class="st">"warn"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The resulting <code>project_data</code> object contains one row per
 fish and can be passed to all project-level plots and screening
-functions.</p>
+functions. Gravitation is estimated once per fish and the same value is
+reused for all thermal metrics. The output also records
+<code>gravitation_valid</code>, <code>gravitation_reference</code>,
+<code>thermal_metrics_start_h</code>,
+<code>activity_metrics_start_h</code>, and whether each metric set was
+calculated after gravitation. If a breakpoint cannot be estimated and
+<code>gravitation_failure = "warn"</code>, gravitation-dependent metrics
+are recorded as <code>NA</code> rather than silently reverting to the
+full trial.</p>
 </div>
 <div class="section level4">
 <h4 id="route-b-start-from-an-existing-project-summary-csv">Route B: start from an existing project-summary CSV<a class="anchor" aria-label="anchor" href="#route-b-start-from-an-existing-project-summary-csv"></a>
 </h4>
 <p>When a CSV already contains one row per fish and the required summary
 columns, load it directly:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_project_database.html">read_project_database</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This route does not use <code><a href="../reference/read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code> or
 <code><a href="../reference/calc_project_results.html">calc_project_results()</a></code>. It is appropriate only for a
-summary table, not a raw ShuttleSoft recording.</p>
+summary table, not a raw ShuttleSoft recording. ShuttleboxR cannot infer
+from summary values alone whether gravitation was excluded, so imported
+project databases should retain analysis-window columns or accompanying
+metadata describing how the metrics were calculated.</p>
 <p>The package includes an 85-fish example summary database, which is
 used for the remainder of this vignette:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"extdata"</span>,</span>
 <span>  <span class="st">"project_database_example.csv"</span>,</span>
@@ -683,7 +822,7 @@ avoidance temperatures alone.</p>
 <div class="section level3">
 <h3 id="step-2-begin-with-univariate-distributions">Step 2: begin with univariate distributions<a class="anchor" aria-label="anchor" href="#step-2-begin-with-univariate-distributions"></a>
 </h3>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">univariate_flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_histograms.html">plot_histograms</a></span><span class="op">(</span><span class="va">project_data</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/project-histograms-1.png" class="r-plt" alt="" width="768"></p>
 <pre><code><span><span class="co">#&gt; TableGrob (3 x 2) "arrange": 6 grobs</span></span>
@@ -706,14 +845,14 @@ biologically meaningful.</p>
 <p>The combined <code>t_near_limits</code> value can conceal whether a
 fish repeatedly reached the upper limit, the lower limit, or both. The
 separate plot is therefore an important quality-control step.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">extreme_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_upper_vs_lower_extremes.html">plot_upper_vs_lower_extremes</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  return_cases <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">extreme_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/upper-lower-extremes-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">extreme_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -845,7 +984,7 @@ unusually wide exploration, unstable system behaviour, tracking
 problems, or settings poorly matched to the species.</li>
 </ul>
 <p>The thresholds can be changed explicitly, for example:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_upper_vs_lower_extremes.html">plot_upper_vs_lower_extremes</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  lower_limit_threshold <span class="op">=</span> <span class="fl">5</span>,</span>
@@ -895,7 +1034,7 @@ distance describes overall activity, whereas the number of shuttles
 describes movement between the two chambers. The plot can therefore
 distinguish inactivity from active movement that does not involve
 thermal regulation.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distance_shuttle_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -903,7 +1042,7 @@ thermal regulation.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/distance-shuttle-review-1.png" class="r-plt" alt="" width="720"></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">distance_shuttle_review</span><span class="op">$</span><span class="va">cases</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -1083,7 +1222,7 @@ highly active thermoregulation or agitation.</li>
 <div class="section level4">
 <h4 id="limit-exposure-versus-distance">Limit exposure versus distance<a class="anchor" aria-label="anchor" href="#limit-exposure-versus-distance"></a>
 </h4>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">limits_distance_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_limits_vs_distance.html">plot_limits_vs_distance</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1100,7 +1239,7 @@ which can indicate that the programmed range was inappropriate.</p>
 <div class="section level4">
 <h4 id="limit-exposure-versus-shuttling">Limit exposure versus shuttling<a class="anchor" aria-label="anchor" href="#limit-exposure-versus-shuttling"></a>
 </h4>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">limits_shuttles_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_limits_vs_shuttles.html">plot_limits_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1121,7 +1260,7 @@ limits may not have allowed it to stabilise.</p>
 particular fish. A bivariate matrix provides a wider overview by
 displaying every pairwise relationship among a selected set of project
 metrics in one figure.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_correlations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correlation_matrix.html">correlation_matrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -1162,7 +1301,7 @@ unusual. It compresses correlated metrics into principal components.</p>
 including every numeric column, and avoid including several
 mathematically redundant variables unless that redundancy is
 scientifically intended.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pca.html">pca</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -1193,7 +1332,7 @@ of variation, PC2 the next largest, and so on. The PC1-PC2 biplot is
 only a two-dimensional view. If PC1 and PC2 explain a modest fraction of
 total variation, fish can be unusual in later components even when they
 do not appear extreme on the biplot.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">biplot</span></span></code></pre></div>
 <p><img src="ShuttleboxR_files/figure-html/pca-biplot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
@@ -1225,7 +1364,7 @@ is likely to have a relatively low value.</li>
 <p>Flagged fish are circled and labelled. The arrows suggest what to
 inspect next, but <code>outlier_details</code> makes that link more
 explicit:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">outlier_details</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1367,7 +1506,7 @@ screen.</li>
 <code>project_pca$outliers</code>. The fish-level table
 <code>project_pca$screening</code> shows which method detected each fish
 and whether it was selected under the chosen <code>flag_rule</code>:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">project_pca</span><span class="op">$</span><span class="va">screening</span>, <span class="va">mahalanobis</span> <span class="op">|</span> <span class="va">dbscan</span><span class="op">)</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">2</span></span>
@@ -1507,21 +1646,69 @@ thresholds and flagging rule.</p>
 <div class="section level3">
 <h3 id="step-7-return-flagged-fish-to-the-raw-trial">Step 7: return flagged fish to the raw trial<a class="anchor" aria-label="anchor" href="#step-7-return-flagged-fish-to-the-raw-trial"></a>
 </h3>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish_to_check</span> <span class="op">&lt;-</span> <span class="va">all_fish</span><span class="op">[[</span><span class="st">"Fish_17.txt"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_tracking.html">plot_tracking</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">checked_grav_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_gravitation.html">calc_gravitation</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">checked_grav_time</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">checked_grav_time</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_distance.html">plot_distance</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish_to_check</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span><span class="va">fish_to_check</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish_to_check</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span><span class="va">fish_to_check</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/calc_extremes.html">calc_extremes</a></span><span class="op">(</span><span class="va">fish_to_check</span>, print_results <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">checked_grav_time</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">checked_grav_time</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">checked_grav_time</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/calc_extremes.html">calc_extremes</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">checked_grav_time</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Choose explicitly whether activity should cover the full dynamic period or</span></span>
+<span><span class="co"># only settled thermoregulation.</span></span>
+<span><span class="fu"><a href="../reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish_to_check</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>A defensible decision process is:</p>
 <ol style="list-style-type: decimal">
 <li>
@@ -1550,12 +1737,12 @@ metrics do not appear extreme.</p>
 <h3 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h3>
 <p>Open the help page for any function with, for example:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">calc_Tbreadth</span></span>
 <span><span class="op">?</span><span class="va">plot_distance_vs_shuttles</span></span>
 <span><span class="op">?</span><span class="va">pca</span></span></code></pre></div>
 <p>List all package help pages with:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>

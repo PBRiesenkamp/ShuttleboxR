@@ -1,10 +1,7 @@
 # Plot the distribution of core body temperatures
 
-Plots the percentage of observations within fixed-width `core_T` bins.
-The histogram shows distribution shape, while the subtitle can report
-median `Tpref` and Tbreadth. Tbreadth is calculated from the original
-observations as the mean pairwise temperature difference; the visual
-`bin_size` does not affect its value.
+Plots the frequency distribution of selected core temperatures and can
+summarise Tpref and Tbreadth.
 
 ## Usage
 
@@ -16,7 +13,9 @@ plot_coreT_histogram(
   exclude_end_minutes = 0,
   exclude_acclimation = FALSE,
   show_Tpref = TRUE,
-  show_Tbreadth = TRUE
+  show_Tbreadth = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -28,48 +27,41 @@ plot_coreT_histogram(
 
 - bin_size:
 
-  Width of the displayed temperature bins in degrees Celsius. Default is
-  0.1. This affects only the appearance of the histogram.
+  Displayed histogram-bin width in degrees Celsius.
 
 - exclude_start_minutes:
 
-  Minutes excluded from the beginning of the recording. Default is 0.
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Minutes excluded from the end of the recording. Default is 0.
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Logical. Exclude rows labelled `"acclimation"`. Default is `FALSE`.
+  Use only the dynamic period.
 
 - show_Tpref:
 
-  Logical. Show a dashed line at median `core_T`, the default definition
-  of `Tpref`. Default is `TRUE`.
+  Show median Tpref.
 
 - show_Tbreadth:
 
-  Logical. Report selected thermal breadth in the plot subtitle. Default
-  is `TRUE`.
+  Show Tbreadth in the subtitle.
+
+- exclude_gravitation:
+
+  Plot only post-gravitation observations.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours.
 
 ## Value
 
-Invisibly returns the `ggplot` object, allowing it to be saved or
-further customised.
+Invisibly returns a `ggplot` object.
 
 ## See also
 
 [`calc_Tbreadth`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
-[`calc_Tpref`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md)
-
-## Examples
-
-``` r
-example_file <- system.file(
-  "extdata", "Fish_14_13_2.txt",
-  package = "ShuttleboxR"
-)
-fish <- read_shuttlesoft(example_file)
-plot_coreT_histogram(fish)
-```
+[`calc_gravitation`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)

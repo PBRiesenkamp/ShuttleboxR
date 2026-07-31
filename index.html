@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Data Preparation and Exploration for Shuttle-Box Temperature Experiments">
-<meta name="description" content="Provides a structured workflow for importing and organising ShuttleSoft temperature shuttle-box data, calculating reproducible thermal and behavioural metrics, including a distance-based measure of selected thermal breadth, and inspecting single trials and complete projects before statistical analysis. Project-level tools help flag unusual trials for closer inspection without treating outlier status as an automatic basis for exclusion.">
-<meta property="og:description" content="Provides a structured workflow for importing and organising ShuttleSoft temperature shuttle-box data, calculating reproducible thermal and behavioural metrics, including a distance-based measure of selected thermal breadth, and inspecting single trials and complete projects before statistical analysis. Project-level tools help flag unusual trials for closer inspection without treating outlier status as an automatic basis for exclusion.">
+<meta name="description" content="Provides a structured workflow for importing and organising ShuttleSoft temperature shuttle-box data, calculating reproducible thermal and behavioural metrics, including a distance-based measure of selected thermal breadth, gravitation-aware analysis windows, and inspection of single trials and complete projects before statistical analysis. Project-level tools help flag unusual trials for closer inspection without treating outlier status as an automatic basis for exclusion.">
+<meta property="og:description" content="Provides a structured workflow for importing and organising ShuttleSoft temperature shuttle-box data, calculating reproducible thermal and behavioural metrics, including a distance-based measure of selected thermal breadth, gravitation-aware analysis windows, and inspection of single trials and complete projects before statistical analysis. Project-level tools help flag unusual trials for closer inspection without treating outlier status as an automatic basis for exclusion.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -216,56 +216,110 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <code class="sourceCode R"><span><span class="fu"><a href="reference/inspect.html">inspect</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="id_2-calculate-shuttle-box-metrics">2. Calculate shuttle-box metrics<a class="anchor" aria-label="anchor" href="#id_2-calculate-shuttle-box-metrics"></a>
+<h3 id="id_2-inspect-gravitation-before-calculating-thermal-metrics">2. Inspect gravitation before calculating thermal metrics<a class="anchor" aria-label="anchor" href="#id_2-inspect-gravitation-before-calculating-thermal-metrics"></a>
 </h3>
+<p>The early dynamic phase often represents a transition from the starting conditions towards the fish’s settled thermal region. Including this <strong>gravitation period</strong> can pull Tpref towards the starting temperature and inflate Tbreadth, avoidance percentiles, core-temperature variation, and time near limits.</p>
+<p>First inspect the trial and calculate gravitation time:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_gravitation.html">calc_gravitation</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">grav_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calc_gravitation.html">calc_gravitation</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  print_results <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code>grav_time</code> is a duration in hours. With <code>exclude_acclimation = TRUE</code>, it is added to the start of the dynamic period; with <code>FALSE</code>, it is added to the start of the complete recording. When <code>exclude_start_minutes</code> is also supplied, the later of the custom start and the gravitation cutoff is used.</p>
+<p>After checking that the breakpoint is plausible, reuse the same value:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/calc_Tpref.html">calc_Tpref</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_Tavoid.html">calc_Tavoid</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_extremes.html">calc_extremes</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/calc_coreT_variance.html">calc_coreT_variance</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  variance_type <span class="op">=</span> <span class="st">"std_deviation"</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>These values describe <strong>settled thermal behaviour</strong>. Distance, shuttling, and occupancy can either cover the complete selected period or only the settled period, depending on the question:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Whole dynamic-period activity</span></span>
 <span><span class="fu"><a href="reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_occupancy.html">calc_occupancy</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_tot_distance.html">calc_tot_distance</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_extremes.html">calc_extremes</a></span><span class="op">(</span><span class="va">fish</span>, exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/calc_track_accuracy.html">calc_track_accuracy</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># Activity during settled thermoregulation</span></span>
+<span><span class="fu"><a href="reference/calc_shuttles.html">calc_shuttles</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>The thermal metrics answer related but distinct questions:</p>
 <ul>
 <li>
 <code>Tpref</code> summarises the central selected temperature; the default is median <code>core_T</code>.</li>
 <li>
-<code>Tavoid_lower</code> and <code>Tavoid_upper</code> are lower and upper percentiles of the <code>core_T</code> distribution.</li>
+<code>Tavoid_lower</code> and <code>Tavoid_upper</code> are lower and upper percentiles of the selected <code>core_T</code> distribution.</li>
 <li>
 <code>Tpref_range</code> is the difference between those avoidance temperatures.</li>
 <li>
-<code>Tbreadth</code> describes how far apart the temperatures experienced by the fish were. It is the average absolute difference between the temperatures at two randomly selected observations from the trial.</li>
+<code>Tbreadth</code> describes how far apart the temperatures experienced by the fish were. It is the average absolute difference between temperatures at two randomly selected observations from the analysed period.</li>
 </ul>
 </div>
 <div class="section level3">
 <h3 id="what-does-tbreadth-mean">What does Tbreadth mean?<a class="anchor" aria-label="anchor" href="#what-does-tbreadth-mean"></a>
 </h3>
-<p>Imagine choosing two moments from the trial and asking how different the fish’s core temperature was at those moments. Repeat that for every possible pair and take the average. That average is <code>Tbreadth</code>.</p>
+<p>Imagine choosing two moments from the analysed part of the trial and asking how different the fish’s core temperature was. Repeat that for every possible pair and take the average. That average is <code>Tbreadth</code>.</p>
 <ul>
 <li>A fish that remains at nearly one temperature has a Tbreadth close to 0 °C.</li>
 <li>Equal time at 20 °C and 21 °C gives a Tbreadth of 0.5 °C.</li>
 <li>Equal time at 10 °C and 20 °C gives a Tbreadth of 5 °C.</li>
 </ul>
-<p>The final example gives 5 °C, rather than 10 °C, because half of the possible pairs compare two equal temperatures and half compare temperatures 10 °C apart.</p>
-<p><code>Tbreadth</code> is <strong>not centred on Tpref</strong>, does not define a lower and upper boundary, and does not depend on histogram bin size. It summarises overall spread, while <code><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code> shows whether that spread is symmetrical, skewed, or split into multiple peaks.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/calc_Tbreadth.html">calc_Tbreadth</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
+<p><code>Tbreadth</code> is <strong>not centred on Tpref</strong>, does not define lower and upper boundaries, and does not depend on histogram bin size. It summarises overall spread, while <code><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code> shows whether that spread is symmetrical, skewed, or split into multiple peaks.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span></span>
+<span>  <span class="va">fish</span>,</span>
+<span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  gravitation_time <span class="op">=</span> <span class="va">grav_time</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="id_3-inspect-the-trial">3. Inspect the trial<a class="anchor" aria-label="anchor" href="#id_3-inspect-the-trial"></a>
 </h3>
 <p>Single-trial plots help answer two different quality-control questions.</p>
 <p><strong>Did the shuttle-box and tracking system work as intended?</strong></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plot_tracking.html">plot_tracking</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plot_T_segmented.html">plot_T_segmented</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Did the fish display interpretable behaviour?</strong></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_coreT_histogram.html">plot_coreT_histogram</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plot_heatmap.html">plot_heatmap</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plot_distance.html">plot_distance</a></span><span class="op">(</span><span class="va">fish</span><span class="op">)</span></span>
@@ -285,12 +339,12 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <p>There are two routes into the project-level workflow.</p>
 <p><strong>Route A: start from a folder of raw trial files</strong></p>
 <p>Place the raw <code>.txt</code> or <code>.csv</code> files for all fish in one folder and import them as a named list:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">all_fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_shuttlesoft_project.html">read_shuttlesoft_project</a></span><span class="op">(</span></span>
 <span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The folder-selection window shows folders, not the individual trial files. Select the folder containing all raw recordings. A metadata table is optional and is useful when files have different trial start times:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">metadata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  file_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Fish_1.txt"</span>, <span class="st">"Fish_2.txt"</span><span class="op">)</span>,</span>
 <span>  trial_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10:30:00"</span>, <span class="st">"14:15:00"</span><span class="op">)</span></span>
@@ -301,27 +355,31 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <span>  directory <span class="op">=</span> <span class="fu">choose.dir</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Calculate one row of summary metrics per fish:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calc_project_results.html">calc_project_results</a></span><span class="op">(</span></span>
 <span>  <span class="va">all_fish</span>,</span>
 <span>  exclude_acclimation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  Tpref_method <span class="op">=</span> <span class="st">"median"</span>,</span>
-<span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span></span>
+<span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  exclude_gravitation_thermal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  exclude_gravitation_activity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  gravitation_failure <span class="op">=</span> <span class="st">"warn"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>Here the thermal distribution metrics are calculated after gravitation, while distance, shuttling, and occupancy retain the complete dynamic period. The output records whether gravitation was valid and the start time used for each metric group. When a breakpoint cannot be estimated, <code>gravitation_failure = "warn"</code> records <code>NA</code> for metrics that require a post-gravitation window rather than silently using the full trial.</p>
 <p><strong>Route B: start from an existing project-summary CSV</strong></p>
 <p>When the CSV already contains one row per fish and the required summary metrics, import it directly:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_project_database.html">read_project_database</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>This route skips <code><a href="reference/read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code> and <code><a href="reference/calc_project_results.html">calc_project_results()</a></code>. It does not calculate metrics that are absent from the summary file; for example, <code>Tbreadth</code> must be recalculated from the original raw trials if it is not already present.</p>
+<p>This route skips <code><a href="reference/read_shuttlesoft_project.html">read_shuttlesoft_project()</a></code> and <code><a href="reference/calc_project_results.html">calc_project_results()</a></code>. It does not calculate metrics that are absent from the summary file; for example, <code>Tbreadth</code> must be recalculated from the original raw trials if it is not already present. It also cannot determine retrospectively whether gravitation was excluded. The summary file should therefore retain columns or accompanying metadata that record the calculation window used.</p>
 </div>
 <div class="section level3">
 <h3 id="id_2-flag-unusual-trials-for-individual-review">2. Flag unusual trials for individual review<a class="anchor" aria-label="anchor" href="#id_2-flag-unusual-trials-for-individual-review"></a>
 </h3>
 <p>Start with the distributions of key metrics:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">possible_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_histograms.html">plot_histograms</a></span><span class="op">(</span><span class="va">project_data</span><span class="op">)</span></span></code></pre></div>
 <p>Then inspect relationships that can distinguish different kinds of unusual behaviour. Distance versus shuttles is a useful first comparison because it separates overall movement from movement between chambers:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">distance_shuttle_review</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  highlight_cases <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -348,7 +406,7 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <span><span class="op">)</span></span></code></pre></div>
 <p>The default limit-exposure rule is direct and interpretable: a fish is flagged when more than 10% of analysed observations occurred near the programmed limits. This avoids IQR thresholds collapsing to zero in projects where most fish never approach either limit. Adjust <code>limit_threshold</code>, <code>lower_limit_threshold</code>, and <code>upper_limit_threshold</code> to match the study design. Project-relative alternatives remain available through <code>limit_method = "quantile"</code> or <code>limit_method = "iqr"</code>.</p>
 <p>A bivariate matrix shows all selected pairwise relationships together. The lower panels contain scatterplots and smooth trends, while the upper panels show Pearson correlations. It is useful for seeing redundant metrics and unexpected combinations before running PCA:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/correlation_matrix.html">correlation_matrix</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -357,7 +415,7 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>PCA then provides a complementary multivariate overview:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">project_pca</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pca.html">pca</a></span><span class="op">(</span></span>
 <span>  <span class="va">project_data</span>,</span>
 <span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -377,7 +435,7 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <p>The PCA variables are supplied explicitly because the PCA can change greatly if variables are added or removed, even when the project dataset contains the same fish. The default <code>flag_rule = "both"</code> highlights only fish identified by both Mahalanobis distance and DBSCAN. Use <code>flag_rule = "either"</code> for a more sensitive screen. Increasing <code>mahalanobis_th</code> or <code>dbscan_th</code> will generally reduce the number of fish flagged; <code>dbscan_minPts</code> controls the minimum local neighbourhood size. These settings identify fish for closer inspection, not automatic exclusion.</p>
 <p>When the project database was generated with the current version of <code><a href="reference/calc_project_results.html">calc_project_results()</a></code>, <code>Tbreadth</code> can also be included in these project-level comparisons. Older summary databases must be regenerated from the raw trial files before <code>Tbreadth</code> is available.</p>
 <p>The output identifies <strong>candidates for review</strong>, not automatic exclusions. The recommended next step is to locate each flagged fish in <code>all_fish</code> and inspect its raw trial:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish_to_check</span> <span class="op">&lt;-</span> <span class="va">all_fish</span><span class="op">[[</span><span class="st">"Fish_17.txt"</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/plot_T_gradient.html">plot_T_gradient</a></span><span class="op">(</span><span class="va">fish_to_check</span><span class="op">)</span></span>
@@ -391,7 +449,7 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <h2 id="recalculating-core-temperature-is-optional">Recalculating core temperature is optional<a class="anchor" aria-label="anchor" href="#recalculating-core-temperature-is-optional"></a>
 </h2>
 <p>ShuttleSoft files normally already contain <code>core_T</code>. Only use <code><a href="reference/calc_coreT.html">calc_coreT()</a></code> when those values need to be replaced and appropriate thermal-lag coefficients are available:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calc_coreT.html">calc_coreT</a></span><span class="op">(</span></span>
 <span>  <span class="va">fish</span>,</span>
 <span>  mass <span class="op">=</span> <span class="fl">12.4</span>,</span>
@@ -404,10 +462,10 @@ Existing summary CSV -&gt; read_project_database()    -&gt; project_data</code><
 <h2 id="full-guide">Full guide<a class="anchor" aria-label="anchor" href="#full-guide"></a>
 </h2>
 <p>After installation, open the worked vignette with:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"ShuttleboxR"</span>, package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 <p>Individual function documentation is available in R, for example:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">calc_Tbreadth</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"ShuttleboxR"</span><span class="op">)</span></span></code></pre></div>
 </div>

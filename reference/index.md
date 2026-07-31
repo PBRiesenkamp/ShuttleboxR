@@ -21,25 +21,25 @@ fish.
 - [`calc_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_distance.md)
   : Calculate the cumulative distance
 - [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md)
-  : Calculate the temperature preference
+  : Calculate temperature preference
 - [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md)
-  : Calculate the avoidance temperatures
+  : Calculate avoidance temperatures
 - [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md)
   : Calculate selected thermal breadth
 - [`calc_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_extremes.md)
-  : Calculate the time spent near the extremes
+  : Calculate exposure near programmed temperature limits
 - [`calc_tot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_tot_distance.md)
-  : Calculate the total distance
+  : Calculate total distance moved
 - [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
-  : Calculate the gravitation period
+  : Calculate gravitation time
 - [`calc_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_shuttles.md)
   : Calculate the number of shuttles
 - [`calc_occupancy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_occupancy.md)
-  : Calculate the occupancy times
+  : Calculate chamber occupancy
 - [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md)
-  : Calculate the temperature preference
+  : Calculate variation in core body temperature
 - [`calc_track_accuracy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_track_accuracy.md)
-  : Calculate the tracking accuracy
+  : Calculate tracking accuracy
 
 ## Single trials: inspect and troubleshoot
 
@@ -48,7 +48,7 @@ Check temperature control, tracking and fish behaviour within a trial.
 - [`plot_T_gradient()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_gradient.md)
   : Plot the temperatures in each side of the shuttlebox over time
 - [`plot_T_segmented()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md)
-  : Plot the core body temperature during the trial
+  : Plot temperature trajectory and gravitation breakpoint
 - [`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md)
   : Plot the distribution of core body temperatures
 - [`plot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_distance.md)

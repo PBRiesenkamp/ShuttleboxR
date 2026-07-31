@@ -1,12 +1,7 @@
 # Calculate shuttle-box metrics for all trials
 
-Calculates the standard ShuttleboxR metrics for every trial in a list,
-such as the object returned by
-[`read_shuttlesoft_project()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/read_shuttlesoft_project.md).
-The output includes selected thermal breadth from
-[`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
-calculated as the mean pairwise difference among observed core
-temperatures.
+Calculates project-level metrics and optionally separates transitional
+and settled behaviour.
 
 ## Usage
 
@@ -21,8 +16,11 @@ calc_project_results(
   exclude_end_minutes = 0,
   Tpref_method = "median",
   Tavoid_percentiles = c(0.05, 0.95),
-  textremes_threshold = expression(0.2 * (max(df$max_T) - max(df$min_T))),
-  core_T_variance_type = "std_error"
+  textremes_threshold = expression(0.2 * (max(df$max_T, na.rm = TRUE) - max(df$min_T, na.rm = TRUE))),
+  core_T_variance_type = "std_error",
+  exclude_gravitation_thermal = FALSE,
+  exclude_gravitation_activity = FALSE,
+  gravitation_failure = c("warn", "error")
 )
 ```
 
@@ -30,47 +28,41 @@ calc_project_results(
 
 - data_read:
 
-  A list containing imported shuttle-box trials.
+  A list of imported shuttle-box trials.
 
 - calculate_distance:
 
-  Logical. Calculate distance from coordinates. Default is `FALSE`.
+  Calculate distance from coordinates.
 
 - pixel_to_cm:
 
-  Logical. Convert pixels to centimetres when calculating distance.
-  Default is `TRUE`.
+  Convert pixels to centimetres when calculating distance.
 
 - recalculate_core_T:
 
-  Logical. Recalculate body temperature with
-  [`calc_coreT()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT.md).
-  Default is `FALSE`, which uses the `core_T` already present in the
-  ShuttleSoft files.
+  Recalculate core body temperature.
 
 - exclude_acclimation:
 
-  Logical. Exclude the acclimation period. Default is `FALSE`.
+  Use the dynamic period as the calculation origin.
 
 - exclude_start_minutes:
 
-  Minutes excluded from the start of each recording. Default is 0.
+  Minutes omitted from the selected origin.
 
 - exclude_end_minutes:
 
-  Minutes excluded from the end of each recording. Default is 0.
+  Minutes omitted from the end.
 
 - Tpref_method:
 
   Method used by
-  [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md):
-  `"median"`, `"mean"`, or `"mode"`. Default is `"median"`.
+  [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md).
 
 - Tavoid_percentiles:
 
-  Lower and upper percentiles used by
+  Percentiles used by
   [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md).
-  Default is `c(0.05, 0.95)`.
 
 - textremes_threshold:
 
@@ -81,12 +73,25 @@ calc_project_results(
   Method used by
   [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md).
 
+- exclude_gravitation_thermal:
+
+  Exclude gravitation from thermal distribution metrics.
+
+- exclude_gravitation_activity:
+
+  Exclude gravitation from distance, shuttles, and occupancy.
+
+- gravitation_failure:
+
+  Use `"warn"` to record NA for gravitation-dependent metrics or
+  `"error"` to stop.
+
 ## Value
 
-A data frame containing metrics for all trials.
+A data frame containing one row of metrics per trial, plus
+gravitation-window metadata.
 
 ## Details
 
-ShuttleSoft files normally already contain `core_T`, so recalculation is
-off by default. Set `recalculate_core_T = TRUE` only when calibrated
-thermal-lag parameters are available for every trial.
+Gravitation is estimated once per fish and reused across dependent
+metrics.

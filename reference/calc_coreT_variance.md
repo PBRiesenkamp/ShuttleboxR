@@ -1,6 +1,7 @@
-# Calculate the temperature preference
+# Calculate variation in core body temperature
 
-This function calculates the temperature preference for the trial
+Calculates variation in core temperature within the selected analysis
+window.
 
 ## Usage
 
@@ -10,7 +11,9 @@ calc_coreT_variance(
   variance_type = c("std_error", "std_deviation", "coeff_variation"),
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F
+  exclude_acclimation = FALSE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -18,29 +21,32 @@ calc_coreT_variance(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `core_T`.
 
 - variance_type:
 
-  The method used for calculating the variance of core body temperature
-  ("std_error", "std_deviation", "coeff_variation"). Default is
-  "std_error".
+  One of `"std_error"`, `"std_deviation"`, or `"coeff_variation"`.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
+
+- exclude_gravitation:
+
+  Exclude the transitional gravitation period.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours.
 
 ## Value
 
-variance in core body temperature
+A single measure of core-temperature variation.

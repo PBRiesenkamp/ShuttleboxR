@@ -1,18 +1,19 @@
-# Calculate the time spent near the extremes
+# Calculate exposure near programmed temperature limits
 
-This function calculates the time the subject spent near the set minimum
-and maximum temperature limits during the shuttle-box trial
+Calculates limit exposure within the selected analysis window.
 
 ## Usage
 
 ``` r
 calc_extremes(
   data,
-  threshold = 0.2 * (max(data$max_T) - max(data$min_T)),
+  threshold = 0.2 * (max(data$max_T, na.rm = TRUE) - max(data$min_T, na.rm = TRUE)),
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -20,32 +21,37 @@ calc_extremes(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing temperature and limit
+  columns.
 
 - threshold:
 
-  Definition of the extreme temperature range. Default is 20% of the
-  temperature range: 0.2\*(max(data\$max_T)-max(data\$min_T))
+  Width of each extreme-temperature zone in degrees Celsius.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the results.
+
+- exclude_gravitation:
+
+  Exclude the transitional gravitation period.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours.
 
 ## Value
 
-the time spent near each extreme
+Percentages near the lower and upper programmed limits.

@@ -1,6 +1,6 @@
-# Calculate the occupancy times
+# Calculate chamber occupancy
 
-This function calculates the time spent in each chamber
+Calculates chamber occupancy within the selected analysis window.
 
 ## Usage
 
@@ -9,8 +9,10 @@ calc_occupancy(
   data,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE,
+  exclude_gravitation = FALSE,
+  gravitation_time = NULL
 )
 ```
 
@@ -18,27 +20,32 @@ calc_occupancy(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `zone`.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the results.
+
+- exclude_gravitation:
+
+  Exclude the transitional gravitation period.
+
+- gravitation_time:
+
+  Optional gravitation duration in hours.
 
 ## Value
 
-the occupancy times
+Counts of observations in the DECR and INCR chambers.

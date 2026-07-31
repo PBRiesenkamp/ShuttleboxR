@@ -1,9 +1,7 @@
-# Calculate the gravitation period
+# Calculate gravitation time
 
-This function calculates the gravitation period using a segmented
-regression with a single breakpoint. The breakpoint represents the
-moment where temperature preference was reached. The time until that
-point is the gravitation time
+Estimates a one-breakpoint segmented regression of core temperature
+through time.
 
 ## Usage
 
@@ -12,8 +10,8 @@ calc_gravitation(
   data,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE
 )
 ```
 
@@ -21,27 +19,37 @@ calc_gravitation(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `time_sec` and
+  `core_T`.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted before fitting, measured from the selected origin.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end before fitting.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use the dynamic-period start as the origin rather than the recording
+  start.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the estimated duration.
 
 ## Value
 
-the temperature preference
+A gravitation duration in hours from the selected origin.
+
+## Details
+
+The returned duration can be reused in thermal calculations to ensure
+that all metrics use the same checked breakpoint.
+
+## See also
+
+[`plot_T_segmented`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md),
+[`calc_Tpref`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md),
+[`calc_Tbreadth`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md)

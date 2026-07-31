@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,18 @@
       <small>Source: <a href="https://github.com/PBRiesenkamp/ShuttleboxR/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9012" id="shuttleboxr-0009012">ShuttleboxR 0.0.0.9012<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009012"></a></h2>
+<ul><li>Added gravitation-aware analysis windows to <code><a href="../reference/calc_Tpref.html">calc_Tpref()</a></code>, <code><a href="../reference/calc_Tavoid.html">calc_Tavoid()</a></code>, <code><a href="../reference/calc_Tbreadth.html">calc_Tbreadth()</a></code>, <code><a href="../reference/calc_coreT_variance.html">calc_coreT_variance()</a></code>, <code><a href="../reference/calc_extremes.html">calc_extremes()</a></code>, <code><a href="../reference/calc_tot_distance.html">calc_tot_distance()</a></code>, <code><a href="../reference/calc_shuttles.html">calc_shuttles()</a></code>, <code><a href="../reference/calc_occupancy.html">calc_occupancy()</a></code>, and <code><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code>.</li>
+<li>
+<code><a href="../reference/calc_gravitation.html">calc_gravitation()</a></code> now reports a duration from the selected origin: the dynamic-period start when acclimation is excluded, or the recording start otherwise.</li>
+<li>
+<code><a href="../reference/plot_T_segmented.html">plot_T_segmented()</a></code> now shades the gravitation period, marks its cutoff, and can calculate displayed thermal metrics from post-gravitation observations.</li>
+<li>
+<code><a href="../reference/calc_project_results.html">calc_project_results()</a></code> can exclude gravitation separately for thermal and activity metrics, reuses one gravitation estimate per fish, and records analysis-window metadata and breakpoint validity.</li>
+<li>When a required project-level gravitation estimate fails, users can choose a warning with <code>NA</code> gravitation-dependent metrics or a stopping error.</li>
+<li>Expanded the README and vignette with a check-then-calculate workflow, guidance on interpreting segmented plots, and examples of whole-period versus settled-period activity metrics.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.9011" id="shuttleboxr-0009011">ShuttleboxR 0.0.0.9011<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009011"></a></h2>
 <ul><li>Replaced the bundled single-trial example with the uploaded <code>Fish_14_13_2.txt</code> ShuttleSoft recording and updated the README, vignette, function examples, and generated help pages accordingly.</li>

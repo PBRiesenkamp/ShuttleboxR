@@ -1,5 +1,35 @@
 # Changelog
 
+## ShuttleboxR 0.0.0.9012
+
+- Added gravitation-aware analysis windows to
+  [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md),
+  [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md),
+  [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
+  [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md),
+  [`calc_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_extremes.md),
+  [`calc_tot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_tot_distance.md),
+  [`calc_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_shuttles.md),
+  [`calc_occupancy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_occupancy.md),
+  and
+  [`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md).
+- [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
+  now reports a duration from the selected origin: the dynamic-period
+  start when acclimation is excluded, or the recording start otherwise.
+- [`plot_T_segmented()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md)
+  now shades the gravitation period, marks its cutoff, and can calculate
+  displayed thermal metrics from post-gravitation observations.
+- [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md)
+  can exclude gravitation separately for thermal and activity metrics,
+  reuses one gravitation estimate per fish, and records analysis-window
+  metadata and breakpoint validity.
+- When a required project-level gravitation estimate fails, users can
+  choose a warning with `NA` gravitation-dependent metrics or a stopping
+  error.
+- Expanded the README and vignette with a check-then-calculate workflow,
+  guidance on interpreting segmented plots, and examples of whole-period
+  versus settled-period activity metrics.
+
 ## ShuttleboxR 0.0.0.9011
 
 - Replaced the bundled single-trial example with the uploaded

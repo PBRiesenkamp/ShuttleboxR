@@ -1,7 +1,6 @@
-# Calculate the tracking accuracy
+# Calculate tracking accuracy
 
-This function calculates the proportion of time the subject was tracked
-accurately during the trial
+Calculates tracking accuracy within the selected analysis window.
 
 ## Usage
 
@@ -10,8 +9,8 @@ calc_track_accuracy(
   data,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
-  exclude_acclimation = F,
-  print_results = T
+  exclude_acclimation = FALSE,
+  print_results = TRUE
 )
 ```
 
@@ -19,27 +18,24 @@ calc_track_accuracy(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing `x_pos`.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default = F
+  Use only the dynamic period.
 
 - print_results:
 
-  Print the results, default is TRUE
+  Print the result.
 
 ## Value
 
-the tracking accuracy
+The proportion of observations successfully tracked.

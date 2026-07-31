@@ -1,7 +1,7 @@
-# Plot the core body temperature during the trial
+# Plot temperature trajectory and gravitation breakpoint
 
-This function plots the core body temperature during the trial, along
-with temperature preference, avoidance, and gravitation time.
+Shows the temperature trajectory, segmented fit, gravitation period, and
+thermal summary metrics.
 
 ## Usage
 
@@ -13,7 +13,9 @@ plot_T_segmented(
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
   exclude_acclimation = TRUE,
-  overlay_chamber_temp = T
+  overlay_chamber_temp = TRUE,
+  exclude_gravitation = TRUE,
+  gravitation_time = NULL
 )
 ```
 
@@ -21,39 +23,46 @@ plot_T_segmented(
 
 - data:
 
-  An organised shuttle-box dataframe with corrected core body
-  temperature
+  An organised shuttle-box data frame containing time and temperature
+  columns.
 
 - Tpref_method:
 
-  The method used for calculation of temperature preference ("median",
-  "mean", "mode"). Default is "median".
+  Method used to calculate Tpref.
 
 - Tavoid_percentiles:
 
-  The lower and upper percentile for lower and upper avoidance
-  temperature calculation resp. Default is c(0.05, 0.95)
+  Percentiles used to calculate avoidance temperatures.
 
 - exclude_start_minutes:
 
-  Exclusion of time from the start of the trial onwards, in minutes.
-  Default is 0
+  Minutes omitted from the start of the selected period.
 
 - exclude_end_minutes:
 
-  Exclusion of time from the end of the trial backwards, in minutes.
-  Default is 0
+  Minutes omitted from the end of the recording.
 
 - exclude_acclimation:
 
-  Exclude the acclimation period from variable calculation, default is
-  TRUE
+  Use the dynamic-period start as the time origin.
 
 - overlay_chamber_temp:
 
-  Boolean to determine whether or not to overlay chamber temperatures,
-  default = TRUE
+  Overlay warm- and cold-chamber temperatures.
+
+- exclude_gravitation:
+
+  Calculate horizontal thermal metrics after the breakpoint.
+
+- gravitation_time:
+
+  Optional checked gravitation duration in hours.
 
 ## Value
 
-plot with the core body temperature and key shuttle-box metrics
+A `ggplot` object with the gravitation time stored as an attribute.
+
+## Details
+
+The complete selected trajectory remains visible even when the
+horizontal metrics are calculated after gravitation.

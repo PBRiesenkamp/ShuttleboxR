@@ -1,5 +1,13 @@
 # Maintaining ShuttleboxR
 
+## Gravitation-aware windows (0.0.0.9012)
+
+Thermal distribution metrics can now exclude the transition before the
+segmented breakpoint. The gravitation duration is referenced to either
+the dynamic-period start or the recording start, controlled by
+`exclude_acclimation`. Project calculations estimate gravitation once
+per fish and reuse the same value across dependent metrics.
+
 This file is a short checklist for making and publishing package
 changes.
 
