@@ -6,34 +6,35 @@
 \usage{
 pca(
   data,
-  mahalanobis_th = 0.7,
+  mahalanobis_th = 0.975,
   dbscan_th = 1,
   print_labels = TRUE,
   id_col = "fileID",
   var_col = "Tpref",
-  biplot_variables = TRUE
+  biplot_variables = TRUE,
+  highlight_outliers = TRUE,
+  n_driver_variables = 3
 )
 }
 \arguments{
 \item{data}{Project-results data containing one row per trial or individual.}
-
-\item{mahalanobis_th}{Probability used for the chi-squared Mahalanobis distance cutoff. Default is 0.7, retained for compatibility with earlier ShuttleboxR versions.}
-
-\item{dbscan_th}{\code{eps} value supplied to DBSCAN. Default is 1.}
-
-\item{print_labels}{Logical. Show individual labels on PCA plots. Default is \code{TRUE}.}
-
+\item{mahalanobis_th}{Probability used for the chi-squared Mahalanobis distance cutoff. Default is 0.975. Smaller values flag more fish.}
+\item{dbscan_th}{\code{eps} value supplied to DBSCAN. Default is 1. Smaller values generally classify more fish as locally isolated.}
+\item{print_labels}{Logical. Show labels for all individuals on PCA plots. Default is \code{TRUE}. Flagged fish are labelled when \code{highlight_outliers} is \code{TRUE} even when \code{print_labels = FALSE}.}
 \item{id_col}{Identifier column. Default is \code{"fileID"}.}
-
 \item{var_col}{Variable plotted against PC1. Default is \code{"Tpref"}.}
-
 \item{biplot_variables}{Logical. Show variable vectors on the biplot.}
+\item{highlight_outliers}{Logical. Circle and label fish flagged by either outlier screen on the biplot and PC1-variable plot. Default is \code{TRUE}.}
+\item{n_driver_variables}{Number of unusually high or low original variables reported for each flagged fish. Default is 3.}
 }
 \value{
-A list containing the PCA object, loadings, scores, outlier table, retained row identifiers, and plots.
+A list containing the PCA object, loadings, scores, method-level outlier table, an \code{outlier_details} table describing potential drivers, retained row identifiers, variance explained, and plots.
 }
 \description{
-Performs a scaled principal component analysis (PCA) of numeric project-level shuttle-box metrics. The returned object includes scores, loadings, two complementary outlier screens, and four ready-to-display plots.
+Performs a scaled principal component analysis of numeric project-level shuttle-box metrics. Fish close together have similar multivariate profiles, while separated fish differ in one or more metrics. Variable arrows show the direction in which each metric increases and help identify measurements that may be driving a flagged fish.
+}
+\details{
+Mahalanobis distance identifies fish far from the multivariate centre while accounting for covariance among PCA dimensions. DBSCAN identifies fish in locally sparse regions of the PC1-PC2 plot. These screens identify candidates for review, not automatic exclusions.
 }
 \examples{
 example_file <- system.file(
@@ -42,10 +43,11 @@ example_file <- system.file(
 project_data <- read_project_database(example_file)
 
 pca_data <- project_data[c(
-  "fileID", "mass", "Tpref", "Tavoid_lower", "Tavoid_upper",
-  "Tpref_range", "tot_distance", "nr_shuttles"
+  "fileID", "Tpref", "Tpref_range", "grav_time",
+  "tot_distance", "nr_shuttles", "t_near_max", "t_near_min"
 )]
 
 pca_result <- pca(pca_data, print_labels = FALSE)
 pca_result$plots$biplot
+pca_result$outlier_details
 }

@@ -62,6 +62,7 @@ reference:
   - plot_distance_vs_shuttles
   - plot_limits_vs_distance
   - plot_limits_vs_shuttles
+  - plot_upper_vs_lower_extremes
   - correlation_matrix
   - pca
 

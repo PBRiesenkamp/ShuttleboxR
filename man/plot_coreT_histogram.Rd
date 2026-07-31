@@ -17,7 +17,7 @@ plot_coreT_histogram(
 \arguments{
 \item{data}{An organised shuttle-box data frame containing \code{core_T}.}
 
-\item{bin_size}{Width of the temperature bins in degrees Celsius. Default is 0.1. Use the same value when comparing animals.}
+\item{bin_size}{Width of the displayed temperature bins in degrees Celsius. Default is 0.1. This affects only the appearance of the histogram.}
 
 \item{exclude_start_minutes}{Minutes excluded from the beginning of the recording. Default is 0.}
 
@@ -25,15 +25,15 @@ plot_coreT_histogram(
 
 \item{exclude_acclimation}{Logical. Exclude rows labelled \code{"acclimation"}. Default is \code{FALSE}.}
 
-\item{show_Tpref}{Logical. Show a dashed line at the midpoint of the most frequently occupied temperature bin. Default is \code{TRUE}.}
+\item{show_Tpref}{Logical. Show a dashed line at median \code{core_T}, the default definition of \code{Tpref}. Default is \code{TRUE}.}
 
-\item{show_Tbreadth}{Logical. Report effective selected thermal breadth in the plot subtitle. Default is \code{TRUE}.}
+\item{show_Tbreadth}{Logical. Report selected thermal breadth in the plot subtitle. Default is \code{TRUE}.}
 }
 \value{
 Invisibly returns the \code{ggplot} object, allowing it to be saved or further customised.
 }
 \description{
-Plots the percentage of observations within fixed-width \code{core_T} bins. The plot can show the midpoint of the most frequently occupied temperature bin and the effective selected thermal breadth calculated from the same bins.
+Plots the percentage of observations within fixed-width \code{core_T} bins. The histogram shows distribution shape, while the subtitle can report median \code{Tpref} and Tbreadth. Tbreadth is calculated from the original observations as the mean pairwise temperature difference; the visual \code{bin_size} does not affect its value.
 }
 \examples{
 example_file <- system.file(

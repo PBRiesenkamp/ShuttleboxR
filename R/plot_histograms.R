@@ -109,7 +109,7 @@ plot_histograms <- function(proj_data, bin_size_Tpref = 1, bin_size_Tavoid_upper
                              length(proj_data$t_near_limits) * bin_size_t_near_limits,
                            linewidth = 1, 
                            color = 'orange') +  
-    ggplot2::labs(x = "Time near limits", y = "Frequency") +
+    ggplot2::labs(x = "Observations near limits (%)", y = "Frequency") +
     ggplot2::theme_light()
   
   variables <- c("Tpref", "Tavoid_upper", "Tavoid_lower", "tot_distance", "nr_shuttles", "t_near_limits")

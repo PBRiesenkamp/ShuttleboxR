@@ -12,117 +12,78 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.width = 7,
-  fig.height = 4.5
+  fig.height = 4.8,
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
-## Purpose and scope
+## What ShuttleboxR is for
 
-ShuttleboxR bridges the gap between data acquisition and statistical analysis
-in shuttle-box temperature experiments. Its purpose is to make the large files
-produced by these experiments easier to organise, calculate consistently and
-inspect for possible technical or behavioural problems.
+ShuttleboxR helps researchers move from raw shuttle-box recordings to a checked,
+interpretable project dataset. It follows three steps:
 
-The package follows three consecutive steps:
-
-1. **Import and organise** the data.
-2. **Calculate shuttle-box metrics** using explicit, reproducible settings.
+1. **Import and organise** the raw data.
+2. **Calculate shuttle-box metrics** consistently.
 3. **Inspect and troubleshoot** the data before formal statistical analysis.
 
-This workflow has two connected branches:
+The same logic operates at two linked levels:
 
-- **Branch 1: single trials** calculates and inspects the recording from one
-  fish.
-- **Branch 2: multiple trials** compiles one row of metrics per fish and
-  examines the study as a whole.
-
-The branches are deliberately connected. Project-level functions can flag a
-fish with unusual values, but the reason for that pattern can only be understood
-by returning to the original single-trial record and inspecting its temperature,
-tracking and movement data.
+- **Branch 1: a single trial**, used to understand one fish in detail.
+- **Branch 2: the complete project**, used to compare all fish in a study and help identify
+  trials that deserve closer inspection.
 
 ```text
 Raw shuttle-box recordings
         |
         +-- Branch 1: one fish
-        |      import and organise
-        |             -> calculate metrics
-        |             -> inspect the trial
+        |      import -> calculate -> inspect
         |
-        +-- Branch 2: the complete project
-               import all trials
-                      -> compile one row per fish
-                      -> inspect distributions and multivariate patterns
+        +-- Branch 2: all fish
+               compile metrics -> screen the project
                                       |
                                       v
-                             flag fish for review
+                            identify fish to review
                                       |
                                       v
                          return to Branch 1 plots
 ```
 
-ShuttleboxR supports data preparation, quality control and exploration. It does
-not select the inferential model for a study, and it does not automatically
-decide that an unusual fish should be excluded.
+The package does **not** automatically decide that an unusual fish should be
+excluded. A project-level flag is the beginning of an investigation, not the
+end of one!
 
 ```{r load-package}
 library(ShuttleboxR)
 ```
 
-## How a shuttle-box trial generates the data
+# Branch 1: analyse and inspect one fish
 
-A temperature shuttle box contains a warm and a cold chamber. During the dynamic
-trial phase, the temperatures increase while the fish occupies the warm chamber
-and decrease while it occupies the cold chamber. By moving between chambers, the
-fish regulates the temperatures it experiences.
+## Step 1: import and organise the recording
 
-A typical recording therefore contains several linked data streams:
-
-- time and trial phase;
-- warm- and cold-chamber temperatures;
-- chamber occupancy and shuttle events;
-- fish position and distance moved; and
-- estimated core body temperature (`core_T`).
-
-These streams should be considered together. A plausible preferred temperature
-is not enough to establish that a trial was successful if, for example, tracking
-failed, temperature control was interrupted or the fish remained motionless.
-
-## Workflow at a glance
-
-| Branch and stage | Main question | Representative functions |
-|---|---|---|
-| Single trial: import and organise | Is this recording correctly structured and where does the experimental trial begin? | `read_shuttlesoft()`, `file_prepare()`, `inspect()` |
-| Single trial: calculate | What thermal and behavioural metrics describe this fish? | `calc_Tpref()`, `calc_Tavoid()`, `calc_Tbreadth()`, `calc_gravitation()`, `calc_shuttles()`, `calc_occupancy()` |
-| Single trial: inspect | Did the apparatus, tracking and fish behaviour produce an interpretable trial? | `plot_T_gradient()`, `plot_tracking()`, `plot_T_segmented()`, `plot_coreT_histogram()`, `plot_heatmap()` |
-| Project: import and calculate | What is the common metric table across all fish? | `read_shuttlesoft_project()`, `calc_project_results()`, `read_project_database()` |
-| Project: inspect | Which fish or trials differ from the rest of the study and require individual review? | `plot_histograms()`, project scatter plots, `correlation_matrix()`, `pca()` |
-
-# Branch 1: work with one fish
-
-## Step 1: import and organise a single trial
-
-The simplest way to import a ShuttleSoft `.txt` file or `.csv` export is:
+Select a ShuttleSoft `.txt` file or `.csv` export:
 
 ```{r choose-file, eval=FALSE}
 fish <- read_shuttlesoft(file.choose())
 ```
 
-`file.choose()` opens an ordinary file-selection window. By default,
-`read_shuttlesoft()` also runs `file_prepare()`, which:
+`read_shuttlesoft()` imports and prepares the recording. It creates elapsed
+seconds and hours, identifies shuttle events, converts required columns to the
+expected formats, and labels acclimation and trial phases when a trial start is
+provided.
 
-- creates elapsed time in seconds and hours;
-- labels acclimation and trial phases;
-- corrects dates when a trial passes midnight;
-- identifies shuttle events; and
-- converts the columns needed by later functions to the expected formats.
+```{r trial-start, eval=FALSE}
+fish <- read_shuttlesoft(
+  file.choose(),
+  trial_start = "13:30:00"
+)
+```
 
-The current version no longer requires a separate metadata file for a single
-trial. Values such as `trial_start` can be supplied directly, and the `core_T`
-values already present in the ShuttleSoft file are retained unless the user
-explicitly chooses to recalculate them.
+When `trial_start` is omitted, the complete recording is treated as trial data.
+The `core_T` values already present in the ShuttleSoft file are retained unless
+the user explicitly recalculates them.
 
-This vignette uses a shortened recording included with the package:
+This vignette uses a shortened example recording included with the package:
 
 ```{r import-example}
 example_file <- system.file(
@@ -132,276 +93,218 @@ example_file <- system.file(
 )
 
 fish <- read_shuttlesoft(example_file)
-```
-
-Check the structure with:
-
-```{r inspect-file}
-dim(fish)
-head(names(fish), 12)
 inspect(fish)
 ```
 
-### Marking acclimation and trial phases
+## Step 2: calculate the main metrics
 
-Many experiments begin with a static acclimation phase followed by a dynamic
-trial phase. Supply the clock time at which the dynamic trial began:
-
-```{r trial-start, eval=FALSE}
-fish <- read_shuttlesoft(
-  file.choose(),
-  trial_start = "13:30:00"
-)
-```
-
-Rows before that time are labelled `"acclimation"`. When `trial_start` is
-omitted, the entire recording is treated as trial data.
-
-Most calculation functions can then use the same exclusion rule:
-
-```{r exclude-acclimation, eval=FALSE}
-calc_Tpref(fish, exclude_acclimation = TRUE)
-calc_Tbreadth(fish, exclude_acclimation = TRUE)
-plot_coreT_histogram(fish, exclude_acclimation = TRUE)
-```
-
-## Step 2: calculate metrics for the fish
-
-### Primary data streams and summary metrics
-
-Some calculations create data that other functions depend on. The most
-important are:
-
-- `core_T`, which is needed for thermal preference, avoidance, thermal breadth,
-  gravitation time and time near limits; and
-- cumulative `distance`, which is needed for total distance and movement speed.
-
-ShuttleSoft normally supplies both. Use `calc_coreT()` or `calc_distance()` only
-when the existing values need to be replaced or reconstructed.
-
-The main summary metrics are:
-
-```{r metric-table, echo=FALSE}
-metric_table <- data.frame(
-  Output = c(
-    "Tpref",
-    "Tavoid_lower / Tavoid_upper",
-    "Tpref_range",
-    "Tbreadth",
-    "grav_time",
-    "nr_shuttles",
-    "tot_distance",
-    "seconds_in_DECR / seconds_in_INCR",
-    "t_near_limits",
-    "core_T_variance",
-    "track_accuracy"
-  ),
-  Interpretation = c(
-    "Central selected temperature; median core_T by default",
-    "Lower and upper percentiles of core_T",
-    "Difference between upper and lower avoidance temperatures",
-    "Effective width of the complete core_T frequency distribution",
-    "Estimated time taken to approach the preferred temperature",
-    "Number of moves between chambers",
-    "Total distance moved during the selected period",
-    "Time spent in the cold and warm chambers",
-    "Proportion of observations near the system temperature limits",
-    "Variation in core_T during the selected period",
-    "Proportion of observations with successful position tracking"
-  ),
-  stringsAsFactors = FALSE
-)
-
-knitr::kable(metric_table)
-```
-
-### Preferred and avoidance temperatures
-
-`calc_Tpref()` summarises the selected temperatures. The default is median
-`core_T`, although the mean and mode are available:
-
-```{r tpref}
-Tpref <- calc_Tpref(
-  fish,
-  method = "median",
-  print_results = FALSE
-)
-Tpref
-```
-
-```{r tpref-methods}
-calc_Tpref(fish, method = "mean", print_results = FALSE)
-calc_Tpref(fish, method = "mode", print_results = FALSE)
-```
-
-`calc_Tavoid()` returns lower and upper percentiles of the `core_T`
-distribution. The defaults are the 5th and 95th percentiles:
-
-```{r tavoid}
-Tavoid <- calc_Tavoid(
-  fish,
-  percentiles = c(0.05, 0.95),
-  print_results = FALSE
-)
-Tavoid
-```
-
-Their difference is the central percentile range:
-
-```{r tavoid-range}
+```{r basic-metrics}
+Tpref <- calc_Tpref(fish, print_results = FALSE)
+Tavoid <- calc_Tavoid(fish, print_results = FALSE)
 Tpref_range <- Tavoid[2] - Tavoid[1]
-Tpref_range
-```
-
-### Effective selected thermal breadth
-
-`Tpref_range` uses only two points in the distribution. `calc_Tbreadth()` was
-added later to provide a complementary measure that uses the frequency of all
-experienced temperatures.
-
-Temperatures are divided into equal-width bins and breadth is calculated as:
-
-\[
-B_T = \frac{w}{\sum_i p_i^2},
-\]
-
-where \(w\) is the temperature-bin width and \(p_i\) is the proportion of
-observations in bin \(i\).
-
-```{r tbreadth}
-Tbreadth <- calc_Tbreadth(
-  fish,
-  bin_size = 0.1,
-  print_results = FALSE
-)
-Tbreadth
-```
-
-A fish concentrated around a narrow set of temperatures has a small
-`Tbreadth`. A fish that distributes its time broadly and relatively evenly has
-a larger value. The result is expressed in degrees Celsius, but it is a measure
-of selected or experienced thermal breadth, not physiological thermal
-tolerance. Use the same `bin_size` for every fish being compared.
-
-The percentile range and effective breadth should not be treated as
-interchangeable. Two fish can have similar upper and lower avoidance
-percentiles while differing substantially in how their time is distributed
-between them.
-
-### Behaviour, occupancy, movement and tracking
-
-```{r behavioural-metrics}
+Tbreadth <- calc_Tbreadth(fish, print_results = FALSE)
 shuttles <- calc_shuttles(fish, print_results = FALSE)
-occupancy <- calc_occupancy(fish, print_results = FALSE)
 distance <- calc_tot_distance(fish, print_results = FALSE)
 tracking <- calc_track_accuracy(fish, print_results = FALSE)
 
-results <- data.frame(
+single_results <- data.frame(
   metric = c(
-    "Preferred temperature (°C)",
-    "Lower avoidance temperature (°C)",
-    "Upper avoidance temperature (°C)",
-    "Preference percentile range (°C)",
-    "Effective thermal breadth (°C)",
+    "Tpref (°C)",
+    "Lower Tavoid (°C)",
+    "Upper Tavoid (°C)",
+    "Tpref range (°C)",
+    "Tbreadth (°C)",
     "Number of shuttles",
-    "Seconds in DECR chamber",
-    "Seconds in INCR chamber",
     "Total distance (cm)",
-    "Proportion tracked"
+    "Proportion successfully tracked"
   ),
   value = c(
-    Tpref,
-    Tavoid[1],
-    Tavoid[2],
-    Tpref_range,
-    Tbreadth,
-    shuttles,
-    occupancy[1],
-    occupancy[2],
-    distance,
-    tracking
+    Tpref, Tavoid[1], Tavoid[2], Tpref_range,
+    Tbreadth, shuttles, distance, tracking
   )
 )
 
-knitr::kable(results, digits = 3)
+knitr::kable(single_results, digits = 3)
 ```
 
-Most metric functions also accept `exclude_start_minutes` and
-`exclude_end_minutes`. Apply exclusions consistently when values will be
-compared:
+### Tpref, avoidance temperatures and Tpref range
 
-```{r time-exclusions}
+`Tpref` is the central selected temperature. The default calculation is the
+median `core_T`, although the mean and mode are available. `Tavoid_lower` and
+`Tavoid_upper` are the lower and upper percentiles of the `core_T`
+distribution; the defaults are the 5th and 95th percentiles. Their difference,
+`Tpref_range`, is therefore the width of the central 90% of observations.
+
+These metrics describe the centre and percentile boundaries of the distribution,
+but they do not describe how observations are distributed *within* those
+boundaries.
+
+## What does Tbreadth mean?
+
+`Tpref`, `Tavoid` and `Tbreadth` describe different parts of the temperature
+distribution:
+
+- `Tpref` describes **where** the distribution is centred.
+- `Tavoid_lower` and `Tavoid_upper` describe percentile boundaries.
+- `Tbreadth` describes **how far apart** the temperatures experienced by the
+  fish were.
+
+
+Imagine choosing two moments from the trial and looking at the fish's core
+temperature at those moments.
+
+- If the two temperatures are almost the same, their difference is small.
+- If the two temperatures are far apart, their difference is large.
+
+Now repeat this for every possible pair of moments and take the average of all
+those differences. That average is `Tbreadth`.
+
+A fish that stays at almost the same temperature will therefore have a
+Tbreadth close to zero. A fish that regularly experiences temperatures far
+apart will have a larger Tbreadth.
+
+### The equation
+
+For core-temperature observations \(T_1, T_2, \ldots, T_n\):
+
+\[
+Tbreadth = \frac{1}{n^2}
+\sum_{i=1}^{n}\sum_{j=1}^{n}|T_i-T_j|
+\]
+
+In words, the function calculates the absolute temperature difference for all
+pairs of observations and then takes their mean. This is also known as the
+**Gini mean difference**. The implementation uses an efficient equivalent
+calculation, so it does not need to construct an enormous table of every pair.
+
+### Worked examples
+
+| Temperature use | Tbreadth | Interpretation |
+|---|---:|---|
+| All observations at 20 °C | 0 °C | Every pair has the same temperature |
+| 50% at 20 °C and 50% at 21 °C | 0.5 °C | Half the pairs differ by 1 °C and half by 0 °C |
+| 50% at 10 °C and 50% at 20 °C | 5 °C | Half the pairs differ by 10 °C and half by 0 °C |
+| 90% at 20 °C and 10% at 30 °C | 1.8 °C | The rare 30 °C observations increase breadth, but most pairs remain near 20 °C |
+
+The 10 °C/20 °C example is important. Its Tbreadth is much larger than that of
+a fish split between 20 °C and 21 °C because the two occupied parts of the
+distribution are much farther apart.
+
+### What Tbreadth does not tell you
+
+`Tbreadth` is **not centred on Tpref**. A value of 2 °C does not mean
+`Tpref - 1 °C` to `Tpref + 1 °C`, and it does not define any particular lower
+or upper temperature boundary.
+
+It also cannot fully describe histogram shape. Two fish can have the same
+Tbreadth even if one has a single broad peak and the other has two separate
+peaks. Use the value together with `plot_coreT_histogram()`:
+
+- `Tbreadth` summarises the overall spread in one number;
+- the histogram shows whether that spread is narrow, broad, skewed, or
+  multimodal.
+
+```{r tbreadth-code}
 calc_Tbreadth(
   fish,
-  exclude_start_minutes = 10,
-  exclude_end_minutes = 10,
   print_results = FALSE
 )
 ```
 
-## Step 3: inspect the single trial
+## Step 3: inspect whether the trial is interpretable
 
-The purpose of inspection is not simply to make attractive figures. It is to
-ask whether the trial provides a valid and interpretable measure of the intended
-behaviour.
+Inspection should answer two separate questions:
 
-### Did the apparatus and tracking system work?
+1. Did the apparatus and tracking system work as intended?
+2. Did the fish show behaviour that can reasonably be interpreted as
+   thermoregulation?
 
-Useful checks include:
+### Chamber temperatures and system operation
 
-```{r system-checks, eval=FALSE}
+```{r plot-gradient, fig.height=4.4}
 plot_T_gradient(fish)
-plot_tracking(fish)
-plot_T_segmented(fish)
 ```
 
-These plots can reveal interruptions in heating or cooling, changes in the
-temperature difference between chambers, tracking failures and an implausible
-segmented estimate of gravitation time.
+Look for a stable difference between the warm and cold chambers, plausible
+heating and cooling rates, and no abrupt interruptions or impossible values. A
+power cut or sensor failure may create a discontinuity that is obvious here but
+not obvious from a single summary metric.
 
-### Did the fish display interpretable behaviour?
+### Temperature trajectory, preference and gravitation
 
-The frequency distribution of `core_T` should be viewed alongside its summary
-metrics:
+`plot_T_segmented()` displays `core_T` over time together with Tpref, avoidance
+temperatures and the estimated gravitation breakpoint.
 
-```{r coreT-histogram}
+```{r plot-segmented, fig.height=5.2}
+segmented_plot <- tryCatch({
+  invisible(capture.output(
+    p_segmented <- plot_T_segmented(
+      fish,
+      exclude_acclimation = FALSE,
+      overlay_chamber_temp = TRUE
+    )
+  ))
+  p_segmented
+}, error = function(e) {
+  ggplot2::ggplot(fish, ggplot2::aes(x = time_h, y = core_T)) +
+    ggplot2::geom_line() +
+    ggplot2::labs(
+      title = "Core body temperature through the example recording",
+      subtitle = paste("Segmented fit was not estimable:", conditionMessage(e)),
+      x = "Time (h)", y = "Core body temperature (°C)"
+    ) +
+    ggplot2::theme_light()
+})
+segmented_plot
+```
+
+A useful segmented plot should show a biologically plausible approach toward a
+stable temperature region. Warning signs include an implausible breakpoint,
+continued directional drift after the estimated gravitation time, extended
+contact with system limits, or chamber temperatures that do not respond as
+expected.
+
+### Frequency distribution and thermal breadth
+
+```{r core-temperature-histogram, fig.height=4.6}
 plot_coreT_histogram(fish, bin_size = 0.1)
 ```
 
-The dashed line marks the midpoint of the most frequently occupied temperature
-bin, and the subtitle reports `Tbreadth` calculated using the same bins.
+This plot is the visual partner to Tbreadth. Tbreadth increases when commonly
+experienced temperatures are farther apart, while the histogram reveals *why*.
+A narrow peak should produce a small Tbreadth. A broad peak, long tails, or
+well-separated peaks can increase Tbreadth. The same Tbreadth can nevertheless
+arise from different shapes, so inspect whether the distribution is symmetrical,
+skewed, or multimodal. Multiple peaks may represent distinct phases of behaviour
+and should be compared with `plot_T_segmented()` and the full temperature-through-
+time record.
 
-Position and activity plots can help distinguish active thermoregulation from
-inactivity, tracking artefacts or prolonged occupancy of a particular area:
+The `bin_size` argument here changes how the histogram is drawn.
 
-```{r behavioural-plots, eval=FALSE}
-plot_heatmap(fish)
-plot_distance(fish)
-plot_interval(fish, column = "shuttle", interval_minutes = 30)
-plot_speed_coreT(fish)
-animate_movements(fish)
+### Tracking and spatial behaviour
+
+```{r tracking-plot, fig.height=4.4}
+invisible(capture.output(
+  tracking_plot <- plot_tracking(fish, interval_minutes = 20)
+))
+tracking_plot
 ```
 
-Time near the upper or lower system limits is especially important to examine.
-It can indicate that the selected safety limits did not encompass the fish's
-behaviour or that the fish was not responding to the gradient as expected.
-Other metrics, such as shuttling frequency or total distance, are more strongly
-species dependent and should be interpreted in an ecological context.
+```{r heatmap-plot, fig.height=5.2}
+plot_heatmap(fish)
+```
 
-A plot can identify a reason for concern, but it cannot by itself establish that
-a fish is invalid. Similar patterns across many fish may indicate a systematic
-methodological issue or a genuine species-level behaviour.
+Poor tracking can inflate or suppress distance and may create false shuttles.
+A heatmap concentrated in one tiny area can indicate inactivity, a tracking lock,
+or a fish that did not engage with the thermal gradient. A broad heatmap is not
+automatically better: location should be interpreted alongside chamber
+occupancy, shuttling, temperature, and species ecology.
 
-# Branch 2: work with the complete project
+# Branch 2: screen the complete project
 
-For most studies, the final objective is not to describe one fish but to create
-a consistent dataset across all trials. The project branch repeats the same
-three stages at the level of the study.
+## Step 1: compile one row of metrics per fish
 
-## Step 1: import and organise multiple trials
-
-Place the raw ShuttleSoft files in one directory and import them as a named
-list:
+Import all raw files from one folder:
 
 ```{r project-import, eval=FALSE}
 all_fish <- read_shuttlesoft_project(
@@ -409,43 +312,19 @@ all_fish <- read_shuttlesoft_project(
 )
 ```
 
-When individual trials have different start times, provide an optional metadata
-table:
-
-```{r metadata-example, eval=FALSE}
-metadata <- data.frame(
-  file_name = c("Fish_1.txt", "Fish_2.txt"),
-  trial_start = c("10:30:00", "14:15:00")
-)
-
-all_fish <- read_shuttlesoft_project(
-  metadata = metadata,
-  directory = choose.dir()
-)
-```
-
-`compile_project_data()` combines all time-series rows into one long data frame.
-This can be useful for plotting or checking the raw trajectories across several
-trials. For one-row-per-fish results, use `calc_project_results()` instead.
-
-## Step 2: create the project results database
+Then calculate the same metrics for every fish:
 
 ```{r project-results, eval=FALSE}
 project_results <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
-  Tavoid_percentiles = c(0.05, 0.95),
-  Tbreadth_bin_size = 0.1
+  Tavoid_percentiles = c(0.05, 0.95)
 )
 ```
 
-The same settings are applied to every trial, while the acclimation boundary is
-read separately from each file. This is important for making the resulting
-metrics comparable.
-
-An existing project-results CSV can be imported directly. The package includes
-an example database containing 85 fish:
+An existing project-results CSV can be loaded directly. The package includes an
+85-fish example database:
 
 ```{r import-project-database}
 project_file <- system.file(
@@ -453,135 +332,222 @@ project_file <- system.file(
   "project_database_example.csv",
   package = "ShuttleboxR"
 )
-
 project_data <- read_project_database(project_file)
-
-dim(project_data)
-head(project_data[c(
-  "fileID", "mass", "Tpref", "Tavoid_lower", "Tavoid_upper",
-  "Tpref_range", "tot_distance", "nr_shuttles"
-)])
 ```
 
-`read_project_database()` standardises several column names used by older
-ShuttleboxR versions, such as `study_ID`, `distance` and `shuttles`.
+The example database predates `calc_Tbreadth()`, so it does not contain that
+metric. Tbreadth must be recalculated from the original time-series data; it
+cannot be reconstructed from Tpref and avoidance temperatures alone.
 
-The bundled project database predates `calc_Tbreadth()` and therefore has no
-`Tbreadth` column. Thermal breadth cannot be reconstructed from summary values
-alone; the raw temperature observations must be reprocessed with
-`calc_project_results()`.
-
-## Step 3: identify trials that require closer inspection
-
-### Examine each metric across fish
-
-`plot_histograms()` displays the distributions of key metrics and returns fish
-that cross its univariate screening thresholds:
+## Step 2: begin with univariate distributions
 
 ```{r project-histograms, fig.height=9, fig.width=8}
-project_outliers <- plot_histograms(
+univariate_flags <- plot_histograms(project_data)
+```
+
+The returned table identifies fish that are unusual for individual metrics.
+This is useful for finding, for example, exceptionally low distance, an unusual
+Tpref, or substantial time near limits. A univariate flag does not reveal whether
+the value is technically invalid or biologically meaningful.
+
+## Step 3: inspect upper and lower limit exposure separately
+
+The combined `t_near_limits` value can conceal whether a fish repeatedly reached
+the upper limit, the lower limit, or both. The separate plot is therefore an
+important quality-control step.
+
+```{r upper-lower-extremes, fig.height=5.4}
+extreme_review <- plot_upper_vs_lower_extremes(
   project_data,
-  id_col = "fileID"
+  return_cases = TRUE
 )
-
-head(project_outliers)
+extreme_review$plot
 ```
 
-An isolated value may reflect a technical problem, an unusual behavioural
-strategy or genuine biological variation. The histogram is a screening tool,
-not an exclusion rule.
+```{r upper-lower-cases}
+knitr::kable(extreme_review$cases, digits = 2)
+```
 
-### Examine relationships among metrics
+Interpretation:
 
-Bivariate plots can reveal combinations of metrics that are more informative
-than either value alone. For example, a fish with many shuttles but little total
-distance may deserve a different interpretation from a fish with both high
-shuttling and high movement.
+- **High upper-limit exposure:** the fish may prefer warmer conditions than the
+  programmed range permits, or it may have failed to move away from the warm
+  extreme.
+- **High lower-limit exposure:** the analogous concern at the cold end.
+- **High exposure to both limits:** may indicate unusually wide exploration,
+  unstable system behaviour, tracking problems, or settings poorly matched to
+  the species.
 
-```{r project-distance-shuttles, fig.height=5, fig.width=7}
-plot_distance_vs_shuttles(
+The next checks should be `plot_T_gradient()`, `plot_T_segmented()` and
+`plot_coreT_histogram()` for the flagged fish.
+
+## Step 4: use bivariate plots to distinguish different outlier types
+
+A bivariate plot can identify three kinds of cases:
+
+1. **Marginal outliers:** extreme on one axis, such as very low distance.
+2. **Corner cases:** extreme on both axes, such as low distance and low
+   shuttling.
+3. **Unusual combinations:** values that are individually plausible but form an
+   unexpected combination, such as many shuttles with little total movement.
+
+The optional review guides below use the 5th and 95th project quantiles for
+movement and shuttling. Time near limits is screened using `Q3 + 1.5 × IQR`.
+These thresholds are transparent starting points, not universal biological
+cutoffs.
+
+### Distance versus shuttling
+
+```{r distance-shuttle-review, fig.height=5.8}
+distance_shuttle_review <- plot_distance_vs_shuttles(
   project_data,
-  label_points = FALSE
+  highlight_cases = TRUE,
+  return_cases = TRUE
 )
+distance_shuttle_review$plot
 ```
 
-```{r other-project-plots, eval=FALSE}
-plot_limits_vs_distance(project_data, label_points = FALSE)
-plot_limits_vs_shuttles(project_data, label_points = FALSE)
+```{r distance-shuttle-cases}
+knitr::kable(distance_shuttle_review$cases, digits = 2)
 ```
 
-A correlation matrix provides a broader summary of relationships:
+Particularly useful patterns are:
 
-```{r project-correlations, fig.height=7, fig.width=7}
-correlation_values <- correlation_matrix(
+- **Low movement + low shuttling:** inspect inactivity and tracking.
+- **Low movement + high shuttling:** inspect the doorway region, false crossings
+  and repeated local movement.
+- **High movement + low shuttling:** the fish may be active within one chamber
+  but not regulating through chamber changes.
+- **High movement + high shuttling:** may represent highly active
+  thermoregulation or agitation.
+
+### Limit exposure versus distance
+
+```{r limits-distance-review, fig.height=5.8}
+limits_distance_review <- plot_limits_vs_distance(
   project_data,
-  columns = c(
-    "Tpref", "Tavoid_lower", "Tavoid_upper", "Tpref_range",
-    "tot_distance", "nr_shuttles", "t_near_limits"
-  )
+  highlight_cases = TRUE,
+  return_cases = TRUE
 )
-
-round(correlation_values, 2)
+limits_distance_review$plot
 ```
 
-### Use PCA as a multivariate screening tool
+A fish with **high limit exposure and low movement** may have remained near a
+limit without responding. A fish with **high limit exposure and high movement**
+may have been actively searching but unable to reach a suitable temperature,
+which can indicate that the programmed range was inappropriate.
 
-PCA summarises correlated project metrics and can flag fish that differ across
-several variables simultaneously. Select variables that are scientifically
-relevant rather than automatically including every numeric column:
+### Limit exposure versus shuttling
 
-```{r project-pca, fig.height=6, fig.width=7}
+```{r limits-shuttles-review, fig.height=5.8}
+limits_shuttles_review <- plot_limits_vs_shuttles(
+  project_data,
+  highlight_cases = TRUE,
+  return_cases = TRUE
+)
+limits_shuttles_review$plot
+```
+
+High limit exposure with few shuttles suggests little corrective behaviour.
+High limit exposure with many shuttles suggests that the fish was responding
+but the available gradient or limits may not have allowed it to stabilise.
+
+## Step 5: interpret PCA as a map of multivariate behaviour
+
+PCA is useful when no single metric fully explains why a fish is unusual. It
+compresses correlated metrics into principal components.
+
+```{r project-pca, fig.height=5.8, fig.width=7.5}
 pca_data <- project_data[c(
-  "fileID", "mass", "total_length", "Tpref", "Tavoid_lower",
-  "Tavoid_upper", "Tpref_range", "tot_distance", "nr_shuttles"
+  "fileID",
+  "Tpref",
+  "Tpref_range",
+  "grav_time",
+  "tot_distance",
+  "nr_shuttles",
+  "t_near_max",
+  "t_near_min"
 )]
 
 project_pca <- pca(
   pca_data,
+  mahalanobis_th = 0.975,
+  dbscan_th = 1,
   print_labels = FALSE,
-  var_col = "Tpref"
+  highlight_outliers = TRUE
 )
 
+project_pca$plots$screeplot
+```
+
+### Reading the scree plot
+
+The scree plot shows the percentage of total project variation represented by
+each principal component. PC1 is the largest single axis of variation, PC2 the
+next largest, and so on. The PC1-PC2 biplot is only a two-dimensional view. If
+PC1 and PC2 explain a modest fraction of total variation, fish can be unusual in
+later components even when they do not appear extreme on the biplot.
+
+```{r pca-biplot, fig.height=6.4, fig.width=8}
 project_pca$plots$biplot
 ```
 
-The full output includes:
+### Reading the biplot
 
-```{r other-pca-outputs, eval=FALSE}
-project_pca$plots$screeplot
-project_pca$plots$pc1contributionplot
-project_pca$plots$varplot
-project_pca$pca_scores
-project_pca$pca_loadings
-project_pca$outliers
+- **Points close together** have similar combinations of metrics.
+- **Points far apart** have different multivariate profiles.
+- **An arrow points toward increasing values** of that metric.
+- **Longer arrows** are represented more strongly in the displayed PC1-PC2
+  plane.
+- **Arrows pointing in similar directions** indicate positively associated
+  metrics; opposing arrows indicate negative association; near-right angles
+  indicate weak association in this plane.
+- A fish lying far in the direction of an arrow is likely to have a relatively
+  high value for that metric. A fish in the opposite direction is likely to
+  have a relatively low value.
+
+Flagged fish are circled and labelled. The arrows suggest what to inspect next,
+but `outlier_details` makes that link more explicit:
+
+```{r pca-outlier-details}
+knitr::kable(project_pca$outlier_details, digits = 2)
 ```
 
-The outlier table combines Mahalanobis-distance and DBSCAN screens. These
-methods define unusual multivariate positions in different ways, but neither
-establishes that a trial should be discarded.
+`potential_drivers` lists the original measurements that are most unusually
+high or low for each flagged fish, expressed in project standard deviations.
+For example, a fish driven by high `t_near_max` should be checked for upper-limit
+exposure, whereas one driven by low `tot_distance` should be checked for
+inactivity or poor tracking.
 
-## The recommended quality-control loop
+### Mahalanobis distance and DBSCAN are complementary
 
-The most important project-level step is to return flagged fish to the
-single-trial branch:
+- **Mahalanobis distance** asks whether a fish is far from the multivariate
+  centre after accounting for correlations among metrics. It uses all retained
+  PCA dimensions, not only the visible biplot.
+- **DBSCAN** asks whether a fish lies in a locally sparse region of the PC1-PC2
+  map. It can detect isolated points even when the project contains more than
+  one cluster.
+
+Agreement between the methods is a strong reason for closer inspection. Disagreement is also informative: a fish can
+be globally unusual without being locally isolated, or locally isolated without
+being far from the overall centre.
+
+The thresholds control sensitivity. A smaller `mahalanobis_th` or `dbscan_th`
+will generally flag more fish. Thresholds should be reported and, where
+possible, checked for robustness.
+
+## Step 6: return flagged fish to the raw trial
 
 ```{r review-loop, eval=FALSE}
-# Example identifier flagged by a histogram or PCA
 fish_to_check <- all_fish[["Fish_17.txt"]]
 
-# Was temperature control stable?
 plot_T_gradient(fish_to_check)
-
-# Was tracking adequate?
 plot_tracking(fish_to_check)
-
-# What did the thermal distribution look like?
+plot_T_segmented(fish_to_check)
 plot_coreT_histogram(fish_to_check)
-
-# Where did the fish spend its time?
 plot_heatmap(fish_to_check)
+plot_distance(fish_to_check)
 
-# Inspect the calculated values together
 calc_Tpref(fish_to_check, print_results = FALSE)
 calc_Tavoid(fish_to_check, print_results = FALSE)
 calc_Tbreadth(fish_to_check, print_results = FALSE)
@@ -589,54 +555,35 @@ calc_shuttles(fish_to_check, print_results = FALSE)
 calc_extremes(fish_to_check, print_results = FALSE)
 ```
 
-A transparent decision process is:
+A suggested decision process is:
 
-1. **Flag** an unusual pattern using project-level plots or PCA.
-2. **Inspect** the original trial for technical, tracking and behavioural
-   explanations.
-3. **Contextualise** the pattern using the species' ecology and the wider
-   dataset.
-4. **Document** the rationale for retaining, qualifying or excluding the trial.
+1. **Flag** an unusual metric or combination of metrics.
+2. **Inspect** the original temperature, tracking and movement records.
+3. **Identify a reason**, such as a power interruption, tracking failure,
+   prolonged immobility, inappropriate limits, or behaviour inconsistent with
+   the intended assay.
+4. **Compare** the pattern with the rest of the project and the ecology of the
+   species.
+5. **Document** whether the fish is retained, excluded, or analysed in a
+   sensitivity analysis.
 
-This helps avoid both retaining technically invalid trials and removing valid
-biological variation simply because it is unusual.
+A fish should not be excluded merely because it is statistically unusual.
+Indeed, unusual values can be real biological variation! Conversely, a technically
+flawed trial can require exclusion even when its summary metrics do not appear
+extreme (e.g. when tracking metrics are very low).
 
-## Optional recalculation of core temperature
+## Getting help
 
-Most users should retain the `core_T` column already present in ShuttleSoft
-files. `calc_coreT()` is only needed when those values must be replaced using a
-separate thermal-lag model:
+Open the help page for any function with, for example:
 
-```{r recalculate-coreT, eval=FALSE}
-fish <- calc_coreT(
-  fish,
-  mass = 12.4,
-  a_value = 0.05,
-  b_value = -0.25
-)
+```{r help-pages, eval=FALSE}
+?calc_Tbreadth
+?plot_distance_vs_shuttles
+?pca
 ```
 
-The `a_value` and `b_value` coefficients cannot be estimated from the
-ShuttleSoft file. They must come from an appropriate calibration or published
-source.
+List all package help pages with:
 
-## Common problems
-
-**The package says that `trial_phase` is missing.** Import the file with
-`read_shuttlesoft()` or run `file_prepare()` before requesting acclimation
-exclusion.
-
-**Everything is labelled as trial data.** This is expected when no
-`trial_start` is supplied. Re-import the file with the actual trial start time
-when acclimation needs to be removed.
-
-**Thermal-breadth values change when `bin_size` changes.** This is expected
-because the index is based on temperature bins. Choose a biologically and
-instrumentally sensible bin width and keep it constant across fish.
-
-**The package asks for `a_value` and `b_value`.** These are only required for
-optional recalculation with `calc_coreT()`. They are not needed to analyse the
-existing `core_T` values.
-
-**A fish is flagged as an outlier.** Treat the result as a prompt for
-single-trial inspection, not as an automatic exclusion decision.
+```{r package-help, eval=FALSE}
+help(package = "ShuttleboxR")
+```

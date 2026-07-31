@@ -2,11 +2,10 @@
 % Please edit documentation in R/calc_Tbreadth.R
 \name{calc_Tbreadth}
 \alias{calc_Tbreadth}
-\title{Calculate effective selected thermal breadth}
+\title{Calculate selected thermal breadth}
 \usage{
 calc_Tbreadth(
   data,
-  bin_size = 0.1,
   exclude_start_minutes = 0,
   exclude_end_minutes = 0,
   exclude_acclimation = FALSE,
@@ -15,8 +14,6 @@ calc_Tbreadth(
 }
 \arguments{
 \item{data}{An organised shuttle-box data frame containing \code{core_T}.}
-
-\item{bin_size}{Temperature-bin width in degrees Celsius. The default is 0.1. Use the same value for all animals being compared.}
 
 \item{exclude_start_minutes}{Minutes to exclude from the beginning of the recording. Default is 0.}
 
@@ -27,15 +24,17 @@ calc_Tbreadth(
 \item{print_results}{Logical. Print the result. Default is \code{TRUE}.}
 }
 \value{
-A single effective thermal breadth in degrees Celsius.
+A single non-negative selected thermal breadth in degrees Celsius.
 }
 \description{
-Calculates an effective breadth from the frequency distribution of core body temperatures. Temperatures are placed into equal-width bins, the proportion of observations in each bin is calculated, and breadth is defined as \code{bin_size / sum(p^2)}, where \code{p} is the proportion of observations in each occupied bin.
+Measures how widely separated the temperatures experienced by a fish were. Tbreadth is the mean absolute difference between the core temperatures at two independently selected observations from the trial.
 }
 \details{
-This is a Simpson/Hill-number effective breadth expressed in degrees Celsius. It is small when observations are concentrated around one temperature and larger when time is distributed broadly and evenly across temperatures.
+This quantity is also known as the Gini mean difference. It uses the complete distribution of \code{core_T}, including both the frequency of each temperature and the distance between temperatures. It does not use histogram bins and is not centred on \code{Tpref}.
 
-This metric describes selected or experienced temperatures during the trial; it is not a measure of physiological thermal tolerance.
+A fish that remains at nearly one temperature has a Tbreadth close to zero. A fish that regularly experiences temperatures far apart has a larger Tbreadth. For example, a fish spending half its time at 10 degrees Celsius and half at 20 degrees Celsius has a Tbreadth of 5 degrees Celsius: half of all pairs have the same temperature and half differ by 10 degrees Celsius.
+
+Tbreadth describes overall spread but cannot, by itself, show whether the histogram is symmetrical, skewed, or multimodal. Interpret it together with \code{plot_coreT_histogram()}. It is not a minimum-to-maximum range, does not define lower and upper boundaries, and is not a physiological thermal-tolerance limit.
 }
 \examples{
 example_file <- system.file(
@@ -44,7 +43,14 @@ example_file <- system.file(
 )
 fish <- read_shuttlesoft(example_file)
 calc_Tbreadth(fish, print_results = FALSE)
+
+# Simple examples
+calc_Tbreadth(data.frame(core_T = rep(20, 100)), print_results = FALSE)
+calc_Tbreadth(
+  data.frame(core_T = c(rep(10, 50), rep(20, 50))),
+  print_results = FALSE
+)
 }
 \seealso{
-\code{\link{plot_coreT_histogram()}}, \code{\link{calc_Tpref}}, \code{\link{calc_Tavoid}}
+\code{\link[=plot_coreT_histogram]{plot_coreT_histogram()}}, \code{\link[=calc_Tpref]{calc_Tpref()}}, \code{\link[=calc_Tavoid]{calc_Tavoid()}}
 }

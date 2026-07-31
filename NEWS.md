@@ -1,3 +1,19 @@
+# ShuttleboxR 0.0.0.9006
+
+- Replaced the original bin-diversity definition of `Tbreadth` with the mean
+  absolute difference between pairs of observed core temperatures (the Gini
+  mean difference).
+- `calc_Tbreadth()` now accounts for the actual distance between occupied
+  temperatures, does not use histogram bins, and is not centred on `Tpref`.
+- Updated `plot_coreT_histogram()` so its bin width affects only the visual
+  histogram; the displayed Tbreadth is calculated from the original
+  observations. The Tpref line now shows median core temperature.
+- Rewrote the README, vignette, examples and help pages with plain-language and
+  worked explanations, including the 50% at 10 degrees Celsius / 50% at 20
+  degrees Celsius example.
+- Removed the obsolete `Tbreadth_bin_size` argument from
+  `calc_project_results()`.
+
 # ShuttleboxR 0.0.0.9004
 
 - Reframed the README, vignette, package overview and website reference index

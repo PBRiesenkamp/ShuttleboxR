@@ -40,7 +40,7 @@ Raw shuttle-box recordings
 ShuttleboxR supports quality control and data exploration. It does **not**
 automatically decide that a fish should be excluded, and it does not replace the
 statistical analysis appropriate to a study. A trial that appears unusual at the
-project level should be checked against its raw temperature, tracking and
+project level should be checked against its raw temperature, tracking, and
 behavioural records, and interpreted in the context of the species and
 experimental design.
 
@@ -114,14 +114,24 @@ The thermal metrics answer related but distinct questions:
 - `Tavoid_lower` and `Tavoid_upper` are lower and upper percentiles of the
   `core_T` distribution.
 - `Tpref_range` is the difference between those avoidance temperatures.
-- `Tbreadth` uses the full frequency distribution and becomes larger when time
-  is distributed more broadly and evenly across temperatures.
+- `Tbreadth` describes how far apart the temperatures experienced by the fish
+  were. It is the average absolute difference between the temperatures at two
+  randomly selected observations from the trial.
 
-`Tbreadth` is expressed in degrees Celsius but is not a physiological tolerance
-limit. Use the same `bin_size` for every fish being compared:
+### What does Tbreadth mean?
+
+Imagine choosing two moments from the trial and asking how different the fish's
+core temperature was at those moments. Repeat that for every possible pair and
+take the average. That average is `Tbreadth`.
+
+`Tbreadth` is **not centred on Tpref**, does not define a lower and upper
+boundary, and does not depend on histogram bin size. It summarises overall
+spread, while `plot_coreT_histogram()` shows whether that spread is symmetrical,
+skewed, or split into multiple peaks.
 
 ```r
-calc_Tbreadth(fish, bin_size = 0.1)
+calc_Tbreadth(fish)
+plot_coreT_histogram(fish)
 ```
 
 ### 3. Inspect the trial
@@ -148,7 +158,7 @@ animate_movements(fish)
 ```
 
 These plots can reveal interruptions in temperature control, poor tracking,
-prolonged inactivity, extensive time near system limits, doorway use or other
+prolonged inactivity, extensive time near system limits, doorway use, or other
 patterns that deserve closer examination.
 
 ## Branch 2: inspect a complete project
@@ -185,13 +195,12 @@ project_results <- calc_project_results(
   all_fish,
   exclude_acclimation = TRUE,
   Tpref_method = "median",
-  Tavoid_percentiles = c(0.05, 0.95),
-  Tbreadth_bin_size = 0.1
+  Tavoid_percentiles = c(0.05, 0.95)
 )
 ```
 
 This creates a project-level database containing thermal, activity, occupancy,
-tracking and movement metrics for every trial.
+tracking, and movement metrics for every trial.
 
 An existing project-results CSV can instead be loaded with:
 
@@ -259,12 +268,12 @@ plot_heatmap(fish_to_check)
 
 A fish should only be excluded when there is a clear, documented reason that the
 trial is technically flawed or does not provide a valid measure of the intended
-behaviour. Unusual behaviour can also be genuine biological variation.
+behaviour. Unusual behaviour may also be real biological variation!
 
 ## Recalculating core temperature is optional
 
-ShuttleSoft files normally already contain `core_T`. Only use `calc_coreT()`
-when those values need to be replaced and appropriate thermal-lag coefficients
+ShuttleSoft files normally already contain `core_T`. Use `calc_coreT()`
+if those values need to be replaced and appropriate thermal-lag coefficients
 are available:
 
 ```r

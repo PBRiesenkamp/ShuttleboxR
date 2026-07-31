@@ -2,7 +2,8 @@
 #'
 #' Calculates the standard ShuttleboxR metrics for every trial in a list, such
 #' as the object returned by [read_shuttlesoft_project()]. The output now
-#' includes effective selected thermal breadth from [calc_Tbreadth()].
+#' includes selected thermal breadth from [calc_Tbreadth()], calculated as
+#' the mean pairwise difference among observed core temperatures.
 #'
 #' ShuttleSoft files normally already contain `core_T`, so recalculation is off
 #' by default. Set `recalculate_core_T = TRUE` only when calibrated thermal-lag
@@ -26,8 +27,6 @@
 #'   `"mode"`. Default is `"median"`.
 #' @param Tavoid_percentiles Lower and upper percentiles used by
 #'   [calc_Tavoid()]. Default is `c(0.05, 0.95)`.
-#' @param Tbreadth_bin_size Bin width in degrees Celsius used by
-#'   [calc_Tbreadth()]. Default is 0.1.
 #' @param textremes_threshold Definition of the extreme-temperature range.
 #' @param core_T_variance_type Method used by [calc_coreT_variance()].
 #'
@@ -44,7 +43,6 @@ calc_project_results <- function(
     exclude_end_minutes = 0,
     Tpref_method = "median",
     Tavoid_percentiles = c(0.05, 0.95),
-    Tbreadth_bin_size = 0.1,
     textremes_threshold = expression(0.2 * (max(df$max_T) - max(df$min_T))),
     core_T_variance_type = "std_error") {
 
@@ -106,7 +104,6 @@ calc_project_results <- function(
     Tpref_range <- Tavoid[2L] - Tavoid[1L]
     Tbreadth <- calc_Tbreadth(
       df,
-      bin_size = Tbreadth_bin_size,
       print_results = FALSE
     )
     textremes <- calc_extremes(

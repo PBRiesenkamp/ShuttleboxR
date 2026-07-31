@@ -1,45 +1,130 @@
 #' Plot time spent near limits versus shuttles across project data
 #'
-#' Plots the number of shuttles against time spent close to the programmed
-#' temperature limits for each trial or individual.
+#' Plots the number of shuttles against the percentage of observations spent
+#' close to the programmed temperature limits. Optional review guides highlight
+#' high limit exposure and unusually low or high shuttling within the project.
+#' Highlighted cases require inspection of the original trial and are not
+#' automatic exclusions.
 #'
 #' @param proj_data Project-results data frame.
 #' @param id_col Identifier column used for labels. Default is `"fileID"`.
-#' @param label_points Logical. Label individual points. Default is `TRUE`.
+#' @param label_points Logical. Label points. When `highlight_cases = TRUE`,
+#'   only highlighted cases are labelled. Default is `TRUE`.
+#' @param highlight_cases Logical. Highlight potential review cases. Default is
+#'   `FALSE`.
+#' @param lower_quantile Lower shuttling quantile used for screening. Default is
+#'   0.05.
+#' @param upper_quantile Upper shuttling quantile used for screening. Default is
+#'   0.95.
+#' @param limits_iqr_multiplier Multiplier used to define unusually high time
+#'   near limits as `Q3 + multiplier * IQR`. Default is 1.5.
+#' @param return_cases Logical. Return a list containing the plot, highlighted
+#'   cases and cutoffs. Default is `FALSE`.
 #'
-#' @return A `ggplot2` plot, invisibly.
+#' @return A `ggplot2` plot invisibly, or a list with `plot`, `cases` and
+#'   `cutoffs` when `return_cases = TRUE`.
 #' @import ggplot2
 #' @export
 plot_limits_vs_shuttles <- function(proj_data,
                                     id_col = "fileID",
-                                    label_points = TRUE) {
+                                    label_points = TRUE,
+                                    highlight_cases = FALSE,
+                                    lower_quantile = 0.05,
+                                    upper_quantile = 0.95,
+                                    limits_iqr_multiplier = 1.5,
+                                    return_cases = FALSE) {
   proj_data <- .standardise_project_data(proj_data)
   required <- c(id_col, "t_near_limits", "nr_shuttles")
   missing <- setdiff(required, names(proj_data))
   if (length(missing) > 0L) {
     stop("Missing required columns: ", paste(missing, collapse = ", "), call. = FALSE)
   }
+  .validate_review_quantiles(lower_quantile, upper_quantile)
+  .validate_positive_scalar(limits_iqr_multiplier, "limits_iqr_multiplier", allow_zero = TRUE)
 
-  proj_data$.label_id <- as.character(proj_data[[id_col]])
+  plot_data <- proj_data[
+    is.finite(proj_data$nr_shuttles) & is.finite(proj_data$t_near_limits),
+    , drop = FALSE
+  ]
+  plot_data$.label_id <- as.character(plot_data[[id_col]])
+
+  limits_q1 <- stats::quantile(plot_data$t_near_limits, 0.25, na.rm = TRUE)
+  limits_q3 <- stats::quantile(plot_data$t_near_limits, 0.75, na.rm = TRUE)
+  cutoffs <- c(
+    limits_high = limits_q3 + limits_iqr_multiplier * (limits_q3 - limits_q1),
+    shuttles_low = stats::quantile(plot_data$nr_shuttles, lower_quantile, na.rm = TRUE),
+    shuttles_high = stats::quantile(plot_data$nr_shuttles, upper_quantile, na.rm = TRUE)
+  )
+
+  plot_data$.review_case <- .classify_limits_activity(
+    limits = plot_data$t_near_limits,
+    activity = plot_data$nr_shuttles,
+    limits_high = cutoffs[["limits_high"]],
+    activity_low = cutoffs[["shuttles_low"]],
+    activity_high = cutoffs[["shuttles_high"]],
+    activity_name = "shuttling"
+  )
+  cases <- plot_data[plot_data$.review_case != "Typical project range", c(
+    id_col, "t_near_limits", "nr_shuttles", ".review_case"
+  ), drop = FALSE]
+  names(cases)[names(cases) == ".review_case"] <- "review_reason"
 
   plot <- ggplot2::ggplot(
-    proj_data,
+    plot_data,
     ggplot2::aes(x = t_near_limits, y = nr_shuttles)
   ) +
-    ggplot2::geom_point() +
     ggplot2::labs(
       title = "Time near temperature limits and shuttling",
-      x = "Time near limits (minutes)",
+      subtitle = if (isTRUE(highlight_cases)) {
+        "Limit exposure uses an IQR screen; shuttling uses project quantiles"
+      } else {
+        NULL
+      },
+      x = "Observations near temperature limits (%)",
       y = "Number of shuttles"
     ) +
     ggplot2::theme_light()
 
-  if (isTRUE(label_points)) {
-    plot <- plot + ggplot2::geom_text(
-      ggplot2::aes(label = .label_id),
-      vjust = -0.7,
-      check_overlap = TRUE
-    )
+  if (isTRUE(highlight_cases)) {
+    flagged <- plot_data[plot_data$.review_case != "Typical project range", , drop = FALSE]
+    plot <- plot +
+      ggplot2::geom_point(colour = "grey65") +
+      ggplot2::geom_vline(
+        xintercept = cutoffs[["limits_high"]],
+        linetype = "dashed", colour = "grey55"
+      ) +
+      ggplot2::geom_hline(
+        yintercept = cutoffs[c("shuttles_low", "shuttles_high")],
+        linetype = "dashed", colour = "grey55"
+      ) +
+      ggplot2::geom_point(
+        data = flagged,
+        ggplot2::aes(colour = .review_case),
+        size = 2.6
+      ) +
+      ggplot2::labs(colour = "Potential review pattern")
+
+    if (isTRUE(label_points) && nrow(flagged) > 0L) {
+      plot <- plot + ggrepel::geom_text_repel(
+        data = flagged,
+        ggplot2::aes(label = .label_id, colour = .review_case),
+        show.legend = FALSE,
+        max.overlaps = Inf
+      )
+    }
+  } else {
+    plot <- plot + ggplot2::geom_point()
+    if (isTRUE(label_points)) {
+      plot <- plot + ggplot2::geom_text(
+        ggplot2::aes(label = .label_id),
+        vjust = -0.7,
+        check_overlap = TRUE
+      )
+    }
+  }
+
+  if (isTRUE(return_cases)) {
+    return(list(plot = plot, cases = cases, cutoffs = cutoffs))
   }
 
   print(plot)

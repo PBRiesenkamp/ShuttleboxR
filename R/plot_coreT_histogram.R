@@ -1,22 +1,24 @@
 #' Plot the distribution of core body temperatures
 #'
 #' Plots the percentage of observations within fixed-width `core_T` bins. The
-#' plot can show the midpoint of the most frequently occupied temperature bin
-#' and the effective selected thermal breadth calculated from the same bins.
+#' histogram shows the shape of the selected-temperature distribution, while
+#' the subtitle can report median `Tpref` and Tbreadth. Tbreadth is calculated
+#' from the original observations as the mean pairwise temperature difference;
+#' the visual `bin_size` does not affect its value.
 #'
 #' @param data An organised shuttle-box data frame containing `core_T`.
-#' @param bin_size Width of the temperature bins in degrees Celsius. Default is
-#'   0.1. Use the same value when comparing animals.
+#' @param bin_size Width of the displayed temperature bins in degrees Celsius.
+#'   Default is 0.1. This affects only the appearance of the histogram.
 #' @param exclude_start_minutes Minutes excluded from the beginning of the
 #'   recording. Default is 0.
 #' @param exclude_end_minutes Minutes excluded from the end of the recording.
 #'   Default is 0.
 #' @param exclude_acclimation Logical. Exclude rows labelled `"acclimation"`.
 #'   Default is `FALSE`.
-#' @param show_Tpref Logical. Show a dashed line at the midpoint of the most
-#'   frequently occupied temperature bin. Default is `TRUE`.
-#' @param show_Tbreadth Logical. Report effective selected thermal breadth in
-#'   the plot subtitle. Default is `TRUE`.
+#' @param show_Tpref Logical. Show a dashed line at median `core_T`, the default
+#'   definition of `Tpref`. Default is `TRUE`.
+#' @param show_Tbreadth Logical. Report selected thermal breadth in the plot
+#'   subtitle. Default is `TRUE`.
 #'
 #' @return Invisibly returns the `ggplot` object, allowing it to be saved or
 #'   further customised.
@@ -58,6 +60,10 @@ plot_coreT_histogram <- function(data,
   }
 
   time_values <- suppressWarnings(as.numeric(data$time_sec))
+  if (!any(is.finite(time_values))) {
+    stop("`time_sec` contains no valid values.", call. = FALSE)
+  }
+
   start_time <- exclude_start_minutes * 60
   end_time <- max(time_values, na.rm = TRUE) - exclude_end_minutes * 60
 
@@ -85,25 +91,24 @@ plot_coreT_histogram <- function(data,
     stop("No valid `core_T` values remain after exclusions.", call. = FALSE)
   }
 
-  bin_id <- floor(temperatures / bin_size)
-  counts <- table(bin_id)
-  proportions <- as.numeric(counts) / sum(counts)
-
-  peak_bin_id <- as.numeric(names(counts)[which.max(counts)])
-  Tpref_peak <- (peak_bin_id + 0.5) * bin_size
-  Tbreadth <- bin_size / sum(proportions^2)
+  Tpref_value <- stats::median(temperatures)
+  Tbreadth_value <- .temperature_gmd(temperatures)
 
   subtitle_parts <- character(0)
   if (isTRUE(show_Tpref)) {
     subtitle_parts <- c(
       subtitle_parts,
-      paste0("Peak Tpref bin: ", round(Tpref_peak, 2), " °C")
+      paste0("Median Tpref: ", round(Tpref_value, 2), " °C")
     )
   }
   if (isTRUE(show_Tbreadth)) {
     subtitle_parts <- c(
       subtitle_parts,
-      paste0("Effective thermal breadth: ", round(Tbreadth, 2), " °C")
+      paste0(
+        "Tbreadth (mean pairwise difference): ",
+        round(Tbreadth_value, 2),
+        " °C"
+      )
     )
   }
 
@@ -135,7 +140,7 @@ plot_coreT_histogram <- function(data,
   if (isTRUE(show_Tpref)) {
     hist_plot <- hist_plot +
       ggplot2::geom_vline(
-        xintercept = Tpref_peak,
+        xintercept = Tpref_value,
         colour = "#2F855A",
         linetype = "dashed",
         linewidth = 1.2
