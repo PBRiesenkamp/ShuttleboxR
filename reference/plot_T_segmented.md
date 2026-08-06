@@ -56,7 +56,8 @@ plot_T_segmented(
 
 - gravitation_time:
 
-  Optional checked gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset
+  because gravitation is estimated automatically.
 
 ## Value
 
@@ -66,3 +67,12 @@ A `ggplot` object with the gravitation time stored as an attribute.
 
 The complete selected trajectory remains visible even when the
 horizontal metrics are calculated after gravitation.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+plot_T_segmented(fish)
+} # }
+```

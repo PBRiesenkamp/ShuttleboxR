@@ -44,8 +44,20 @@ calc_tot_distance(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
 Total distance moved within the selected window.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_tot_distance(fish)
+calc_tot_distance(fish, exclude_gravitation = TRUE)
+} # }
+```

@@ -1,5 +1,100 @@
 # Changelog
 
+## ShuttleboxR 0.0.0.9016
+
+- Expanded the vignette into a practical function gallery while
+  retaining simple, direct one-line examples.
+- Added examples of cumulative distance through time with
+  [`plot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_distance.md),
+  interval summaries with
+  [`plot_interval()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_interval.md),
+  and movement speed versus core temperature with
+  [`plot_speed_coreT()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_speed_coreT.md).
+- Added examples of
+  [`calc_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_shuttles.md),
+  [`calc_tot_distance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_tot_distance.md),
+  [`calc_occupancy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_occupancy.md),
+  and
+  [`calc_track_accuracy()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_track_accuracy.md)
+  so users can discover useful single-trial summaries.
+- Kept project-level examples prominent, including
+  [`plot_distance_vs_shuttles()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_distance_vs_shuttles.md),
+  limit-exposure plots, the bivariate matrix, and PCA.
+- Added a concise function-finder table and corrected the README example
+  for
+  [`plot_interval()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_interval.md)
+  to include its required `column` argument.
+
+## ShuttleboxR 0.0.0.9015
+
+- Added
+  [`calc_Tpercentile_range()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpercentile_range.md)
+  to calculate the difference between two user-selected core-temperature
+  percentiles. The default 25th and 75th percentiles give the
+  interquartile range, describing the width of the central 50% of
+  observations.
+- Added gravitation-aware, acclimation-aware and custom-window arguments
+  consistent with the other thermal metrics.
+- Added `Tpercentile_range` to
+  [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md),
+  with adjustable `Tpercentile_range_percentiles`.
+- Updated the README, vignette, package overview, website index and help
+  pages to distinguish `Tpref_range`, `Tpercentile_range`, and the
+  distance-based `Tbreadth`.
+
+## ShuttleboxR 0.0.0.9014
+
+- Reworked the README and vignette so use is shown as direct function
+  calls rather than assignments, helper objects, manual result printing,
+  or code that duplicates work already performed inside package
+  functions.
+- Made the gravitation workflow consistent throughout the documentation:
+  users inspect with
+  [`plot_T_segmented()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md),
+  may report the duration with
+  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md),
+  and then request settled metrics simply with
+  `exclude_gravitation = TRUE`.
+- Removed manual reuse of `gravitation_time` from the standard
+  fish-review workflow and retained it only as an advanced override in
+  the function reference.
+- Simplified project-level examples so plots are produced directly.
+  Retrieving case tables with `return_cases = TRUE` is now shown once as
+  an optional extension rather than as the default workflow.
+- Simplified PCA documentation to show only the required explicit
+  variable selection and the main returned plots, while retaining
+  separate guidance on threshold controls.
+- Added concise, direct examples to the help pages for gravitation-aware
+  thermal, activity, project-screening, correlation, and PCA functions.
+
+## ShuttleboxR 0.0.0.9013
+
+- Simplified the gravitation workflow throughout the README and
+  vignette. Users now only need to set `exclude_gravitation = TRUE`; the
+  relevant calculation or plotting function estimates gravitation time
+  automatically when no manual value is supplied.
+- Removed vignette-only scaffolding such as `use_settled_window`, shared
+  argument lists, [`do.call()`](https://rdrr.io/r/base/do.call.html),
+  and visible [`tryCatch()`](https://rdrr.io/r/base/conditions.html)
+  wrappers that obscured the normal user workflow.
+- Clarified that
+  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
+  is useful for reporting and checking the breakpoint, but it does not
+  have to be run before
+  [`calc_Tpref()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md),
+  [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md),
+  [`calc_Tbreadth()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
+  [`calc_extremes()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_extremes.md),
+  [`calc_coreT_variance()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_coreT_variance.md),
+  or
+  [`plot_coreT_histogram()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md).
+- Retained `gravitation_time` as an advanced optional override for
+  manually checked breakpoints or exact reuse across calculations.
+- Clarified that
+  [`calc_project_results()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_project_results.md)
+  estimates gravitation once per fish under the hood and reuses it for
+  all requested metrics.
+
 ## ShuttleboxR 0.0.0.9012
 
 - Added gravitation-aware analysis windows to

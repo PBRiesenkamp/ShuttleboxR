@@ -94,11 +94,8 @@ Direct arguments take priority over values in `metadata`.
 ## Examples
 
 ``` r
-example_file <- system.file(
-  "extdata", "Fish_14_13_2.txt",
-  package = "ShuttleboxR"
-)
-fish <- read_shuttlesoft(example_file)
-calc_Tpref(fish, print_results = FALSE)
-#> [1] 16.62
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tpref(fish, exclude_gravitation = TRUE)
+} # }
 ```

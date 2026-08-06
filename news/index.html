@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9016</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,38 @@
       <small>Source: <a href="https://github.com/PBRiesenkamp/ShuttleboxR/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9016" id="shuttleboxr-0009016">ShuttleboxR 0.0.0.9016<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009016"></a></h2>
+<ul><li>Expanded the vignette into a practical function gallery while retaining simple, direct one-line examples.</li>
+<li>Added examples of cumulative distance through time with <code><a href="../reference/plot_distance.html">plot_distance()</a></code>, interval summaries with <code><a href="../reference/plot_interval.html">plot_interval()</a></code>, and movement speed versus core temperature with <code><a href="../reference/plot_speed_coreT.html">plot_speed_coreT()</a></code>.</li>
+<li>Added examples of <code><a href="../reference/calc_shuttles.html">calc_shuttles()</a></code>, <code><a href="../reference/calc_tot_distance.html">calc_tot_distance()</a></code>, <code><a href="../reference/calc_occupancy.html">calc_occupancy()</a></code>, and <code><a href="../reference/calc_track_accuracy.html">calc_track_accuracy()</a></code> so users can discover useful single-trial summaries.</li>
+<li>Kept project-level examples prominent, including <code><a href="../reference/plot_distance_vs_shuttles.html">plot_distance_vs_shuttles()</a></code>, limit-exposure plots, the bivariate matrix, and PCA.</li>
+<li>Added a concise function-finder table and corrected the README example for <code><a href="../reference/plot_interval.html">plot_interval()</a></code> to include its required <code>column</code> argument.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9015" id="shuttleboxr-0009015">ShuttleboxR 0.0.0.9015<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009015"></a></h2>
+<ul><li>Added <code><a href="../reference/calc_Tpercentile_range.html">calc_Tpercentile_range()</a></code> to calculate the difference between two user-selected core-temperature percentiles. The default 25th and 75th percentiles give the interquartile range, describing the width of the central 50% of observations.</li>
+<li>Added gravitation-aware, acclimation-aware and custom-window arguments consistent with the other thermal metrics.</li>
+<li>Added <code>Tpercentile_range</code> to <code><a href="../reference/calc_project_results.html">calc_project_results()</a></code>, with adjustable <code>Tpercentile_range_percentiles</code>.</li>
+<li>Updated the README, vignette, package overview, website index and help pages to distinguish <code>Tpref_range</code>, <code>Tpercentile_range</code>, and the distance-based <code>Tbreadth</code>.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9014" id="shuttleboxr-0009014">ShuttleboxR 0.0.0.9014<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009014"></a></h2>
+<ul><li>Reworked the README and vignette so use is shown as direct function calls rather than assignments, helper objects, manual result printing, or code that duplicates work already performed inside package functions.</li>
+<li>Made the gravitation workflow consistent throughout the documentation: users inspect with <code><a href="../reference/plot_T_segmented.html">plot_T_segmented()</a></code>, may report the duration with <code><a href="../reference/calc_gravitation.html">calc_gravitation()</a></code>, and then request settled metrics simply with <code>exclude_gravitation = TRUE</code>.</li>
+<li>Removed manual reuse of <code>gravitation_time</code> from the standard fish-review workflow and retained it only as an advanced override in the function reference.</li>
+<li>Simplified project-level examples so plots are produced directly. Retrieving case tables with <code>return_cases = TRUE</code> is now shown once as an optional extension rather than as the default workflow.</li>
+<li>Simplified PCA documentation to show only the required explicit variable selection and the main returned plots, while retaining separate guidance on threshold controls.</li>
+<li>Added concise, direct examples to the help pages for gravitation-aware thermal, activity, project-screening, correlation, and PCA functions.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9013" id="shuttleboxr-0009013">ShuttleboxR 0.0.0.9013<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009013"></a></h2>
+<ul><li>Simplified the gravitation workflow throughout the README and vignette. Users now only need to set <code>exclude_gravitation = TRUE</code>; the relevant calculation or plotting function estimates gravitation time automatically when no manual value is supplied.</li>
+<li>Removed vignette-only scaffolding such as <code>use_settled_window</code>, shared argument lists, <code><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call()</a></code>, and visible <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> wrappers that obscured the normal user workflow.</li>
+<li>Clarified that <code><a href="../reference/calc_gravitation.html">calc_gravitation()</a></code> is useful for reporting and checking the breakpoint, but it does not have to be run before <code><a href="../reference/calc_Tpref.html">calc_Tpref()</a></code>, <code><a href="../reference/calc_Tavoid.html">calc_Tavoid()</a></code>, <code><a href="../reference/calc_Tbreadth.html">calc_Tbreadth()</a></code>, <code><a href="../reference/calc_extremes.html">calc_extremes()</a></code>, <code><a href="../reference/calc_coreT_variance.html">calc_coreT_variance()</a></code>, or <code><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code>.</li>
+<li>Retained <code>gravitation_time</code> as an advanced optional override for manually checked breakpoints or exact reuse across calculations.</li>
+<li>Clarified that <code><a href="../reference/calc_project_results.html">calc_project_results()</a></code> estimates gravitation once per fish under the hood and reuses it for all requested metrics.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.9012" id="shuttleboxr-0009012">ShuttleboxR 0.0.0.9012<a class="anchor" aria-label="anchor" href="#shuttleboxr-0009012"></a></h2>
 <ul><li>Added gravitation-aware analysis windows to <code><a href="../reference/calc_Tpref.html">calc_Tpref()</a></code>, <code><a href="../reference/calc_Tavoid.html">calc_Tavoid()</a></code>, <code><a href="../reference/calc_Tbreadth.html">calc_Tbreadth()</a></code>, <code><a href="../reference/calc_coreT_variance.html">calc_coreT_variance()</a></code>, <code><a href="../reference/calc_extremes.html">calc_extremes()</a></code>, <code><a href="../reference/calc_tot_distance.html">calc_tot_distance()</a></code>, <code><a href="../reference/calc_shuttles.html">calc_shuttles()</a></code>, <code><a href="../reference/calc_occupancy.html">calc_occupancy()</a></code>, and <code><a href="../reference/plot_coreT_histogram.html">plot_coreT_histogram()</a></code>.</li>

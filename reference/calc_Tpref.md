@@ -49,8 +49,9 @@ calc_Tpref(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours, usually from
-  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md).
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
@@ -61,3 +62,12 @@ A single temperature preference in degrees Celsius.
 When gravitation is excluded, its duration is added to the
 dynamic-period start if acclimation is excluded, or to the recording
 start otherwise.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tpref(fish, exclude_gravitation = TRUE)
+} # }
+```

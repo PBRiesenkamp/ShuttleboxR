@@ -16,6 +16,7 @@ calc_project_results(
   exclude_end_minutes = 0,
   Tpref_method = "median",
   Tavoid_percentiles = c(0.05, 0.95),
+  Tpercentile_range_percentiles = c(0.25, 0.75),
   textremes_threshold = expression(0.2 * (max(df$max_T, na.rm = TRUE) - max(df$min_T, na.rm = TRUE))),
   core_T_variance_type = "std_error",
   exclude_gravitation_thermal = FALSE,
@@ -64,6 +65,12 @@ calc_project_results(
   Percentiles used by
   [`calc_Tavoid()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tavoid.md).
 
+- Tpercentile_range_percentiles:
+
+  Percentiles used by
+  [`calc_Tpercentile_range()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpercentile_range.md).
+  The default is `c(0.25, 0.75)`.
+
 - textremes_threshold:
 
   Definition of the extreme-temperature range.
@@ -94,4 +101,5 @@ gravitation-window metadata.
 ## Details
 
 Gravitation is estimated once per fish and reused across dependent
-metrics.
+metrics. Project output includes the distance-based `Tbreadth` and the
+percentile-based `Tpercentile_range`.

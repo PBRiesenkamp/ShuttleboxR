@@ -75,3 +75,12 @@ plot_upper_vs_lower_extremes(
 
 A `ggplot2` plot invisibly, or a list with `plot`, `cases`, `cutoffs`,
 and `limit_method` when `return_cases = TRUE`.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+project_data <- read_project_database(file.choose())
+plot_upper_vs_lower_extremes(project_data)
+} # }
+```

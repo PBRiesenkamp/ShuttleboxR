@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9016</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,14 @@
     </div>
 
 
+<div class="section level2">
+<h2 id="thermal-spread-metrics-0009015">Thermal spread metrics (0.0.0.9015)<a class="anchor" aria-label="anchor" href="#thermal-spread-metrics-0009015"></a></h2>
+<p><code>Tpref_range</code>, <code>Tpercentile_range</code>, and <code>Tbreadth</code> are deliberately distinct. <code>Tpref_range</code> uses the avoidance percentiles, <code>Tpercentile_range</code> uses user-selected percentile boundaries (25th and 75th by default), and <code>Tbreadth</code> is the mean pairwise temperature difference across the complete distribution. Keep these distinctions explicit in documentation and analyses.</p>
+</div>
+<div class="section level2">
+<h2 id="documentation-style-0009014">Documentation style (0.0.0.9014)<a class="anchor" aria-label="anchor" href="#documentation-style-0009014"></a></h2>
+<p>User-facing examples should show the shortest normal call first. Do not expose internal helper objects, repeated breakpoint fitting, <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code>, <code><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call()</a></code>, or manual result-printing code in the README or vignette. Advanced overrides may be described after the basic workflow.</p>
+</div>
 <div class="section level2">
 <h2 id="gravitation-aware-windows-0009012">Gravitation-aware windows (0.0.0.9012)<a class="anchor" aria-label="anchor" href="#gravitation-aware-windows-0009012"></a></h2>
 <p>Thermal distribution metrics can now exclude the transition before the segmented breakpoint. The gravitation duration is referenced to either the dynamic-period start or the recording start, controlled by <code>exclude_acclimation</code>. Project calculations estimate gravitation once per fish and reuse the same value across dependent metrics.</p>

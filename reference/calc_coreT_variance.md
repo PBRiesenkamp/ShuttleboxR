@@ -45,8 +45,20 @@ calc_coreT_variance(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
 A single measure of core-temperature variation.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_coreT_variance(fish, variance_type = "std_deviation",
+  exclude_gravitation = TRUE)
+} # }
+```

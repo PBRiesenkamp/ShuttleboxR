@@ -45,8 +45,9 @@ calc_Tbreadth(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours, usually from
-  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md).
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
@@ -60,14 +61,15 @@ spread of the settled temperature distribution.
 
 ## See also
 
+[`calc_Tpercentile_range`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpercentile_range.md),
 [`plot_coreT_histogram`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_coreT_histogram.md),
 [`calc_gravitation`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
 
 ## Examples
 
 ``` r
-example_file <- system.file("extdata", "Fish_14_13_2.txt", package = "ShuttleboxR")
-fish <- read_shuttlesoft(example_file)
-calc_Tbreadth(fish, print_results = FALSE)
-#> [1] 2.057776
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tbreadth(fish, exclude_gravitation = TRUE)
+} # }
 ```

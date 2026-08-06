@@ -55,7 +55,9 @@ plot_coreT_histogram(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
@@ -64,4 +66,14 @@ Invisibly returns a `ggplot` object.
 ## See also
 
 [`calc_Tbreadth`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
+[`calc_Tpercentile_range`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpercentile_range.md),
 [`calc_gravitation`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+plot_coreT_histogram(fish, exclude_gravitation = TRUE)
+} # }
+```

@@ -44,8 +44,9 @@ be estimated with
 [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md)
 and inspected with
 [`plot_T_segmented()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md).
-The same checked duration can then be reused when calculating thermal
-and activity metrics.
+When requested, package functions exclude this period automatically from
+Tpref, avoidance temperatures, Tbreadth, percentile-based thermal range,
+core-temperature variation, limit exposure, and activity metrics.
 
 ## Getting started
 

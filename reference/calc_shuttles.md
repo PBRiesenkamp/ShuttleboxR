@@ -44,8 +44,20 @@ calc_shuttles(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
 The number of chamber transitions.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_shuttles(fish)
+calc_shuttles(fish, exclude_gravitation = TRUE)
+} # }
+```

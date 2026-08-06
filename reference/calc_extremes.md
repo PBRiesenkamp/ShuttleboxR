@@ -50,8 +50,19 @@ calc_extremes(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
 Percentages near the lower and upper programmed limits.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_extremes(fish, exclude_gravitation = TRUE)
+} # }
+```

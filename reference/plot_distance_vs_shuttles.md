@@ -26,3 +26,12 @@ plot_distance_vs_shuttles(proj_data, id_col = "fileID", label_points = TRUE)
 ## Value
 
 A `ggplot2` plot, invisibly.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+project_data <- read_project_database(file.choose())
+plot_distance_vs_shuttles(project_data, highlight_cases = TRUE)
+} # }
+```

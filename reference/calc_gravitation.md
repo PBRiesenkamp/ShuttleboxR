@@ -52,4 +52,14 @@ that all metrics use the same checked breakpoint.
 
 [`plot_T_segmented`](https://pbriesenkamp.github.io/ShuttleboxR/reference/plot_T_segmented.md),
 [`calc_Tpref`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpref.md),
-[`calc_Tbreadth`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md)
+[`calc_Tbreadth`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tbreadth.md),
+[`calc_Tpercentile_range`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_Tpercentile_range.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_gravitation(fish)
+} # }
+```

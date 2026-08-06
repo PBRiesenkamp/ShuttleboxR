@@ -1,5 +1,23 @@
 # Maintaining ShuttleboxR
 
+## Thermal spread metrics (0.0.0.9015)
+
+`Tpref_range`, `Tpercentile_range`, and `Tbreadth` are deliberately
+distinct. `Tpref_range` uses the avoidance percentiles,
+`Tpercentile_range` uses user-selected percentile boundaries (25th and
+75th by default), and `Tbreadth` is the mean pairwise temperature
+difference across the complete distribution. Keep these distinctions
+explicit in documentation and analyses.
+
+## Documentation style (0.0.0.9014)
+
+User-facing examples should show the shortest normal call first. Do not
+expose internal helper objects, repeated breakpoint fitting,
+[`tryCatch()`](https://rdrr.io/r/base/conditions.html),
+[`do.call()`](https://rdrr.io/r/base/do.call.html), or manual
+result-printing code in the README or vignette. Advanced overrides may
+be described after the basic workflow.
+
 ## Gravitation-aware windows (0.0.0.9012)
 
 Thermal distribution metrics can now exclude the transition before the

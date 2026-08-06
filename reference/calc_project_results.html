@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ShuttleboxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9016</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,7 @@
 <span>  exclude_end_minutes <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  Tpref_method <span class="op">=</span> <span class="st">"median"</span>,</span>
 <span>  Tavoid_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span>,</span>
+<span>  Tpercentile_range_percentiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.75</span><span class="op">)</span>,</span>
 <span>  textremes_threshold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fl">0.2</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">max_T</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">min_T</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  core_T_variance_type <span class="op">=</span> <span class="st">"std_error"</span>,</span>
 <span>  exclude_gravitation_thermal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -96,6 +97,9 @@
 <dt id="arg-tavoid-percentiles">Tavoid_percentiles<a class="anchor" aria-label="anchor" href="#arg-tavoid-percentiles"></a></dt>
 <dd><p>Percentiles used by <code><a href="calc_Tavoid.html">calc_Tavoid()</a></code>.</p></dd>
 
+<dt id="arg-tpercentile-range-percentiles">Tpercentile_range_percentiles<a class="anchor" aria-label="anchor" href="#arg-tpercentile-range-percentiles"></a></dt>
+<dd><p>Percentiles used by <code><a href="calc_Tpercentile_range.html">calc_Tpercentile_range()</a></code>. The default is <code>c(0.25, 0.75)</code>.</p></dd>
+
 <dt id="arg-textremes-threshold">textremes_threshold<a class="anchor" aria-label="anchor" href="#arg-textremes-threshold"></a></dt>
 <dd><p>Definition of the extreme-temperature range.</p></dd>
 
@@ -118,7 +122,7 @@
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Gravitation is estimated once per fish and reused across dependent metrics.</p>
+    <p>Gravitation is estimated once per fish and reused across dependent metrics. Project output includes the distance-based <code>Tbreadth</code> and the percentile-based <code>Tpercentile_range</code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

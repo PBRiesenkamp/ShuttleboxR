@@ -50,9 +50,19 @@ calc_Tavoid(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours, usually from
-  [`calc_gravitation()`](https://pbriesenkamp.github.io/ShuttleboxR/reference/calc_gravitation.md).
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
 A two-element vector containing lower and upper avoidance temperatures.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tavoid(fish, exclude_gravitation = TRUE)
+} # }
+```

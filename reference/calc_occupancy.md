@@ -44,8 +44,20 @@ calc_occupancy(
 
 - gravitation_time:
 
-  Optional gravitation duration in hours.
+  Advanced optional override in hours. Most users can leave this unset;
+  when `exclude_gravitation = TRUE`, gravitation is estimated
+  automatically.
 
 ## Value
 
 Counts of observations in the DECR and INCR chambers.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_occupancy(fish)
+calc_occupancy(fish, exclude_gravitation = TRUE)
+} # }
+```
