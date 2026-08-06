@@ -17,8 +17,9 @@
 #'   Default is `FALSE`.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period before drawing the histogram. Default is `FALSE`.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()].
+#' @param gravitation_time Advanced optional override in hours. Most users can
+#'   leave this unset; when `exclude_gravitation = TRUE`, gravitation is
+#'   estimated automatically.
 #' @param show_Tpref Logical. Show a dashed line at median `core_T`, the default
 #'   definition of `Tpref`. Default is `TRUE`.
 #' @param show_Tbreadth Logical. Report selected thermal breadth in the plot
@@ -28,14 +29,12 @@
 #'   further customised.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "Fish_14_13_2.txt",
-#'   package = "ShuttleboxR"
-#' )
-#' fish <- read_shuttlesoft(example_file)
-#' plot_coreT_histogram(fish)
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' plot_coreT_histogram(fish, exclude_gravitation = TRUE)
+#' }
 #'
-#' @seealso [calc_Tbreadth()], [calc_Tpref()]
+#' @seealso [calc_Tbreadth()], [calc_Tpercentile_range()], [calc_Tpref()]
 #' @import ggplot2
 #' @export
 plot_coreT_histogram <- function(data,

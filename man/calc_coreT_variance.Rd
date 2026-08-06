@@ -21,7 +21,14 @@ calc_coreT_variance(
 \item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
 \item{exclude_acclimation}{Use only the dynamic period.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{A single measure of core-temperature variation.}
 \description{Calculates variation in core temperature within the selected analysis window.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_coreT_variance(fish, variance_type = "std_deviation",
+  exclude_gravitation = TRUE)
+}
+}

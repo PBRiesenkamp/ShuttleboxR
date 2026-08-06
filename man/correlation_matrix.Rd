@@ -30,13 +30,10 @@ The numeric correlation matrix, invisibly.
 Creates a pairs plot and returns the corresponding correlation matrix. The function can be used with a project-results table containing one row per trial, or with a single time-series trial that is first averaged into time intervals.
 }
 \examples{
-example_file <- system.file(
-  "extdata", "project_database_example.csv", package = "ShuttleboxR"
-)
-project_data <- read_project_database(example_file)
-
-correlation_matrix(
-  project_data,
-  columns = c("Tpref", "Tavoid_lower", "Tavoid_upper", "nr_shuttles")
-)
+\dontrun{
+project_data <- read_project_database(file.choose())
+correlation_matrix(project_data, columns = c(
+  "Tpref", "Tpref_range", "nr_shuttles", "tot_distance"
+))
+}
 }

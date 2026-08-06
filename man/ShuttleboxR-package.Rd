@@ -29,7 +29,7 @@ ShuttleSoft files normally already include \code{core_T}. Recalculation with \co
 }
 \section{Gravitation-aware metrics}{
 
-The transition from starting conditions to settled thermal behaviour can be estimated with \code{calc_gravitation()} and inspected with \code{plot_T_segmented()}. The same checked duration can then be reused when calculating thermal and activity metrics.
+The transition from starting conditions to settled thermal behaviour can be estimated with \code{calc_gravitation()} and inspected with \code{plot_T_segmented()}. When requested, package functions exclude this period automatically from Tpref, avoidance temperatures, Tbreadth, percentile-based thermal range, core-temperature variation, limit exposure, and activity metrics.
 }
 \section{Getting started}{
 

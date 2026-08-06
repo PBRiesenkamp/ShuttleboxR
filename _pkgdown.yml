@@ -25,6 +25,7 @@ reference:
   - calc_Tpref
   - calc_Tavoid
   - calc_Tbreadth
+  - calc_Tpercentile_range
   - calc_extremes
   - calc_tot_distance
   - calc_gravitation

@@ -23,7 +23,13 @@ calc_extremes(
 \item{exclude_acclimation}{Use only the dynamic period.}
 \item{print_results}{Print the results.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{Percentages near the lower and upper programmed limits.}
 \description{Calculates limit exposure within the selected analysis window.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_extremes(fish, exclude_gravitation = TRUE)
+}
+}

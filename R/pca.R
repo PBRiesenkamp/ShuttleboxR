@@ -48,26 +48,18 @@
 #'   potential drivers, thresholds, retained identifiers, and plots.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "project_database_example.csv", package = "ShuttleboxR"
-#' )
-#' project_data <- read_project_database(example_file)
-#'
-#' pca_result <- pca(
+#' \dontrun{
+#' project_data <- read_project_database(file.choose())
+#' project_pca <- pca(
 #'   project_data,
 #'   variables = c(
 #'     "Tpref", "Tpref_range", "grav_time", "tot_distance",
 #'     "nr_shuttles", "t_near_max", "t_near_min"
 #'   ),
-#'   mahalanobis_th = 0.99,
-#'   dbscan_th = 1.5,
-#'   dbscan_minPts = 4,
-#'   flag_rule = "both",
 #'   print_labels = FALSE
 #' )
-#' pca_result$plots$biplot
-#' pca_result$screening
-#' pca_result$outlier_details
+#' project_pca$plots$biplot
+#' }
 #'
 #' @import FactoMineR factoextra ggrepel dbscan ggplot2
 #' @export

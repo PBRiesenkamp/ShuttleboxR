@@ -14,10 +14,18 @@
 #'   `FALSE`.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period. Default is `FALSE`.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()].
+#' @param gravitation_time Advanced optional override in hours. Most users can
+#'   leave this unset; when `exclude_gravitation = TRUE`, gravitation is
+#'   estimated automatically.
 #'
 #' @return A single measure of variation in core body temperature.
+#' @examples
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_coreT_variance(fish, variance_type = "std_deviation",
+#'   exclude_gravitation = TRUE)
+#' }
+#'
 #' @export
 calc_coreT_variance <- function(
     data,

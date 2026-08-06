@@ -32,29 +32,21 @@
 #'   `trial_phase`. Default is `FALSE`.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period. Default is `FALSE` for backwards compatibility.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()]. When omitted and `exclude_gravitation = TRUE`, it is
+#' @param gravitation_time Optional advanced override: a gravitation duration
+#'   in hours, usually from [calc_gravitation()]. Most users can leave this
+#'   unset. When omitted and `exclude_gravitation = TRUE`, gravitation is
 #'   estimated automatically using the same acclimation reference.
 #' @param print_results Logical. Print the result. Default is `TRUE`.
 #'
 #' @return A single non-negative selected thermal breadth in degrees Celsius.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "Fish_14_13_2.txt",
-#'   package = "ShuttleboxR"
-#' )
-#' fish <- read_shuttlesoft(example_file)
-#' calc_Tbreadth(fish, print_results = FALSE)
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_Tbreadth(fish, exclude_gravitation = TRUE)
+#' }
 #'
-#' # Simple examples
-#' calc_Tbreadth(data.frame(core_T = rep(20, 100)), print_results = FALSE)
-#' calc_Tbreadth(
-#'   data.frame(core_T = c(rep(10, 50), rep(20, 50))),
-#'   print_results = FALSE
-#' )
-#'
-#' @seealso [plot_coreT_histogram()], [calc_Tpref()], [calc_Tavoid()]
+#' @seealso [calc_Tpercentile_range()], [plot_coreT_histogram()], [calc_Tpref()], [calc_Tavoid()]
 #' @export
 calc_Tbreadth <- function(data,
                           exclude_start_minutes = 0,

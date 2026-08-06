@@ -15,12 +15,19 @@
 #'   `FALSE`.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period. Default is `FALSE`.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()].
+#' @param gravitation_time Advanced optional override in hours. Most users can
+#'   leave this unset; when `exclude_gravitation = TRUE`, gravitation is
+#'   estimated automatically.
 #' @param print_results Logical. Print the results. Default is `TRUE`.
 #'
 #' @return A two-element vector giving percentages near the lower and upper
 #'   limits.
+#' @examples
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_extremes(fish, exclude_gravitation = TRUE)
+#' }
+#'
 #' @export
 calc_extremes <- function(
     data,

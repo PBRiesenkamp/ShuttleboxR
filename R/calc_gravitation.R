@@ -8,10 +8,13 @@
 #' start of the complete recording when `exclude_acclimation = FALSE`.
 #' `exclude_start_minutes` is also interpreted relative to that same origin.
 #'
-#' The estimated duration can be passed to `gravitation_time` in functions such
-#' as [calc_Tpref()], [calc_Tbreadth()], [calc_Tavoid()], and
-#' [plot_coreT_histogram()]. This ensures that all functions use the same
-#' breakpoint rather than refitting the model separately.
+#' Downstream functions do not normally require this value to be passed
+#' manually. Setting `exclude_gravitation = TRUE` in functions such as
+#' [calc_Tpref()], [calc_Tbreadth()], [calc_Tpercentile_range()],
+#' [calc_Tavoid()], and
+#' [plot_coreT_histogram()] makes them call `calc_gravitation()` internally. The
+#' returned value is mainly useful for inspection, reporting, or an advanced
+#' manual override.
 #'
 #' @param data An organised shuttle-box data frame containing `time_sec` and
 #'   `core_T`.
@@ -29,12 +32,10 @@
 #' @return A single gravitation time in hours.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "Fish_14_13_2.txt",
-#'   package = "ShuttleboxR"
-#' )
-#' fish <- read_shuttlesoft(example_file)
-#' grav_time <- calc_gravitation(fish, print_results = FALSE)
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_gravitation(fish)
+#' }
 #'
 #' @seealso [plot_T_segmented()], [calc_Tpref()], [calc_Tbreadth()]
 #' @import segmented

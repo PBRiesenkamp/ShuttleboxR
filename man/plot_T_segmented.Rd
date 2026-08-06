@@ -25,8 +25,14 @@ plot_T_segmented(
 \item{exclude_acclimation}{Use the dynamic-period start as the time origin.}
 \item{overlay_chamber_temp}{Overlay warm- and cold-chamber temperatures.}
 \item{exclude_gravitation}{Calculate horizontal thermal metrics after the breakpoint.}
-\item{gravitation_time}{Optional checked gravitation duration in hours.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset because gravitation is estimated automatically.}
 }
 \value{A \code{ggplot} object with the gravitation time stored as an attribute.}
 \description{Shows the temperature trajectory, segmented fit, gravitation period, and thermal summary metrics.}
 \details{The complete selected trajectory remains visible even when the horizontal metrics are calculated after gravitation.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+plot_T_segmented(fish)
+}
+}

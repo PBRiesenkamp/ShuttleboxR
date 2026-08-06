@@ -31,3 +31,9 @@ plot_upper_vs_lower_extremes(
 }
 \value{A \code{ggplot2} plot invisibly, or a list with \code{plot}, \code{cases}, \code{cutoffs}, and \code{limit_method} when \code{return_cases = TRUE}.}
 \description{Compares the percentage of observations spent near the lower and upper programmed temperature limits. The plot can highlight fish exceeding a transparent threshold at the upper limit, lower limit, or both. This is a screening step that should be followed by inspection of the original trial.}
+\examples{
+\dontrun{
+project_data <- read_project_database(file.choose())
+plot_upper_vs_lower_extremes(project_data)
+}
+}

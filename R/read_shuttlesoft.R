@@ -33,12 +33,10 @@
 #'   calculation and plotting functions.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "Fish_14_13_2.txt",
-#'   package = "ShuttleboxR"
-#' )
-#' fish <- read_shuttlesoft(example_file)
-#' calc_Tpref(fish, print_results = FALSE)
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_Tpref(fish, exclude_gravitation = TRUE)
+#' }
 #'
 #' @seealso [read_shuttlesoft_project()], [file_prepare()], [calc_coreT()]
 #' @export

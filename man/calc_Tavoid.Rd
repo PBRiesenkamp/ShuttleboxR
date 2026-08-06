@@ -23,7 +23,13 @@ calc_Tavoid(
 \item{exclude_acclimation}{Use only the dynamic period.}
 \item{print_results}{Print the results.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours, usually from \code{calc_gravitation()}.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{A two-element vector containing lower and upper avoidance temperatures.}
 \description{Calculates percentile boundaries of the selected core-temperature distribution.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tavoid(fish, exclude_gravitation = TRUE)
+}
+}

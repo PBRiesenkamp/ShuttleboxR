@@ -32,6 +32,12 @@
 #'
 #' @return A `ggplot2` plot invisibly, or a list with `plot`, `cases`, `cutoffs`,
 #'   and `limit_method` when `return_cases = TRUE`.
+#' @examples
+#' \dontrun{
+#' project_data <- read_project_database(file.choose())
+#' plot_limits_vs_distance(project_data, highlight_cases = TRUE)
+#' }
+#'
 #' @import ggplot2
 #' @export
 plot_limits_vs_distance <- function(proj_data,

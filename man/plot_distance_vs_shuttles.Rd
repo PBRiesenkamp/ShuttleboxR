@@ -19,3 +19,9 @@ A \code{ggplot2} plot, invisibly.
 \description{
 Plots total movement distance against the number of shuttles for each trial or individual in a project-results table.
 }
+\examples{
+\dontrun{
+project_data <- read_project_database(file.choose())
+plot_distance_vs_shuttles(project_data, highlight_cases = TRUE)
+}
+}

@@ -3,10 +3,10 @@
 #' Calculates standard ShuttleboxR metrics for every trial in a list, such as
 #' the object returned by [read_shuttlesoft_project()].
 #'
-#' Gravitation time is estimated once per fish. When
+#' Gravitation time is estimated once per fish under the hood. When
 #' `exclude_gravitation_thermal = TRUE`, the same checked gravitation duration
 #' is used to remove the transitional period from Tpref, avoidance
-#' temperatures, Tbreadth, core-temperature variation, and exposure near the
+#' temperatures, Tbreadth, percentile-based thermal range, core-temperature variation, and exposure near the
 #' programmed limits. The duration is added to the start of the dynamic period
 #' when `exclude_acclimation = TRUE`, or to the start of the complete recording
 #' otherwise.
@@ -40,6 +40,8 @@
 #' @param Tpref_method Method used by [calc_Tpref()]. Default is `"median"`.
 #' @param Tavoid_percentiles Lower and upper percentiles used by
 #'   [calc_Tavoid()]. Default is `c(0.05, 0.95)`.
+#' @param Tpercentile_range_percentiles Lower and upper percentiles used by
+#'   [calc_Tpercentile_range()]. Default is `c(0.25, 0.75)`.
 #' @param textremes_threshold Definition of the extreme-temperature range.
 #' @param core_T_variance_type Method used by [calc_coreT_variance()].
 #'
@@ -58,6 +60,7 @@ calc_project_results <- function(
     exclude_end_minutes = 0,
     Tpref_method = "median",
     Tavoid_percentiles = c(0.05, 0.95),
+    Tpercentile_range_percentiles = c(0.25, 0.75),
     textremes_threshold = expression(0.2 * (max(df$max_T, na.rm = TRUE) - max(df$min_T, na.rm = TRUE))),
     core_T_variance_type = "std_error",
     exclude_gravitation_thermal = FALSE,
@@ -159,6 +162,13 @@ calc_project_results <- function(
         thermal_args,
         list(print_results = FALSE)
       ))
+      Tpercentile_range <- do.call(calc_Tpercentile_range, c(
+        thermal_args,
+        list(
+          percentiles = Tpercentile_range_percentiles,
+          print_results = FALSE
+        )
+      ))
       textremes <- do.call(calc_extremes, c(
         thermal_args,
         list(threshold = textremes_th, print_results = FALSE)
@@ -168,7 +178,7 @@ calc_project_results <- function(
         list(variance_type = core_T_variance_type)
       ))
     } else {
-      Tpref <- Tpref_range <- Tbreadth <- core_T_variance <- NA_real_
+      Tpref <- Tpref_range <- Tbreadth <- Tpercentile_range <- core_T_variance <- NA_real_
       Tavoid <- c(lower = NA_real_, upper = NA_real_)
       textremes <- c(lower = NA_real_, upper = NA_real_)
     }
@@ -215,6 +225,7 @@ calc_project_results <- function(
       Tpref = Tpref,
       Tpref_range = Tpref_range,
       Tbreadth = Tbreadth,
+      Tpercentile_range = Tpercentile_range,
       grav_time = grav_time,
       gravitation_valid = grav_valid,
       gravitation_reference = reference,

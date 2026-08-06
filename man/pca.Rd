@@ -54,24 +54,16 @@ Performs a scaled principal component analysis (PCA) of selected numeric project
 Two complementary screens are provided. Mahalanobis distance identifies fish far from the multivariate centre while accounting for covariance among PCA dimensions. DBSCAN identifies fish in locally sparse regions of the PC1-PC2 plot. \code{flag_rule} controls whether either screen, both screens, or one named screen is used for highlighting. These screens identify candidates for review, not automatic exclusions.
 }
 \examples{
-example_file <- system.file(
-  "extdata", "project_database_example.csv", package = "ShuttleboxR"
-)
-project_data <- read_project_database(example_file)
-
-pca_result <- pca(
+\dontrun{
+project_data <- read_project_database(file.choose())
+project_pca <- pca(
   project_data,
   variables = c(
     "Tpref", "Tpref_range", "grav_time", "tot_distance",
     "nr_shuttles", "t_near_max", "t_near_min"
   ),
-  mahalanobis_th = 0.99,
-  dbscan_th = 1.5,
-  dbscan_minPts = 4,
-  flag_rule = "both",
   print_labels = FALSE
 )
-pca_result$plots$biplot
-pca_result$screening
-pca_result$outlier_details
+project_pca$plots$biplot
+}
 }

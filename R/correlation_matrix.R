@@ -18,15 +18,12 @@
 #' @return The numeric correlation matrix, invisibly.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "project_database_example.csv", package = "ShuttleboxR"
-#' )
-#' project_data <- read_project_database(example_file)
-#'
-#' correlation_matrix(
-#'   project_data,
-#'   columns = c("Tpref", "Tavoid_lower", "Tavoid_upper", "nr_shuttles")
-#' )
+#' \dontrun{
+#' project_data <- read_project_database(file.choose())
+#' correlation_matrix(project_data, columns = c(
+#'   "Tpref", "Tpref_range", "nr_shuttles", "tot_distance"
+#' ))
+#' }
 #'
 #' @importFrom graphics pairs panel.smooth text
 #' @importFrom stats aggregate cor

@@ -22,4 +22,10 @@ calc_gravitation(
 \value{A gravitation duration in hours from the selected origin.}
 \description{Estimates a one-breakpoint segmented regression of core temperature through time.}
 \details{The returned duration can be reused in thermal calculations to ensure that all metrics use the same checked breakpoint.}
-\seealso{\code{\link{plot_T_segmented}}, \code{\link{calc_Tpref}}, \code{\link{calc_Tbreadth}}}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_gravitation(fish)
+}
+}
+\seealso{\code{\link{plot_T_segmented}}, \code{\link{calc_Tpref}}, \code{\link{calc_Tbreadth}}, \code{\link{calc_Tpercentile_range}}}

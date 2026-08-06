@@ -14,6 +14,7 @@ calc_project_results(
   exclude_end_minutes = 0,
   Tpref_method = "median",
   Tavoid_percentiles = c(0.05, 0.95),
+  Tpercentile_range_percentiles = c(0.25, 0.75),
   textremes_threshold = expression(0.2 * (max(df$max_T, na.rm = TRUE) - max(df$min_T, na.rm = TRUE))),
   core_T_variance_type = "std_error",
   exclude_gravitation_thermal = FALSE,
@@ -31,6 +32,7 @@ calc_project_results(
 \item{exclude_end_minutes}{Minutes omitted from the end.}
 \item{Tpref_method}{Method used by \code{calc_Tpref()}.}
 \item{Tavoid_percentiles}{Percentiles used by \code{calc_Tavoid()}.}
+\item{Tpercentile_range_percentiles}{Percentiles used by \code{calc_Tpercentile_range()}. The default is \code{c(0.25, 0.75)}.}
 \item{textremes_threshold}{Definition of the extreme-temperature range.}
 \item{core_T_variance_type}{Method used by \code{calc_coreT_variance()}.}
 \item{exclude_gravitation_thermal}{Exclude gravitation from thermal distribution metrics.}
@@ -39,4 +41,4 @@ calc_project_results(
 }
 \value{A data frame containing one row of metrics per trial, plus gravitation-window metadata.}
 \description{Calculates project-level metrics and optionally separates transitional and settled behaviour.}
-\details{Gravitation is estimated once per fish and reused across dependent metrics.}
+\details{Gravitation is estimated once per fish and reused across dependent metrics. Project output includes the distance-based \code{Tbreadth} and the percentile-based \code{Tpercentile_range}.}

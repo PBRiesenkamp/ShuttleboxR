@@ -21,7 +21,14 @@ calc_occupancy(
 \item{exclude_acclimation}{Use only the dynamic period.}
 \item{print_results}{Print the results.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{Counts of observations in the DECR and INCR chambers.}
 \description{Calculates chamber occupancy within the selected analysis window.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_occupancy(fish)
+calc_occupancy(fish, exclude_gravitation = TRUE)
+}
+}

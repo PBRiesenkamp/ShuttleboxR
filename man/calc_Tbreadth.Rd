@@ -21,14 +21,15 @@ calc_Tbreadth(
 \item{exclude_acclimation}{Use only the dynamic period.}
 \item{print_results}{Print the result.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours, usually from \code{calc_gravitation()}.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{A non-negative selected thermal breadth in degrees Celsius.}
 \description{Measures the mean absolute difference between two independently selected core-temperature observations.}
 \details{Tbreadth uses both the frequency and separation of temperatures. It is not centred on Tpref. When gravitation is excluded, it describes the spread of the settled temperature distribution.}
 \examples{
-example_file <- system.file("extdata", "Fish_14_13_2.txt", package = "ShuttleboxR")
-fish <- read_shuttlesoft(example_file)
-calc_Tbreadth(fish, print_results = FALSE)
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tbreadth(fish, exclude_gravitation = TRUE)
 }
-\seealso{\code{\link{plot_coreT_histogram}}, \code{\link{calc_gravitation}}}
+}
+\seealso{\code{\link{calc_Tpercentile_range}}, \code{\link{plot_coreT_histogram}}, \code{\link{calc_gravitation}}}

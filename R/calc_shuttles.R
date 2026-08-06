@@ -12,11 +12,19 @@
 #'   `FALSE`.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period. Default is `FALSE`; whole-trial activity is often of interest.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()].
+#' @param gravitation_time Advanced optional override in hours. Most users can
+#'   leave this unset; when `exclude_gravitation = TRUE`, gravitation is
+#'   estimated automatically.
 #' @param print_results Logical. Print the result. Default is `TRUE`.
 #'
 #' @return Number of chamber transitions.
+#' @examples
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_shuttles(fish)
+#' calc_shuttles(fish, exclude_gravitation = TRUE)
+#' }
+#'
 #' @export
 calc_shuttles <- function(data,
                           exclude_start_minutes = 0,

@@ -18,13 +18,20 @@
 #'   `FALSE`.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period. Default is `FALSE` for backwards compatibility.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()]. When omitted and `exclude_gravitation = TRUE`, it is
+#' @param gravitation_time Advanced optional override in hours. Most users can
+#'   leave this unset; when `exclude_gravitation = TRUE`, gravitation is
+#'   estimated automatically. When omitted and `exclude_gravitation = TRUE`, it is
 #'   estimated automatically.
 #' @param print_results Logical. Print the results. Default is `TRUE`.
 #'
 #' @return A two-element vector containing lower and upper avoidance
 #'   temperatures in degrees Celsius.
+#'
+#' @examples
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_Tavoid(fish, exclude_gravitation = TRUE)
+#' }
 #'
 #' @export
 calc_Tavoid <- function(data,

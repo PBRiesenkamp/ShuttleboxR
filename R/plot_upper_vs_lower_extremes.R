@@ -26,6 +26,12 @@
 #'
 #' @return A `ggplot2` plot invisibly, or a list with `plot`, `cases`, `cutoffs`,
 #'   and `limit_method` when `return_cases = TRUE`.
+#' @examples
+#' \dontrun{
+#' project_data <- read_project_database(file.choose())
+#' plot_upper_vs_lower_extremes(project_data)
+#' }
+#'
 #' @import ggplot2
 #' @export
 plot_upper_vs_lower_extremes <- function(proj_data,

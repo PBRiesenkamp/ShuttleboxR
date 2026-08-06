@@ -21,7 +21,14 @@ calc_shuttles(
 \item{exclude_acclimation}{Use only the dynamic period.}
 \item{print_results}{Print the result.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{The number of chamber transitions.}
 \description{Counts shuttles within the selected analysis window.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_shuttles(fish)
+calc_shuttles(fish, exclude_gravitation = TRUE)
+}
+}

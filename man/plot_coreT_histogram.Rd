@@ -25,8 +25,14 @@ plot_coreT_histogram(
 \item{show_Tpref}{Show median Tpref.}
 \item{show_Tbreadth}{Show Tbreadth in the subtitle.}
 \item{exclude_gravitation}{Plot only post-gravitation observations.}
-\item{gravitation_time}{Optional gravitation duration in hours.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{Invisibly returns a \code{ggplot} object.}
 \description{Plots the frequency distribution of selected core temperatures and can summarise Tpref and Tbreadth.}
-\seealso{\code{\link{calc_Tbreadth}}, \code{\link{calc_gravitation}}}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+plot_coreT_histogram(fish, exclude_gravitation = TRUE)
+}
+}
+\seealso{\code{\link{calc_Tbreadth}}, \code{\link{calc_Tpercentile_range}}, \code{\link{calc_gravitation}}}

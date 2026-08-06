@@ -19,12 +19,19 @@
 #'   Default is 0.
 #' @param exclude_gravitation Logical. Exclude the transitional gravitation
 #'   period. Default is `FALSE` for backwards compatibility.
-#' @param gravitation_time Optional gravitation duration in hours, usually from
-#'   [calc_gravitation()]. When omitted and `exclude_gravitation = TRUE`, it is
+#' @param gravitation_time Optional advanced override: a gravitation duration
+#'   in hours, usually from [calc_gravitation()]. Most users can leave this
+#'   unset. When omitted and `exclude_gravitation = TRUE`, gravitation is
 #'   estimated automatically using the same acclimation reference.
 #' @param print_results Logical. Print the result. Default is `TRUE`.
 #'
 #' @return A single temperature preference in degrees Celsius.
+#'
+#' @examples
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' calc_Tpref(fish, exclude_gravitation = TRUE)
+#' }
 #'
 #' @export
 calc_Tpref <- function(data,

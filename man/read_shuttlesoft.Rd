@@ -45,12 +45,10 @@ Imports a single ShuttleSoft tab-delimited \code{.txt} file or comma-separated \
 ShuttleSoft files normally already contain a \code{core_T} column. The arguments \code{mass}, \code{initial_T}, \code{a_value}, and \code{b_value} are therefore optional and are only needed if body temperature will later be recalculated with \code{calc_coreT()}. Direct arguments take priority over values in \code{metadata}.
 }
 \examples{
-example_file <- system.file(
-  "extdata", "Fish_14_13_2.txt",
-  package = "ShuttleboxR"
-)
-fish <- read_shuttlesoft(example_file)
-calc_Tpref(fish, print_results = FALSE)
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tpref(fish, exclude_gravitation = TRUE)
+}
 }
 \seealso{
 \code{\link{read_shuttlesoft_project}}, \code{\link{file_prepare}}, \code{\link{calc_coreT}}

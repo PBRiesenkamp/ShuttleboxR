@@ -25,9 +25,10 @@
 #' @param exclude_gravitation Logical. Calculate Tpref and avoidance
 #'   temperatures using only observations after the breakpoint. Default is
 #'   `TRUE`.
-#' @param gravitation_time Optional gravitation duration in hours. When omitted,
-#'   it is estimated with [calc_gravitation()]. Supplying a previously checked
-#'   value ensures that the plot and later calculations use the same cutoff.
+#' @param gravitation_time Optional advanced override: a gravitation duration
+#'   in hours. Most users can leave this unset; the function estimates
+#'   gravitation automatically. Supply a value only when a manually checked or
+#'   adjusted breakpoint must be used.
 #' @param overlay_chamber_temp Logical. Overlay warm- and cold-chamber
 #'   temperatures. Default is `TRUE`.
 #'
@@ -35,12 +36,10 @@
 #'   `gravitation_time` attribute.
 #'
 #' @examples
-#' example_file <- system.file(
-#'   "extdata", "Fish_14_13_2.txt",
-#'   package = "ShuttleboxR"
-#' )
-#' fish <- read_shuttlesoft(example_file)
-#' plot_T_segmented(fish, exclude_acclimation = FALSE)
+#' \dontrun{
+#' fish <- read_shuttlesoft(file.choose())
+#' plot_T_segmented(fish)
+#' }
 #'
 #' @import ggplot2 segmented
 #' @export

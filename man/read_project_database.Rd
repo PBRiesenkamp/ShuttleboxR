@@ -30,19 +30,15 @@ are changed. If no identifier column is available but \code{ID} is present, a
 character \code{fileID} column is added.
 
 Project databases store summary values and therefore cannot be used to
-calculate a new \code{Tbreadth} value retrospectively. Thermal breadth must be
-calculated from the underlying temperature observations using
-\code{calc_project_results()}.
+calculate a new \code{Tbreadth} or \code{Tpercentile_range} value retrospectively.
+These metrics must already be present in the table or be calculated from the
+underlying temperature observations using \code{calc_project_results()}.
 }
 \examples{
-example_file <- system.file(
-  "extdata",
-  "project_database_example.csv",
-  package = "ShuttleboxR"
-)
-
-project_data <- read_project_database(example_file)
-head(project_data)
+\dontrun{
+project_data <- read_project_database(file.choose())
+plot_distance_vs_shuttles(project_data, highlight_cases = TRUE)
+}
 }
 \seealso{
 \code{\link[=calc_project_results]{calc_project_results()}}, \code{\link[=plot_histograms]{plot_histograms()}}, \code{\link[=pca]{pca()}}

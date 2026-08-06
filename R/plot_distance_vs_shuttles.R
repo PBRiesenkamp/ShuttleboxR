@@ -18,6 +18,12 @@
 #'
 #' @return A `ggplot2` plot invisibly, or a list with `plot`, `cases` and
 #'   `cutoffs` when `return_cases = TRUE`.
+#' @examples
+#' \dontrun{
+#' project_data <- read_project_database(file.choose())
+#' plot_distance_vs_shuttles(project_data, highlight_cases = TRUE)
+#' }
+#'
 #' @import ggplot2
 #' @export
 plot_distance_vs_shuttles <- function(proj_data,

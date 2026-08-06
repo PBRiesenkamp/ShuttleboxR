@@ -33,3 +33,9 @@ plot_limits_vs_distance(
 }
 \value{A \code{ggplot2} plot invisibly, or a list with \code{plot}, \code{cases}, \code{cutoffs}, and \code{limit_method} when \code{return_cases = TRUE}.}
 \description{Plots total movement distance against the percentage of observations spent close to the programmed temperature limits. Optional review guides highlight trials exceeding a transparent limit-exposure threshold and trials with unusually low or high movement within the project. Highlighted cases require inspection of the original trial and are not automatic exclusions.}
+\examples{
+\dontrun{
+project_data <- read_project_database(file.choose())
+plot_limits_vs_distance(project_data, highlight_cases = TRUE)
+}
+}

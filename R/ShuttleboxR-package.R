@@ -33,7 +33,8 @@
 #' The transition from starting conditions to settled thermal behaviour can be
 #' estimated with [calc_gravitation()] and inspected with
 #' [plot_T_segmented()]. The same checked duration can then be excluded from
-#' Tpref, avoidance temperatures, Tbreadth, core-temperature variation, limit
+#' Tpref, avoidance temperatures, Tbreadth, percentile-based thermal range,
+#' core-temperature variation, limit
 #' exposure, and—when scientifically appropriate—activity metrics.
 #'
 #' @section Getting started:

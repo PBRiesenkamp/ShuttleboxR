@@ -23,8 +23,14 @@ calc_Tpref(
 \item{exclude_end_minutes}{Minutes omitted from the end of the recording.}
 \item{print_results}{Print the result.}
 \item{exclude_gravitation}{Exclude the transitional gravitation period.}
-\item{gravitation_time}{Optional gravitation duration in hours, usually from \code{calc_gravitation()}.}
+\item{gravitation_time}{Advanced optional override in hours. Most users can leave this unset; when \code{exclude_gravitation = TRUE}, gravitation is estimated automatically.}
 }
 \value{A single temperature preference in degrees Celsius.}
 \description{Calculates the centre of the selected core-temperature distribution.}
 \details{When gravitation is excluded, its duration is added to the dynamic-period start if acclimation is excluded, or to the recording start otherwise.}
+\examples{
+\dontrun{
+fish <- read_shuttlesoft(file.choose())
+calc_Tpref(fish, exclude_gravitation = TRUE)
+}
+}
