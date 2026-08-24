@@ -7,10 +7,8 @@ Description: Provides a structured workflow for importing and organising
     ShuttleSoft temperature shuttle-box data, calculating reproducible thermal
     and behavioural metrics, including distance-based and percentile-based measures of selected
     thermal breadth, gravitation-aware analysis windows, and inspection of
-    single trials and complete projects
-    before statistical analysis. Project-level tools help flag unusual trials
-    for closer inspection without treating outlier status as an automatic basis
-    for exclusion.
+    single trials and complete projects before statistical analysis. Project-level tools help 
+    flag unusual trials for closer inspection.
 License: MIT + file LICENSE
 URL: https://github.com/PBRiesenkamp/ShuttleboxR
 BugReports: https://github.com/PBRiesenkamp/ShuttleboxR/issues
